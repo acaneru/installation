@@ -1,0 +1,52 @@
+@media only screen and (max-width:1367px) {
+    .sidetoc {
+        display: none;
+    }
+}
+
+@media only screen and (min-width:1368px) {
+    main {
+        position: relative;
+    }
+    .sidetoc {
+        margin-left: auto;
+        margin-right: auto;
+        left: calc(100% + (var(--content-max-width))/4 - 200px);
+        position: absolute;
+    }
+    .pagetoc {
+        position: fixed;
+        width: 280px;
+        height: calc(100vh - var(--menu-bar-height) - 0.67em * 4);
+        overflow: auto;
+        font-size: 14px;
+    }
+    .pagetoc a {
+        border-left: 1px solid var(--sidebar-bg);
+        color: var(--fg) !important;
+        display: block;
+        padding-bottom: 5px;
+        padding-top: 5px;
+        padding-left: 10px;
+        text-align: left;
+        text-decoration: none;
+        white-space: nowrap;        /* 防止文本换行 */
+        overflow: hidden;           /* 隐藏溢出的内容 */
+        text-overflow: ellipsis;    /* 使用省略号表示被截断的文本 */
+    }
+    .pagetoc a:hover,
+    .pagetoc a.active {
+        background: var(--sidebar-bg);
+        color: var(--sidebar-fg) !important;
+    }
+    .pagetoc .active {
+        background: var(--sidebar-bg);
+        color: var(--sidebar-fg);
+    }
+}
+
+@media print {
+    .sidetoc {
+        display: none;
+    }
+}
