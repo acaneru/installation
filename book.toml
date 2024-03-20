@@ -3,7 +3,7 @@ authors = ["TensorStack Authors"]
 language = "zh-cn"
 multilingual = false
 src = "src"
-title = "TensorStack AI 计算平台 - 用户使用手册"
+title = "TensorStack AI 计算平台 - 管理员使用手册"
 
 [output.html]
 additional-css = ["theme/sidebar.css", "theme/custom.css"]
