@@ -402,7 +402,7 @@ spec:
       name: kube-api-access-j7hhf
       readOnly: <span class="hljs-literal">true</span>
     workingDir: /t9k/mnt
-<span style="background-color: #FFFF00">  - args:
+<span style="background-color: #FFF2CC">  - args:
     - --http-address=0.0.0.0:4180
     - --upstream=http://127.0.0.1:8888/
     - --client-id=t9k-client

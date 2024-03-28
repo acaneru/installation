@@ -28,7 +28,7 @@
 
 ## 网络策略
 
-管理员可以限制一个 Pod 能够通信的实体，可基于命名空间、标签、IP 地址、端口等信息来进行限制，包括上行方向（egress）和下行方向（ingress）。此功能通过创建一个 <a target="_blank" rel="noopener noreferrer" href="https://kubernetes.io/docs/concepts/services-networking/network-policies/">Kuberentes Network Policy</a> 资源实现。
+管理员可以限制一个 Pod 能够通信的实体，可基于命名空间、标签、IP 地址、端口等信息来进行限制，包括上行方向（egress）和下行方向（ingress）。此功能通过创建一个 <a target="_blank" rel="noopener noreferrer" href="https://kubernetes.io/docs/concepts/services-networking/network-policies/">Kubernetes Network Policy</a> 资源实现。
 
 ### 管理项目网络策略
 

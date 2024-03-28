@@ -9,5 +9,5 @@ TensorStack AI 平台的安全系统主要包括以下组件：
 
 <figure class="architecture">
   <img alt="architecture" src="../assets/user-and-security-management/architecture.drawio.svg" />
-  <figcaption>图 1：TensorStack AI 平台安全系统架构示意图。1）PEP Proxy、Security Console、Keycloak、LDAP 协同提供平台的身份和访问管理功能，其中 LDAP 负责管理用户数据、Keycloak 负责管理权限数据、Security Console 负责对外提供具体 API、PEP Proxy 负责保护每个资源服务器；2）集群管理员通过 Cluster Admin 管理用户、用户组、项目，普通用户通过 Account Console 分享自己的项目、创建 API Key；3）普通用户通过 Web 登录获取 Cookie，或通过 T9k CLI 登录获取 Token，或持有其他用户分享给自己的 API Key，即可访问平台，PEP Proxy 将对 Cookie、Token、API Key 进行权限验证，检查用户是否拥有足够的权限</figcaption>
+  <figcaption>图 1：TensorStack AI 平台的安全系统架构示意图。1）PEP Proxy、Security Console、Keycloak、LDAP 协同提供平台的身份和访问管理功能，其中 LDAP 负责管理用户数据、Keycloak 负责管理权限数据、Security Console 负责对外提供具体 API、PEP Proxy 负责保护每个资源服务器；2）集群管理员通过 Cluster Admin 管理用户、用户组、项目，普通用户通过 Account Console 分享自己的项目、创建 API Key；3）普通用户通过 Web 登录获取 Cookie，或通过 T9k CLI 登录获取 Token，或持有其他用户分享给自己的 API Key，即可访问平台，PEP Proxy 将对 Cookie、Token、API Key 进行权限验证，检查用户是否拥有足够的权限</figcaption>
 </figure>
