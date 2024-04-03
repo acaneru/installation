@@ -122,7 +122,7 @@ oversubscription 是一种在资源管理中常用的策略，它允许系统分
 
 ### 局限性
 
-队列是调度器 t9k-scheduler 提供的机制，如果使用其它调度器，例如 kube-scheduler 则无法使用。如需要，集群管理员可以通过配置[验证规则 — R027 Verify Workload Scheduler](./reference/t9k-verification-rules.md#r027---verify-workload-scheduler) 来限制用户可以使用的调度器，即强制要求必须使用 t9k-scheduler。
+队列是调度器 t9k-scheduler 提供的机制，如果使用其他调度器，例如 kube-scheduler 则无法使用。如需要，集群管理员可以通过配置[验证规则 — R027 Verify Workload Scheduler](./reference/t9k-verification-rules.md#r027---verify-workload-scheduler) 来限制用户可以使用的调度器，即强制要求必须使用 t9k-scheduler。
 
 ## 调度器
 

@@ -4,9 +4,35 @@
 
 ---
 
-<!-- * [安装]
-    * [离线安装]
-    * [升级和维护] -->
+* [安装](installation/index.md)
+    * [在线安装](installation/online/index.md)
+        * [准备 Inventory](installation/online/prepare-inventory.md)
+        * [准备节点与安装 K8s](installation/online/prepare-nodes-and-install-k8s.md)
+        * [安装 Registry](installation/online/install-registry/index.md)
+            * [Harbor](installation/online/install-registry/harbor.md)
+        * [安装存储服务](installation/online/install-storage-service/index.md)
+            * [MinIO](installation/online/install-storage-service/minio.md)
+            * [NFS](installation/online/install-storage-service/nfs.md)
+            * [Ceph](installation/online/install-storage-service/ceph.md)
+        * [安装 K8s 组件](installation/online/install-k8s-components.md)
+        * [安装产品](installation/online/install-products.md)
+        * [正确性检查](installation/online/correctness-checking.md)
+    * [离线安装](installation/offline/index.md)
+        * [准备离线安装包](installation/offline/prepare-offline-packages/index.md)
+            * [Kubespray](installation/offline/prepare-offline-packages/kubespray.md)
+            * [K8s 组件](installation/offline/prepare-offline-packages/k8s-components.md)
+            * [产品](installation/offline/prepare-offline-packages/products.md)
+        * [安装](installation/offline/install/index.md)
+            * [K8s](installation/offline/install/k8s.md)
+            * [K8s 组件](installation/offline/install/k8s-components.md)
+            * [产品](installation/offline/install/products.md)
+    * [产品升级](installation/update/index.md)
+    * [附录](installation/appendix/index.md)
+        * [在线安装 Docker](installation/appendix/install-docker.md)
+        * [在线安装 Docker Compose](installation/appendix/install-docker-compose.md)
+        * [在线安装 s3cmd](installation/appendix/install-s3cmd.md)
+        * [生成 K8s 文件和镜像列表](installation/appendix/generate-k8s-file-and-image-list.md)
+        * [生成 T9k 产品镜像列表](installation/appendix/generate-t9k-product-image-list.md)
 * [用户及安全管理](user-and-security-management/index.md)
     * [查看运行状态](user-and-security-management/view-running-status.md)
     * [用户管理](user-and-security-management/user-management.md)

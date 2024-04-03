@@ -1,6 +1,6 @@
 # 变更控制器
 
-T9k 变更控制器（mutating admission controller）采用 K8s 的 [dynamic admission control](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/) 机制实施一些管理策略。当用户发送创建/修改（目前，2024/04，变更规则只作用于 Pod）的请求后，T9k 变更控制器会根据配置的策略对此请求进行修改，然后再传送给 K8s API Server。某些情况下，变更控制器也可以直接拒绝资源对象的创建/修改行为。
+T9k 变更控制器（mutating admission controller）采用 K8s 的 <a target="_blank" rel="noopener noreferrer" href="https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/">dynamic admission control</a> 机制实施一些管理策略。当用户发送创建/修改（目前，2024/04，变更规则只作用于 Pod）的请求后，T9k 变更控制器会根据配置的策略对此请求进行修改，然后再传送给 K8s API Server。某些情况下，变更控制器也可以直接拒绝资源对象的创建/修改行为。
 
 ## 运行状态
 
@@ -315,7 +315,7 @@ webhooks:
 <aside class="note">
 <div class="title">注意</div>
 
-当设置了 namespaceSelector（[参考](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#mutatingwebhook-v1-admissionregistration-k8s-io)）时：
+当设置了 namespaceSelector（<a target="_blank" rel="noopener noreferrer" href="https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#mutatingwebhook-v1-admissionregistration-k8s-io">参考</a>）时：
 
 1. 系统会根据资源对象的 namespace 是否与 namespaceSelector 匹配来决定 webhook 是否作用于这个资源对象。
 1. 如果资源对象本身就是 Namespace，则根据 `object.metadata.labels` 执行匹配。

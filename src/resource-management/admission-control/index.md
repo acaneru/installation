@@ -14,7 +14,7 @@ T9k Admission 包含两部分：
 
 <figure class="architecture">
   <img alt="architecture" src="../../assets/resource-management/validation-mutation.png" />
-  <figcaption>图 1：TensorStack AI 平台的 admission 机制概览。1）Validation 采用 [GateKeeper](https://open-policy-agent.github.io/gatekeeper/website/)；通过 ConstraintTemplate 和 Constraint 来定义验证规则，其中 Constraint 是 ConstraintTemplate 的实例；二者通过 CRD 的机制实现；2）Mutation 通过 T9k 的独立 server 实现，其配置信息存放在 2 个 configmap 中：admission-security, admission-sched</figcaption>
+  <figcaption>图 1：TensorStack AI 平台的 admission 机制概览。1）Validation 采用 <a target="_blank" rel="noopener noreferrer" href="https://open-policy-agent.github.io/gatekeeper/website/">GateKeeper</a>；通过 ConstraintTemplate 和 Constraint 来定义验证规则，其中 Constraint 是 ConstraintTemplate 的实例；二者通过 CRD 的机制实现；2）Mutation 通过 T9k 的独立 server 实现，其配置信息存放在 2 个 configmap 中：admission-security, admission-sched</figcaption>
 </figure>
 
 ## 验证控制器

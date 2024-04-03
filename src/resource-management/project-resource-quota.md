@@ -1,6 +1,6 @@
 # Project Resource Quota
 
-Project Resource Quota 可以限制 Project 中的工作负载可以使用的资源上限。CRD Project 中定义了 project 的 quota 及其它信息，project controller 负责 reconcile 这些配置。
+Project Resource Quota 可以限制 Project 中的工作负载可以使用的资源上限。CRD Project 中定义了 project 的 quota 及其他信息，project controller 负责 reconcile 这些配置。
 
 ## 运行状态
 
