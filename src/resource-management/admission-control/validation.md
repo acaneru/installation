@@ -1,8 +1,8 @@
-# Validation
+# 验证控制器
 
 ## 运行状态
 
-安装 T9k Admission 之后，运行下列命令检查 validation 的组件是否正常运行：
+安装 T9k Admission 之后，运行下列命令检查验证控制器的组件是否正常运行：
 
 Webhook configuration (<a target="_blank" rel="noopener noreferrer" href="https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/#configure-admission-webhooks-on-the-fly">参考</a>)：
 

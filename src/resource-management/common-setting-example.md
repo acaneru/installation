@@ -1,6 +1,6 @@
 # 常见设置示例
 
-下面说明了一些常见的资源设置策略，供给管理员参考使用。
+下面说明了一些常见的资源设置策略，提供给管理员参考使用。
 
 ## 项目资源配额
 
@@ -11,25 +11,34 @@
 集群资源量 {cpu: 2000, memory: 200Ti, nvidia.com/gpu: 200，nvidia.com/gpu.shared: 400}
 
 集群内定义了 3 个 QuotaProfile：
+
 1. QuotaProfile A：
-    1. 资源量 {cpu: 10, memory: 1Ti}
-    1. 适用于资源量需求低，且不需要使用 GPU 的项目
+    1. 资源量 {cpu: 10, memory: 1Ti, nvidia.com/gpu: 0，nvidia.com/gpu.shared: 0}
+    1. 适用于资源量需求低，且不需要使用 GPU 的项目。将 nvidia.com/gpu 和 nvidia.com/gpu.shared 设为 0 可以禁止该项目使用 NVIDIA GPU。
 1. QuotaProfile B：
-    1. 资源量 {cpu: 100, memory: 10Ti, nvidia.com/gpu: 10}
-    1. 适用于中等资源量需求的项目，项目需要使用独占 GPU，但不需要使用共享 GPU。
+    1. 资源量 {cpu: 100, memory: 10Ti, nvidia.com/gpu: 10，nvidia.com/gpu.shared: 0}
+    1. 适用于中等资源量需求的项目，项目需要使用独占 GPU，禁止使用共享 GPU。
 1. QuotaProfile C：
-    1. 资源量 {cpu: 100, memory: 10Ti, nvidia.com/gpu.shared: 40}
-    1. 适用于中等资源量需求的项目，项目需要使用共享 GPU。
+    1. 资源量 {cpu: 100, memory: 10Ti, nvidia.com/gpu: 0, nvidia.com/gpu.shared: 40}
+    1. 适用于中等资源量需求的项目，项目需要使用共享 GPU，禁止使用独占 GPU。
 1. QuotaProfile D：
     1. 资源量 {cpu: 1000, memory: 50Ti, nvidia.com/gpu: 50，nvidia.com/gpu.shared: 200}
-    1. 适用于较大资源量需求的项目，并且项目同时需要使用独占 GPU 和共享 GPU。
+    1. 适用于较大资源量需求的项目，并且项目同时需要使用独占 GPU 和共享 GPU。 
+1. QuotaProfile E:
+    1. 资源量 {memory: 50Ti, nvidia.com/gpu: 50}
+    1. 只限制内存和独占 GPU 的使用数量，不限制其他资源
+1. QuotaProfile F：
+    1. 资源量 {persistentvolumeclaims：10，pod：50}
+    1. 限制 PVC 和 Pod 的数量
 
 集群内需要新增下列项目：
 
-1. 新增项目 P1，对资源需求量低，且不需要使用 GPU。将 P1 的 QuotaProfile 设为 A。
-1. 新增项目 P2，需要使用独占 GPU。将 P2 的 QuotaProfile 设为 B。
-1. 新增项目 P3，需要使用共享 GPU。将 P2 的 QuotaProfile 设为 C。
+1. 新增项目 P1，对资源需求量低，且不允许使用 GPU。将 P1 的 QuotaProfile 设为 A。
+1. 新增项目 P2，只需要使用独占 GPU。将 P2 的 QuotaProfile 设为 B。
+1. 新增项目 P3，只需要使用共享 GPU。将 P3 的 QuotaProfile 设为 C。
 1. 新增项目 P4，对资源的需求量较高，并同时需要使用独占 GPU 和共享 GPU。将 P4 的 QuotaProfile 设为 D。
+1. 新增项目 P5，只限制内存和独占 GPU 的使用数量。将 P5 的 QuotaProfile 设为 E。
+1. 新增项目 P6，想要限制 PVC 和 Pod 的数量。将 P6 的 QuotaProfile 设为 F。
 
 ### 规范
 
@@ -69,7 +78,7 @@ oversubscription 是一种在资源管理中常用的策略，它允许系统分
 
 可针对不同计算资源，应用 oversubscription，例如：
 
-1. CPU 过量使用（CPU overcommit）。这允许分配给工作负载的 CPU 数量超过物理 CPU 的数量。这是基于不同工作负载往往不会100%使用CPU的情况。
+1. CPU 过量使用（CPU overcommit）。这允许分配给工作负载的 CPU 数量超过物理 CPU 的数量。这是基于不同工作负载往往不会 100% 使用CPU的情况。
 1. 内存过量使用（memory overcommit）。这允许分配给工作负载的内存总量超过物理内存容量。这依赖于操作系统的交换和页面共享功能来管理内存使用。
 
 通过 oversubscription，可以在相同的硬件资源上运行更多的工作负载，提高资源利用效率。但是,如果使用不当，也可能导致性能下降或系统不稳定。因此，需要合理设置 oversubscription 比率，并密切监控资源使用情况。同时也需要在不同应用场景中权衡资源过量使用带来的风险和收益。
@@ -92,6 +101,7 @@ oversubscription 是一种在资源管理中常用的策略，它允许系统分
 队列 Q1 可以使用节点 A 和 B，队列 Q2 可以使用节点 B 和 C，两个队列均可以使用节点 B。
 
 配额设置除了需要考虑 “示例1” 中的 oversubscription 策略外，通常会有下面 3 种配置方法：
+
 1. shared + oversubscription：
     * 资源设置：Q1 资源配额 300 = 100（节点 A 资源量）+ 200（节点 B 资源量），Q2 资源配额 250 = 50（节点 C 资源量）+ 200（节点 B 资源量）。
     * 说明：这种设置提供了比较多的自由度，但很可能导致节点B的资源全部被 Q1 的工作负载占用，如果 Q1 的工作负载不释放资源，Q2 的工作负载则无法使用节点 B 上的资源。

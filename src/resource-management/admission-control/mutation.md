@@ -1,12 +1,10 @@
-# Mutation
+# 变更控制器
 
-用户发送创建/修改资源对象的请求后，Mutation 会对相关的资源对象进行修改，然后 K8s API Server 会接收到修改后的资源对象。某些特殊情况下，Mutation 会直接拒绝资源对象的创建/修改行为。
-
-Mutation 中定义了多个 features，目前的 features 均作用于 Pod，详情见 [features 列表](#features-列表)。
+T9k 变更控制器（mutating admission controller）采用 K8s 的 [dynamic admission control](https://kubernetes.io/docs/reference/access-authn-authz/extensible-admission-controllers/) 机制实施一些管理策略。当用户发送创建/修改（目前，2024/04，变更规则只作用于 Pod）的请求后，T9k 变更控制器会根据配置的策略对此请求进行修改，然后再传送给 K8s API Server。某些情况下，变更控制器也可以直接拒绝资源对象的创建/修改行为。
 
 ## 运行状态
 
-安装 T9k Admission 之后，运行下列命令检查 mutation 的组件是否正常运行：
+安装 T9k Admission 之后，运行下列命令检查 mutating 的组件是否正常运行：
 
 ```bash
 $ kubectl -n t9k-system get pod -l tensorstack.dev/component=admission
@@ -36,25 +34,243 @@ level=info time=2023-10-20T09:22:44.389639832Z configuration=Arguments UpdateCon
 level=info time=2023-10-20T09:22:44.389651132Z configuration=Arguments UpdateConfiguration="set arguments for Security.SecurityContext.PodMutation according to configmap"
 ```
 
-## 查看/修改配置
+## 变更规则
 
-Mutation 有 4 种类型的配置：
+变更控制器根据变更规则（mutating policy）来对资源对象进行修改/检查，管理员可以修改变更规则的配置，从而控制变更控制器的行为。目前，变更规则可分为两类：
 
-1. 命令行参数：基本配置，例如 log level。
-1. features 配置：控制 features 的开启/关闭。
-1. arguments 配置：提供参数，控制 mutation 的具体行为。
-1. mutatingwebhookconfiguration：用于向 K8s 注册 mutation 服务。
+1. 安全：与安全相关的变更规则。
+1. 调度器：与调度器相关的变更规则。
+
+### 安全
+
+此类型的规则目前有两个：
+
+1. securityContext
+    1. 作用于资源对象： Pod
+    1. 描述：确保 Pod Container 中定义的 SecurityContext 字段设置符合管理员设置的安全规范，阻止不适当的特权升级等。
+1. containerNvidiaGPUEnv
+    1. 作用于资源对象： Pod
+    1. 描述：确保 NVIDIA 的 GPU 设备没有被非授权用户使用。
+
+#### securityContext
+
+变更规则 securityContext 会对 Pod Container 中定义的 SecurityContext 字段进行检查，具体会检查子字段 allowPrivilegeEscalation 和 privileged。
+
+##### allowPrivilegeEscalation
+
+当 allowPrivilegeEscalation 被用户主动设置为 true 时，本变更规则会认为 Pod 是违规的，并根据配置参数进行下列操作：
+
+* ignore：do nothing，允许 Pod 的创建。
+* deny：拒绝 Pod 的创建。
+* mutate：将 allowPrivilegeEscalation 修改为 false。
+
+当 allowPrivilegeEscalation 未被主动设置时，本变更规则会根据配置参数进行下列操作：
+
+* ignore：do nothing
+* deny/mutate：将 allowPrivilegeEscalation 设置为 false。
+
+##### privileged
+
+当 privileged 被设置为 true 时，本变更规则会认为 Pod 是违规的，并根据配置参数进行下列操作：
+
+* ignore：do nothing，允许 Pod 的创建。
+* deny：拒绝 Pod 的创建。
+* mutate：将 privileged 修改为 false。
+
+##### 配置参数
+
+本变更规则有下列配置参数:
+
+1. allowPrivilegeEscalation：可选值”ignore”/“deny”/”mutate”，默认值是 deny。不同值对变更控制器行为的影响请见上文。
+1. privileged：可选值”ignore”/“deny”/”mutate”，默认值是 deny。不同值对变更控制器行为的影响请见上文。
+
+#### containerNvidiaGPUEnv
+
+本变更规则会在用户创建 Pod 时实施如下行为，以保护集群中的 NVIDIA GPU 资源：
+1. 如果用户在 Pod 的 Spec 中为 Container 设置了环境变量 NVIDIA_VISIBLE_DEVICES，且环境变量值不是 void，本变更规则根据参数 preventPodCreation 的值进行以下操作：
+    1. `true`：禁止 Pod 的创建。
+    1. `false`：删除用户设置的环境变量 NVIDIA_VISIBLE_DEVICES。
+1. 如果 Container 未声明与 NVIDIA GPU 相关的扩展资源，控制器会为 Container 添加环境变量 NVIDIA_VISIBLE_DEVICES=void。
+
+##### 配置参数
+
+本变更规则有下列配置参数：
+
+1. resourceRegex：数据类型是 string，默认值是 `^nvidia\.com\/(gpu|mig).*$`。参数值是正则表达式，满足该正则表达式的扩展资源会被认为是 NVIDIA GPU 扩展资源。
+1. preventPodCreation：数据类型是 bool，默认值是 false。当用户创建 Pod 时为 Container 设置了环境变量 NVIDIA_VISIBLE_DEVICES，参数 preventPodCreation 的值会影响本变更规则的行为：
+    1. `true`：本变更规则禁止 Pod 的创建。
+    1. `false`：本变更规则删除用户设置的环境变量 NVIDIA_VISIBLE_DEVICES。
+
+### 调度器
+
+#### setDefaultScheduler
+
+本变更规则会修改 Pod 的调度器名称，将调度器名称修改为本规则的配置参数中定义的 defaultSchedulerName：
+
+1. 作用于资源对象： Pod。
+1. 描述：利用本变更规则，管理员可以强制让所有 Pod 都使用指定的调度器。Pod 被创建之后，如果 Pod 的 spec.schedulerName 不是 defaultSchedulerName，本变更规则会将其修改为 defaultSchedulerName。
+
+##### 配置参数
+
+本变更规则有下列配置参数：
+
+* defaultSchedulerName：数据类型是  string。调度器的名称，默认值是 t9k-scheduler。
+
+## 变更规则配置
+
+变更规则配置分为两类：
+
+1. 安全：与安全相关的变更规则的参数配置，存储在 ConfigMap admission-security 中。
+1. 调度：与调度相关的变更规则的参数配置，存储在 ConfigMap admission-sched 中。
+
+### 安全
+
+#### 配置内容
+
+配置存在 ConfigMap admission-security 中，ConfigMap 中可以定义多个模版（profiles）。例如：
+
+```yaml
+apiVersion: v1
+data:
+ config.yaml: |
+   profiles:
+   - name: default
+     securityContext:
+       enabled: true
+       allowPrivilegeEscalation: "deny"
+       privileged: "deny"
+     containerNvidiaGPUEnv:
+       enabled: true
+       resourceRegex: ^nvidia\.com\/(gpu|mig).*$
+       preventPodCreation: true
+   - name: superUser
+     securityContext:
+       enabled: false
+     containerNvidiaGPUEnv:
+       enabled: false
+kind: ConfigMap
+metadata:
+  name: admission-security
+  namespace: t9k-system
+```
+
+上述配置定义了两个模版：default 和 superUser。注意 ConfigMap 中必须定义 default 模版。
+
+一个模版包含下列字段：
+
+1. name：模版名称
+1. securityContext：用于设置 [securitycontext](#securitycontext) 变更规则的配置参数。当这个字段未设置时，下面所有字段都会被设为默认值。
+    1. enabled：类型 bool，默认值 true。用于表明是否启用这个变更规则。
+    1. allowPrivilegeEscalation：可选值”ignore”/“deny”/”mutate”，默认值是 deny。
+    1. privileged：可选值”ignore”/“deny”/”mutate”，默认值是 deny。
+1. containerNvidiaGPUEnv：用于设置 [containerNvidiaGPUEnv](#containernvidiagpuenv) 变更规则的配置参数。当这个字段未设置时，下面所有字段都被认为是默认值。
+    1. enabled：类型 bool，默认值 true。用于表明是否启用这个变更规则。
+    1. resourceRegex：数据类型是 string，默认值是 `^nvidia\.com\/(gpu|mig).*$`。
+    1. preventPodCreation：数据类型是 bool，默认值是 true。
+
+#### 默认配置
+
+当 ConfigMap admission-security 未通过[验证](#配置验证)时。系统会采用下列默认配置：
+
+```yaml
+config.yaml: |
+  profiles:
+  - name: default
+    securityContext:
+      enabled: true
+      allowPrivilegeEscalation: "deny"
+      privileged: "deny"
+    containerNvidiaGPUEnv:
+      enabled: true
+      resourceRegex: ^nvidia\.com\/(gpu|mig).*$
+      preventPodCreation: true
+```
+
+#### 应用配置
+
+管理员为 Project Namespace 添加 labels `policy.tensorstack.dev/security-profile:<profile-name>` 来表明这个 namespace 采用哪个模版。未设置这个标签、或指定的模版不存在，变更控制器会认为这个 namespace 使用 default 模版。
+
+### 调度器
+
+#### 配置内容
+
+配置存在 ConfigMap admission-sched 中，ConfigMap 中可以定义多个模版（profiles），例如：
+
+```yaml
+apiVersion: v1
+data:
+ config.yaml: |
+   profiles:
+   - name: default
+     setDefaultScheduler:
+       enabled: false
+       defaultSchedulerName: t9k-scheduler
+   - name: demo
+     setDefaultScheduler:
+       enabled: true
+       defaultSchedulerName: t9k-scheduler
+kind: ConfigMap
+metadata:
+ name: admission-sched
+ namespace: t9k-system
+```
+
+上述配置定义了两个模版：default 和 demo。注意：ConfigMap 中必须定义 default 模版。
+
+一个模版包含下列字段：
+
+* name：模版名称。
+* setDefaultScheduler：用于设置 [setDefaultScheduler](#setdefaultscheduler) 变更规则的配置参数。当这个字段未设置时，下面所有字段都会被设为默认值。
+    * enable：类型 bool，默认值 false。用于表明是否启用这个变更规则。
+    * defaultSchedulerName：数据类型是 string，默认值是 t9k-scheduler。
+
+#### 默认配置
+
+当 ConfigMap admission-sched 未通过[验证](#配置验证)时。系统会采用下列默认配置：
+
+```yaml
+config.yaml: |
+  profiles:
+  - name: default
+    setDefaultScheduler:
+      enabled: false
+      defaultSchedulerName: t9k-scheduler
+```
+
+#### 应用配置
+
+管理员为 Project Namespace 添加 labels `policy.tensorstack.dev/sched-profile:<profile-name>` 来表明这个 namespace 采用哪个模版。未设置这个标签、或指定的模版不存在，变更控制器会认为这个 namespace 使用 default 模版。
+
+### 配置验证
+
+系统会对安全和调度相关的变更规则的配置进行验证，当配置满足下列任一条件时，认为配置未通过验证：
+
+1. 配置对应的 ConfigMap 不存在
+1. ConfigMap 未设置 `data."config.yaml"` 字段
+1. 未设置名为 default 的模版
+1. 有多个模版设置了相同的名称
+1. 有模版的名称为空
+
+当配置未通过验证时，系统会采用默认配置（安全，调度）。
+
+## 其他设置
+
+除了变更规则配置，你还可以设置下列内容：
+
+1. admission controller 的命令行参数：例如修改 log level。
+1. mutatingwebhookconfiguration：设定向 K8s 注册 admission controller 时的参数。
 
 ### 命令行参数
 
-Mutation 有下列命令行参数：
+T9k admission controller 支持下列命令行参数：
 
-* enable-leader-election：Enable leader election for controller manager. Enabling this will ensure there is only one active controller manager.
-* log-level：log level can be "debug", "info", "warn" or "error" (default "info")
-* metrics-addr：The address the metric endpoint binds to. (default ":8080")
-* mutator-path：Webhook register path for mutator. (default "/mutate")
-* port：Secure port that the webhook listens on (default 443)
-* webhook-cert-dir：The directory where certs are stored in webhook server, default is /tmp/k8s-webhook-server/serving-certs (default "/tmp/k8s-webhook-server/serving-certs")
+* disable-cert-rotation: 设置为 true 时，会禁用 cert rotation。cert rotation 负责自动生成 [tls 证书](#tls-证书)。 
+* enable-leader-election：设置 true 时会启用 leader election。启用 leader election 后，可以部署多副本的变更控制器，leader election 会从中选择一个作为执行变更规则的控制器。
+* log-level：日志等级，可以被设为 "debug", "info", "warn" 或 "error" (默认 "info")
+* metrics-addr：metrics 服务对应的地址和端口 (默认 ":8080")
+* mutator-path：mutation webhook 服务对应的 path (默认 "/mutate")
+* port：mutation webhook 对应的服务端口(默认 443)
+* webhook-cert-dir：存储 tls 证书的文件路径 (默认 "/tmp/k8s-webhook-server/serving-certs")
 
 查看当前命令行参数：
 
@@ -74,248 +290,9 @@ $ kubectl -n t9k-system get deploy admission-control \
 $ kubectl -n t9k-system edit deploy admission-control
 ```
 
-### features 配置
-
-Mutation 根据 features 配置文件来确定开启/关闭哪些 features，features 配置存放在 ConfigMap admission-features 中。
-
-#### 配置示例
-
-```yaml
-apiVersion: v1
-data:
-  _example: |-
-    ################################
-    #                              #
-    #    EXAMPLE CONFIGURATION     #
-    #                              #
-    ################################
-    # This block is not actually functional configuration,
-    # but serves to illustrate the available configuration
-    # options and document them in a way that is accessible
-    # to users that `kubectl edit` this config map.
-    #
-    # These sample configuration options may be copied out of
-    # this example block and unindented to be in the data block
-    # to actually change the configuration.
-    # indicates whether restrict SecurityContext of Containers in Pod, value is "enabled" | "disabled", default is "enabled"
-    security.securitycontext.pod-mutation: enabled
-    # indicates whether set env NVIDIA_VISIBLE_DEVICES=void in a container which doesn't declare extended resources about the NVIDIA GPU.
-    # value is "enabled" | "disabled", default is "enabled"
-    security.container-nvidia-gpu-env.pod-mutation: enabled
-    # indicates whether set spec.schedulerName when pod's spec.scheduerName is default-scheduler.
-    # value is "enabled" | "disabled", default is "enabled".
-    scheduler.set-default-scheduler.pod-mutation: enabled
-  scheduler.set-default-scheduler.pod-mutation: disabled
-  security.container-nvidia-gpu-env.pod-mutation: enabled
-  security.securitycontext.pod-mutation: disabled
-kind: ConfigMap
-metadata:
-  name: admission-features
-  namespace: t9k-system
-```
-
-#### features 列表
-
-##### *scheduler.set-default-scheduler.pod-mutation*
-
-描述：将 Pod 的调度器修改为指定的调度器名称（指定的调度器名称在 arguments 中配置）。
-
-目标资源对象：Pod
-
-##### *security.container-nvidia-gpu-env.pod-mutation*
-
-描述：mutatoin 会修改 Container 的环境变量 NVIDIA_VISIBLE_DEVICES。具体行为是：
-
-1. 如果用户在 Pod Spec 中为 Container 设置了环境变量 NVIDIA_VISIBLE_DEVICES，且环境变量值不是 void，本策略根据 arguments prevent-pod-creation 的值进行以下操作：
-    1. true：禁止 Pod 的创建。
-    1. false：删除用户设置的环境变量 NVIDIA_VISIBLE_DEVICES，然后创建 Pod。
-1. 如果 Container 未声明与 NVIDIA GPU 相关的扩展资源，Mutation 会为 Container 添加环境变量 NVIDIA_VISIBLE_DEVICES=void。
-
-目标资源对象：Pod
-
-##### *security.securitycontext.pod-mutation*
-
-描述：本策略会对 Pod 的 SecurityContext 子字段 allowPrivilegeEscalation 和 privileged 进行检查，并根据 arguments 配置对违规 Pod 进行操作。
-
-目标资源对象：Pod
-
-**allowPrivilegeEscalation**
-
-当 allowPrivilegeEscalation 被用户主动设置为 true 时，本策略会认为 Pod 是违规的，并根据 arguments 配置进行下列操作：
-
-* ignore：什么都不做，允许 Pod 的创建。
-* deny：拒绝 Pod 的创建。
-* mutate：将 allowPrivilegeEscalation 修改为 false。
-
-当 allowPrivilegeEscalation 未被主动设置时（K8s 认为 allowPrivilegeEscalation 默认值是 true），本策略会根据配置参数进行下列操作：
-
-* ignore：什么都不做
-* deny/mutate：将 allowPrivilegeEscalation 设置为 false。
-
-<aside class="note">
-<div class="title">注意</div>
-
-因为用户创建 Pod 时很有可能不会设置 allowPrivilegeEscalation 字段。所以在用户未主动设置 allowPrivilegeEscalation 字段时，本策略不会拒绝 Pod 的创建，只是默认将 allowPrivilegeEscalation 改为 false。
-
-</aside>
-
-**privileged**
-
-当 privileged 被设置为 true 时，本策略会认为 Pod 是违规的，并根据 arguments 配置进行下列操作：
-
-* ignore：什么都不做，允许 Pod 的创建。
-* deny：拒绝 Pod 的创建。
-* mutate：将 allowPrivilegeEscalation 修改为 false。
-
-#### 查看配置
-
-运行下列命令可以查看 features 配置文件：
-
-```bash
-$ kubectl -n t9k-system get cm admission-features -o yaml
-```
-
-#### 修改配置
-
-修改配置文件的命令：
-
-```bash
-$ kubectl -n t9k-system edit cm admission-features 
-```
-
-### arguments 配置
-
-arguments 配置向 Mutation feature 提供参数。
-
-#### 配置示例
-
-```yaml
-apiVersion: v1
-data:
-  _annotatin: |-
-    ################################
-    #                              #
-    #   EXAMPLE CONFIGURATION      #
-    #                              #
-    ################################
-    # This block is not actually functional configuration,
-    # but serves to illustrate the available configuration
-    # options and document them in a way that is accessible
-    # to users that `kubectl edit` this config map.
-    #
-    # Arguments for security.securitycontext.pod-mutation
-    # 1. "allowPrivilegeEscalation": define mutation's actions about allowPrivilegeEscalation, value can be:
-    #   1.1 ignore: do nothing
-    #   1.2 deny(default): reject pod creation when user set allowPrivilegeEscalation=true. mutate allowPrivilegeEscalation=false when allowPrivilegeEscalation is not set.
-    #   1.3 mutate: mutate allowPrivilegeEscalation to false when user set allowPrivilegeEscalation=true or allowPrivilegeEscalation is not set.
-    # 2. "privileged": define mutation's actions about privileged, value can be:
-    #   2.1 ignore: do nothing
-    #   2.2 deny(default): reject pod creation when user set privileged=true.
-    #   2.3 mutate: mutate privileged to false when user set privileged=true.
-    security.securitycontext.pod-mutation.json: |-
-      {
-        "allowPrivilegeEscalation": "deny",
-        "privileged": "deny"
-      }
-    #
-    # Arguments for security.container-nvidia-gpu-env.pod-mutation
-    # 1. "resource-regex": An array of resource name's regex about nvidia gpu, default is ["^nvidia.com/gpu.*$","^nvidia.com/mig.*$"]
-    # 2. "prevent-pod-creation" value is true or false, default is true:
-    #       2.1 true: prevent pod creation when Pod's Container is set env NVIDIA_VISIBLE_DEVICES.
-    #       2.2 false: delete env NVIDIA_VISIBLE_DEVICES in container when it's set.
-    security.container-nvidia-gpu-env.pod-mutation.json: |-
-      {
-          "resource-regex": ["^nvidia.com/gpu.*$","^nvidia.com/mig.*$"],
-          "prevent-pod-creation": true
-      }
-    #
-    # Arguments for scheduler.set-default-scheduler.pod-mutation
-    # "scheduler-name": default scheduler's name that admission-control will set for pod whose spec.scheduerName is default-scheduler. default is "t9k-scheduler"
-    scheduler.set-default-scheduler.pod-mutation.json: |-
-      {
-          "scheduler-name": "t9k-scheduler"
-      }
-  scheduler.set-default-scheduler.pod-mutation.json: |-
-    {
-        "scheduler-name": "t9k-scheduler"
-    }
-  security.container-nvidia-gpu-env.pod-mutation.json: |-
-    {
-        "resource-regex": ["^nvidia.com/gpu.*$","^nvidia.com/mig.*$"],
-        "prevent-pod-creation": true
-    }
-  security.securitycontext.pod-mutation.json: |-
-    {
-      "allowPrivilegeEscalation": "mutate",
-      "privileged": "mutate"
-    }
-kind: ConfigMap
-metadata:
-  name: admission-arguments
-  namespace: t9k-system
-```
-
-#### arguments 列表
-
-##### *security.container-nvidia-gpu-env.pod-mutation.json*
-
-参数示例：
-
-```json
-{
-    "resource-regex": ["^nvidia.com/gpu.*$","^nvidia.com/mig.*$"],
-    "prevent-pod-creation": true
-}
-```
-
-* resource-regex：记录 NVIDIA GPU 扩展资源的正则表达式
-* prevent-pod-creation：当用户在 Pod Spec 中为 Container 设置了环境变量 NVIDIA_VISIBLE_DEVICES 时，影响 Mutation 的行为。
-
-##### *scheduler.set-default-scheduler.pod-mutation.json*
-
-参数示例：
-
-```json
-    {
-        "scheduler-name": "t9k-scheduler"
-    }
-```
-
-* scheduler-name：scheduler.set-default-scheduler.pod-mutation feature 会根据 scheduler-name 来修改 Pod 的调度器名称。
-
-##### *security.securitycontext.pod-mutation.json*
-
-参数示例
-
-```json
-{
-  "allowPrivilegeEscalation": "deny",
-  "privileged": "deny"
-}
-```
-
-* allowPrivilegeEscalation：可选值”ignore”/“deny”/”mutate”，默认值是 deny。不同值对策略行为的影响请见 [feature 说明](#securitysecuritycontextpod-mutation)。
-* privileged：可选值”ignore”/“deny”/”mutate”，默认值是 deny。不同值对策略行为的影响请见 [feature 说明](#securitysecuritycontextpod-mutation)。
-
-#### 查看配置
-
-查看配置文件的命令：
-
-```bash
-$ kubectl -n t9k-system get cm admission-arguments -o yaml
-```
-
-#### 修改配置
-
-修改配置文件的命令：
-
-```bash
-$ kubectl -n t9k-system edit cm admission-arguments 
-```
-
 ### mutatingwebhookconfiguration
 
-mutation 通过 mutatingwebhookconfiguration admission.tensorstack.dev 向 K8s APIServer 注册 webhook 服务，mutatingwebhookconfiguration API 详情见 <a target="_blank" rel="noopener noreferrer" href="https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#mutatingwebhookconfiguration-v1-admissionregistration-k8s-io">K8s Reference</a>。
+变更控制器通过 mutatingwebhookconfiguration admission.tensorstack.dev 向 K8s APIServer 注册 webhook 服务，mutatingwebhookconfiguration API 详情见 <a target="_blank" rel="noopener noreferrer" href="https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#mutatingwebhookconfiguration-v1-admissionregistration-k8s-io">K8s Reference</a>。
 
 #### 查看配置
 
@@ -323,7 +300,7 @@ mutation 通过 mutatingwebhookconfiguration admission.tensorstack.dev 向 K8s A
 $ kubectl get mutatingwebhookconfiguration admission.tensorstack.dev -o yaml
 ```
 
-需要注意，默认的 mutatingwebhookconfiguration 设置了下列 namespaceSelector，使得 Mutation 只作用于 Project 对应的 namespace：
+需要注意，默认的 mutatingwebhookconfiguration 设置了下列 namespaceSelector，使得变更控制器只作用于 Project 对应的 namespace（Project namespace 都含有标签 `project.tensorstack.dev: true`）：
 
 ```yaml
 webhooks:
@@ -335,13 +312,71 @@ webhooks:
       - "true"
 ```
 
-## 常见操作
+<aside class="note">
+<div class="title">注意</div>
 
-TODO
+当设置了 namespaceSelector（[参考](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#mutatingwebhook-v1-admissionregistration-k8s-io)）时：
+
+1. 系统会根据资源对象的 namespace 是否与 namespaceSelector 匹配来决定 webhook 是否作用于这个资源对象。
+1. 如果资源对象本身就是 Namespace，则根据 `object.metadata.labels` 执行匹配。
+1. 如果资源对象是其他类型的 cluster scoped resource，它永远不会跳过 webhook。
+
+</aside>
+
+## 常见操作示例
+
+### 命令行
+
+使用 kubectl 查看与安全相关的变更规则配置：
+
+```bash
+$ kubectl -n t9k-system get cm admission-security  -o yaml
+apiVersion: v1
+data:
+  config.yaml: |
+    profiles:
+      - name: default
+        securityContext:
+          enabled: true
+          allowPrivilegeEscalation: deny
+          privileged: deny
+        containerNvidiaGPUEnv:
+          enabled: true
+          resourceRegex: ^nvidia\.com\/(gpu|mig).*$
+          preventPodCreation: true
+      - name: kubevirts
+        securityContext:
+          enabled: true
+          allowPrivilegeEscalation: ignore
+          privileged: deny
+        containerNvidiaGPUEnv:
+          enabled: true
+          resourceRegex: ^nvidia\.com\/(gpu|mig).*$
+          preventPodCreation: true
+kind: ConfigMap
+metadata:
+  name: admission-security
+  namespace: t9k-system
+```
+
+发现配置中定义了两个模版：default 和 kubevirts。
+
+运行下列命令，将 kubevirts 模版应用于 Namespace demo：
+
+```bash
+kubectl label ns demo policy.tensorstack.dev/security-profile=kubevirts
+```
+
+### Web UI
+
+通过集群管理的网页：
+
+1. 在菜单“准入控制->变更规则”下，可以查看/修改变更规则的配置模版。
+1. 在菜单”项目管理->项目“下，进入 Project 详情，可以查看/修改 Namespace 应用的配置模版。
 
 ## TLS 证书
 
-Mutation 会自动管理相关的 tls 证书，包括：
+变更控制器可以自动管理相关的 tls 证书，包括：
 
 1. 自动更新 secret admission-webhook-cert 中存储的 tls 证书
 1. 自动配置 mutatingwebhookconfiguration admission.tensorstack.dev 的 `webhooks[*].clientConfig.caBundle` 字段
