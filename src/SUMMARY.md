@@ -4,6 +4,9 @@
 
 ---
 
+<!-- * [安装]
+    * [离线安装]
+    * [升级和维护] -->
 * [用户及安全管理](user-and-security-management/index.md)
     * [查看运行状态](user-and-security-management/view-running-status.md)
     * [用户管理](user-and-security-management/user-management.md)
@@ -38,6 +41,9 @@
     * [LakeFS](ai-data/lakefs.md)
     * [PostgreSQL](ai-data/postgresql.md)
     * [S3 Service（external）](ai-data/s3-service-external.md)
+* [计费系统](cost/index.md)
+    * [查看运行状态](cost/view-running-status.md)
+    * [查看费用和价格](cost/view-costs-and-prices.md)
 * [数据备份](data-backup/index.md)
     * [velero 备份](data-backup/velero-backup.md)
     * [etcd 备份](data-backup/etcd-backup.md)
