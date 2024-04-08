@@ -57,7 +57,7 @@ $ ./manage-offline-container-images.sh --option create \
 
 ### 域名证书
 
-准备一份域名证书。参考[A120 - 域名证书管理]()生成域名证书。然后复制到目录中：
+准备一份域名证书。参考[A120 - 域名证书管理](https://docs.google.com/document/d/1QPBMi1jThcRd7SQcr95Ainm18_L9wnx_-OpEc1l2LEY/edit?usp=sharing)生成域名证书。然后复制到目录中：
 
 ```bash
 $ mkdir certs

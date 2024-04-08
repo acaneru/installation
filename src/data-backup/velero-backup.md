@@ -63,7 +63,7 @@ Server:
 在创建备份之前，可选择性完成以下操作：
 
 1. 为不需要备份的资源添加 label velero.io/exclude-from-backup=true
-1. 运行[脚本]()将所有的 t9k job 设为暂停状态，以避免 [status 被删除]()引发的问题
+1. 运行[脚本](unknown)将所有的 t9k job 设为暂停状态，以避免 [status 被删除](#status-被删除)引发的问题
 
 通过以下命令备份整个集群：
 
@@ -171,13 +171,13 @@ $ kubectl delete pod -n cephfs-ssd --all
 
 原因是 velero 在恢复资源时会删除资源的 owner reference 字段。
 
-管理员需要运行[脚本]()删除所有不带 owner reference 的子资源，使得 crd 控制器自动创建带 owner reference 的子资源。
+管理员需要运行[脚本](unknown)删除所有不带 owner reference 的子资源，使得 crd 控制器自动创建带 owner reference 的子资源。
 
 #### status 被删除
 
 如果恢复集群后，本已运行完毕的 t9k job 被重新运行，原因是 velero 在恢复资源时会删除资源的 status 字段。
 
-管理员需要在备份集群之前运行[脚本]()将所有的 t9k job 设置为暂停状态；恢复集群后，用户可自行选择是否重新运行。
+管理员需要在备份集群之前运行[脚本](unknown)将所有的 t9k job 设置为暂停状态；恢复集群后，用户可自行选择是否重新运行。
 
 #### 创建 crd 被 webhook 拒绝
 

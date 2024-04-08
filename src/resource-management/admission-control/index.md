@@ -24,7 +24,7 @@ T9k Admission 包含两部分：
 * Gatekeeper system：gatekeeper 系统服务，主要包含下列组件：
     * `audit`：Audit performs periodic evaluations of existing resources against constraints, detecting pre-existing misconfigurations.
     * `controller manager`：serves the valdating webhook that Kubernetes' API server calls as part of the admission process.
-* T9k Admission Provider：https server，用于向 gatekeeper 提供 <a target="_blank" rel="noopener noreferrer" href="https://open-policy-agent.github.io/gatekeeper/website/docs/externaldata">external data</a>。详情见[参考]()。
+* T9k Admission Provider：https server，用于向 gatekeeper 提供 <a target="_blank" rel="noopener noreferrer" href="https://open-policy-agent.github.io/gatekeeper/website/docs/externaldata">external data</a>。详情见[附录](unknown)。
 
 配置文件：
 

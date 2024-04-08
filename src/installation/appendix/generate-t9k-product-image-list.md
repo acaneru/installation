@@ -8,7 +8,7 @@ $ cd ~/ansible/ks-clusters/tools/offline-t9k
 
 1）确认您完成了[下载 Helm Chart](../offline/prepare-offline-packages/k8s-components.md#下载-helm-chart)。
 
-2）然后准备 values.yaml，您可以在 [sample]() 的基础上修改。您需要确保该 values.yaml 对容器镜像的设置与实际安装使用的一致。
+2）然后准备 values.yaml，您可以在 [sample](https://gitlab.dev.tensorstack.net/t9k/admin-docs/blob/master/docs/deploy-tools/values-sample-1.78.7.yaml) 的基础上修改。您需要确保该 values.yaml 对容器镜像的设置与实际安装使用的一致。
 
 3）生成镜像列表，保存在 images.list：
 

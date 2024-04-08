@@ -22,8 +22,6 @@ T9k 产品安装分为以下三个阶段：
 * “执行安装命令” 的环境应当能够访问存放安装包的网络服务（一般在公网上，可支持本地 mirror）。
 * T9k 产品使用者应当能够访问 “K8s 集群” 上部署的服务。
 
-不满足上述条件的场景在[特殊场景]()一节进行说明。
-
 ## Pre-Install
 
 ### 域名相关设置
@@ -240,7 +238,7 @@ for image in $(cat t9k-2024-02-01.list); do
 done
 ```
 
-如果您计划安装的产品尚未生成镜像列表，则需要根据文档[生成 T9k 产品镜像列表]()。
+如果您计划安装的产品尚未生成镜像列表，则需要根据文档[生成 T9k 产品镜像列表](../appendix/generate-t9k-product-image-list.md)。
 
 ## Install
 
@@ -804,7 +802,7 @@ spec:
 
 #### 日志格式变化
 
-kubernetes 底层可以使用不同的容器运行时，比如在 [Kubernetes 1.24.7 适配]()的时候，就使用不同的容器运行时。不同的运行时，存储的日志格式是不同的：
+kubernetes 底层可以使用不同的容器运行时，比如在 [Kubernetes 1.24.7 适配](https://docs.google.com/document/d/11vrEiYmV8uwHDSJcgz1TGpd87bVtnsT15EKy3k7HGU0/edit#)的时候，就使用不同的容器运行时。不同的运行时，存储的日志格式是不同的：
 
 * 之前的版本日志格式：`{"log":" Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.804\n","stream":"stdout","time":"2022-09-19T06:13:01.856641709Z"}`
 * 新版本日志格式：`2022-10-25T05:54:00.897711526Z stderr F 	/root/repos/aimd-server/gen/component/repos/aimd-server/pkg/lakefs/client.go:102 +0x251`

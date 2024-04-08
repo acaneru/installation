@@ -13,7 +13,7 @@
 
 ### 部署
 
-部署 ES 的文档：[A108 - T9k 安装手册 - K8s 组件]()
+部署 ES 的文档：[K8s 组件](../installation/online/install-k8s-components/index.md)
 
 ### 修改配置
 

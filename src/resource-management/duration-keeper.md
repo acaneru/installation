@@ -60,7 +60,7 @@ $ kubectl -n t9k-system edit deploy duration-keeper
 
 Duration Keeper 针对不同类型的 Pods 采用不同的删除方式：
 
-1. Pod 由 Owner Controller 创建维护，并且可以通过修改 Owner API Object 来删除 Pod：DurationKeeper 会修改 Pod Owner 的 Spec 以实现删除 Pod。可改的 Owner 记录在“[修改父资源]()”章节。
+1. Pod 由 Owner Controller 创建维护，并且可以通过修改 Owner API Object 来删除 Pod：DurationKeeper 会修改 Pod Owner 的 Spec 以实现删除 Pod。可改的 Owner 记录在“[修改父资源](https://docs.google.com/document/d/14X5M9u5GhE0-FOzGvDhqiFaYFYF4brS3z0FsGfG8PcU/edit#heading=h.bifpn37iv0aq)”章节。
 1. Pod 无 Owner Controller 维护，或者 Pod Owner 未提供删除 Pod 的 Spec API：DurationKeeper 直接删除 Pod。
 
 如果 Pod 的 Owner 是下列资源对象，则 Duration Keeper 会修改 Owner spec 字段来删除 Pod：

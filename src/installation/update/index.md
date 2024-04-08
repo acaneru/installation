@@ -20,7 +20,7 @@ $ cd ../<cluster>
 $ vim values.yaml
 ```
 
-从 [T9k Releases]() 文档获取最新的产品列表及版本。
+从 [T9k Releases](https://docs.google.com/document/d/13aBfNmEYTysJJS_S7bMPPZkTqms6ZrUkVL6bv-IaRPc/edit) 文档获取最新的产品列表及版本。
 
 使用 Helm upgrade 命令逐个升级产品（以产品 “t9k-csi-s3” 的 1.79.0 版本为例）：
 

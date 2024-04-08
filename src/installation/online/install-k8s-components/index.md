@@ -321,7 +321,7 @@ $ helm install elasticsearch-data \
     -f ../ks-clusters/additionals/elasticsearch/data.yaml
 ```
 
-其中 Helm Chart 的来源参考：[Elastic Search 的 Helm Chart 修改]()
+其中 Helm Chart 的来源参考：[Elastic Search 的 Helm Chart 修改](../../appendix/modify-helm-chart.md#elastic-search)
 
 单节点安装方式：
 
@@ -400,11 +400,11 @@ $ kubectl apply -n kube-system -f ../ks-clusters/additionals/monitoring/kube-sys
 
 ### cAdvisor
 
-cAdvisor 的安装依赖 t9k-monitoring 产品。已经移动到 [Post Install]()。
+cAdvisor 的安装依赖 t9k-monitoring 产品。已经移动到 [Post Install](../install-products.md#安装-cadvisor-服务)。
 
 ## Gatekeeper
 
-t9k-cluster-admin 依赖于 Gatekeeper，因此在安装 t9k-cluster-admin 之前，应当预先安装 Gatekeeper 到 t9k-system。完整文档参考：[T9k 产品安装手册-gatekeeper]()。
+t9k-cluster-admin 依赖于 Gatekeeper，因此在安装 t9k-cluster-admin 之前，应当预先安装 Gatekeeper 到 t9k-system。完整文档参考：[T9k 产品安装手册-gatekeeper](https://docs.google.com/document/d/1tG62x4PYPDbPDAsZKoyQpioU0W3S1RCqcBUG8RlVhOU/edit#heading=h.78bnmdi8ns1n)。
 
 ### 安装
 
@@ -538,7 +538,7 @@ NAME             AGE
 cluster-policy   2d18h
 ```
 
-安装后的配置请参考文档：[NVIDIA GPU Operator]()。
+安装后的配置请参考文档：[NVIDIA GPU Operator](../install-k8s-components/install-nvidia-gpu-operator.md)。
 
 ## Network Operator
 

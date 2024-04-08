@@ -1,6 +1,6 @@
 # NFS
 
-本文档是在选定的单个节点上安装一个 NFS 服务，并基于该服务在 K8s 集群中安装 NFS CSI driver 和相应的 StorageClass nfs-csi。参考文档为[准备节点与安装 K8s](../prepare-nodes-and-install-k8s.md) 以及 [Installing NFS]()。
+本文档是在选定的单个节点上安装一个 NFS 服务，并基于该服务在 K8s 集群中安装 NFS CSI driver 和相应的 StorageClass nfs-csi。参考文档为[准备节点与安装 K8s](../prepare-nodes-and-install-k8s.md) 以及 [Installing NFS](https://docs.google.com/document/d/1B9s4nx1chGsFaTby8YnVXHnCc8jblxaeBA2QUQZI-zA/edit#heading=h.er81k4h8wpj1)。
 
 ## 前置条件
 

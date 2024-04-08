@@ -243,11 +243,11 @@ K8s 附加组件设置：
 1. 安装使用的路径设置
     1. bin_dir 设置为 /usr/local/bin
 1. 设置 <a target="_blank" rel="noopener noreferrer" href="https://github.com/kubernetes-sigs/kubespray/blob/master/docs/dns-stack.md#upstream_dns_servers">upstream_dns_servers</a>，选择 114.114.114.114（或其他可靠的 DNS 服务）作为上游 DNS 服务器。
-    1. 原因：避免 DNS 查询循环，参考 [K8s DNS 配置]()。
+    1. 原因：避免 DNS 查询循环，参考 [K8s DNS 配置](https://docs.google.com/document/d/1wPHoCcTU49jlVjFhWiQfWfQRkj5Ymzq6ovtuKHAlCuM/edit#heading=h.h1mp0pkm52wl)。
 
 ##### group_vars/all/download.yml
 
-本文件来源于 kubespray sample 的 group_vars/all/offline.yml，结合了 download role 中的 <a target="_blank" rel="noopener noreferrer" href="https://github.com/kubernetes-sigs/kubespray/blob/v2.22.1/roles/download/defaults/main.yml">defaults/main.yml</a> 中的变量。用于指定命令行工具、镜像的下载源。部署 K8s 使用的镜像列表见文档：[[2023/08] Kubespray 测试]()。
+本文件来源于 kubespray sample 的 group_vars/all/offline.yml，结合了 download role 中的 <a target="_blank" rel="noopener noreferrer" href="https://github.com/kubernetes-sigs/kubespray/blob/v2.22.1/roles/download/defaults/main.yml">defaults/main.yml</a> 中的变量。用于指定命令行工具、镜像的下载源。部署 K8s 使用的镜像列表见文档：[[2023/08] Kubespray 测试](https://docs.google.com/document/d/1ktaFh43jI5cULvQe96GHeJBSjXpP2Kl4dQPST_Uw474/edit#heading=h.76vwdbfut8rn)。
 
 1. 通用下载源设置
     1. files_repo: "https://ghproxy.com"
@@ -285,7 +285,7 @@ docker 的设置，参考 <a target="_blank" rel="noopener noreferrer" href="htt
         1. https://ccr.ccs.tencentyun.com/
 1. 其他 docker 设置 (docker_options)
     1. 预设值: "--default-ulimit=memlock=-1:-1 --default-ulimit=stack=67108864:67108864"
-    1. 原因：参考 <https://github.com/awslabs/benchmark-ai/issues/17>，但是其中 shared memory size 的设置对 K8s 无效（[测试记录]()），因此没有增加。
+    1. 原因：参考 <https://github.com/awslabs/benchmark-ai/issues/17>，但是其中 shared memory size 的设置对 K8s 无效（[测试记录](https://docs.google.com/document/d/1jJ6cfRvwQaWFk2G0F4_RvNOlfTw5ic2Ae_ozsEnfxvI/edit#heading=h.gvmpht24z67q)），因此没有增加。
 
 ##### group_vars/all/etcd.yml
 
@@ -326,7 +326,7 @@ $ ansible-playbook ../kubespray/cluster.yml \
 
 [运行内容]
 
-参考：[kubespray playbook 结构]()。
+参考：[kubespray playbook 结构](https://docs.google.com/document/d/1DGNnGftwfF62hnL-NtESlC3NVBDtrDVDZTx9_3AAib8/edit#heading=h.o263jjbqbmhn)。
 
 [运行时间]
 
@@ -373,9 +373,9 @@ nuc                        : ok=728  changed=45   unreachable=0    failed=0    s
 
 1. unreachable: 如果有节点显示为不可达，那么您应该检查该节点状态和网络连接。
 1. failed: 如果有任务失败，那么您应该检查失败原因，并尝试解决问题。
-1. ignored: 如果有错误被忽略，那么您应该检查忽略原因，并确定是否需要采取进一步的措施。这一步可以参考[常见 ignored fatal]()。
+1. ignored: 如果有错误被忽略，那么您应该检查忽略原因，并确定是否需要采取进一步的措施。这一步可以参考[常见 ignored fatal](https://docs.google.com/document/d/13X6vAjNVKEtzG6H5ydSNPcMx3Sbzzh1LFaFA-UKqBIo/edit#heading=h.rkmh2bn7pw2c)。
 
-如果安装完成后，部分节点的 unreachable 或 failed 不为 0。您需要先处理它的错误，然后使用[增删集群节点]()的方式将它加入到集群中。
+如果安装完成后，部分节点的 unreachable 或 failed 不为 0。您需要先处理它的错误，然后使用[增删集群节点](#增删集群节点)的方式将它加入到集群中。
 
 [常见失败原因]
 
@@ -452,7 +452,7 @@ $ KUBECONFIG=~/.kube/nuc.config kubectl get node
 
 #### 使用 nfs
 
-参考文档：[Installing NFS]()
+参考文档：[Installing NFS](https://docs.google.com/document/d/1B9s4nx1chGsFaTby8YnVXHnCc8jblxaeBA2QUQZI-zA/edit#heading=h.er81k4h8wpj1)
 
 ks-clusters/t9k-playbooks/roles/nfs/defaults/main.yml 中定义了变量 nfs_server_ip, nfs_share_network，可在运行 playbook 时在命令行设置。
 

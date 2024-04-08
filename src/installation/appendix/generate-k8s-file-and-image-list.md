@@ -7,8 +7,8 @@
 
 ## 准备 ansible 运行环境和 inventory
 
-1. 需要在节点设置 ansible 运行环境，参见基本场景。
-1. 准备 inventory 并设置变量。变量会影响需要下载的 files、images 版本。
+1. 需要在节点设置 ansible 运行环境，参见[基本场景](../online/prepare-inventory.md#基本场景)。
+1. 准备 inventory 并[设置变量](../online/prepare-nodes-and-install-k8s.md#修改变量配置文件)。变量会影响需要下载的 files、images 版本。
 
 变量使用在线安装的配置设置即可，建议检查下面的镜像、文件源配置（download.yaml）：
 
@@ -119,7 +119,7 @@ sed -i '/t9kpublic.*\/.*\//d' ../ks-clusters/tools/offline-k8s/temp/images.list
 
 2）调整命令行工具下载源
 
-调整 K8s 命令行工具的下载源，通常国内使用该下载源会更快（详细说明见：[K8s 命令行工具下载路径错误]()）：
+调整 K8s 命令行工具的下载源，通常国内使用该下载源会更快（详细说明见：[K8s 命令行工具下载路径错误](https://docs.google.com/document/d/19Wx4UqCbidSagGp7XXln_x_OlLtDQqCGoKKqJyJLJl0/edit#heading=h.9as21su2s6ig)）：
 
 ```bash
 sed -i 's|dl.k8s.io|storage.googleapis.com/kubernetes-release|g' \
