@@ -311,7 +311,7 @@ $ kubectl -n t9k-system get q
 $ kubectl -n t9k-system get q demo -o yaml
 ```
 
-Queue Spec 详情见[参考：Queue](./reference/queue.md)。
+Queue Spec 详情见[附录：Queue](./reference/queue.md)。
 
 ### 创建 Queue
 
@@ -363,7 +363,7 @@ $ kubectl -n t9k-system edit q demo
 * 优先级
 * ……
 
-详情见[参考：Queue](./reference/queue.md)。
+详情见[附录：Queue](./reference/queue.md)。
 
 ### 设置 Queue 的属性
 

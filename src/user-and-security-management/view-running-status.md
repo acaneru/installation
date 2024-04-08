@@ -27,7 +27,7 @@ $ kubectl logs -n t9k-system -l app.kubernetes.io/name=openldap --tail 100 -f
 
 ## Keycloak
 
-Keycloak 中的的相关概念以及平台如何配置 Keycloak 详见[参考：Keycloak](./reference/keycloak.md)。
+Keycloak 中的的相关概念以及平台如何配置 Keycloak 详见[附录：Keycloak](./reference/keycloak.md)。
 
 ### 查看运行状态
 
@@ -322,7 +322,7 @@ $ kubectl logs -n demo managed-notebook-af483-0 -c pep-proxy
 
 ### 查看 PEP Proxy 配置
 
-PEP Proxy 配置分为基本配置和 PEP 配置两部分，详见[参考：PEP Proxy 配置](./reference/pep-proxy-config.md)。
+PEP Proxy 配置分为基本配置和 PEP 配置两部分，详见[附录：PEP Proxy 配置](./reference/pep-proxy-config.md)。
 
 查看该 Pod 详情，黄色高亮部分即为基本配置：
 

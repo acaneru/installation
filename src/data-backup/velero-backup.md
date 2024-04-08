@@ -7,7 +7,7 @@
 1. k8s 集群已安装 volume snapshot 相关 crd 及 controller
 1. 每个需要备份的 storage class 具有对应的 volume snapshot class，且 volume snapshot class 拥有 label velero.io/csi-volumesnapshot-class: "true"
 1. PVC 的 storage provider（例如 ceph）已使用的存储空间小于 50%
-1. k8s 集群已安装 velero server，本地已安装 velero cli，详见[参考：安装 velero server/cli](./reference/install-velero-server-cli.md)
+1. k8s 集群已安装 velero server，本地已安装 velero cli，详见[附录：安装 velero server/cli](./reference/install-velero-server-cli.md)
 
 验证条件 1：
 

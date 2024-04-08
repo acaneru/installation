@@ -54,7 +54,7 @@ NAME                                          READY   STATUS    RESTARTS   AGE
 pod/t9k-admission-provider-779bd676b5-4klms   1/1     Running   0          19d
 ```
 
-上述 4 个默认部署的 provider 均由 T9k Admission Provider 提供服务，T9k Admission Provider 详情见[参考：T9k Admission Provider](../reference/t9k-admission-provider.md)。
+上述 4 个默认部署的 provider 均由 T9k Admission Provider 提供服务，T9k Admission Provider 详情见[附录：T9k Admission Provider](../reference/t9k-admission-provider.md)。
 
 ## 验证规则
 
@@ -131,7 +131,7 @@ spec:
 
 平台会在集群内部署一些默认的 ConstraintTemplate，并会为大多数 ConstraintTemplate 部署一个默认的 Constraint。管理员可以按需修改，不建议管理员删除这些 ConstraintTemplate，如果你想要关闭对应的验证规则，删除对应的 Constraint 即可。
 
-平台提供的验证规则列表见[参考：T9k 验证规则列表](../reference/t9k-verification-rules.md)。
+平台提供的验证规则列表见[附录：T9k 验证规则列表](../reference/t9k-verification-rules.md)。
 
 ### 查看验证规则
 
@@ -186,7 +186,7 @@ Gatekeeper 生成 constraint CRD 时，会将 CRD 的 `spec.names.categories` �
 
 有下列几种方法可以使得验证规则失效：
 
-1. 修改 Constraint 的 `spec.enforcementAction` 为 warn 或 dryrun。详情见[参考：Constraint Spec](../reference/gatekeeper.md#constraint)。
+1. 修改 Constraint 的 `spec.enforcementAction` 为 warn 或 dryrun。详情见[附录：Constraint Spec](../reference/gatekeeper.md#constraint)。
 2. 删除 Constraint 即可禁用其对应的验证规则。以默认验证规则为例，运行下列命令可以禁用验证规则 `disallowunauthorizeduseofqueue.constraints.gatekeeper.sh/all-workloads`：
 
 ```bash
@@ -267,4 +267,4 @@ $ kubectl get provider queue-authz -o yaml
 $ kubectl get provider workload-info  -o yaml
 ```
 
-手动生成 ssl 证书的方法见[参考：手动生成 TSL 证书](../reference/generate-tsl-cert.md)。
+手动生成 ssl 证书的方法见[附录：手动生成 TSL 证书](../reference/generate-tsl-cert.md)。
