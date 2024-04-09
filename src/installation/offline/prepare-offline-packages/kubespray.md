@@ -7,7 +7,7 @@ $ mkdir -p ~/ansible && cd ~/ansible
 $ git clone https://github.com/t9k/ks-clusters.git
 ```
 
-本章操作在 `ks-clusters/tools/offline-k8s` 中进行：
+下面的操作在 `ks-clusters/tools/offline-k8s` 中进行：
 
 ```bash
 $ cd ~/ansible/ks-clusters/tools/offline-k8s

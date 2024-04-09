@@ -521,6 +521,34 @@ $ ansible-playbook ../ks-clusters/t9k-playbooks/12-install-ceph-csi.yml \
     -i inventory/inventory.ini
 ```
 
+### 安装 Linux Drivers
+
+GPU driver
+
+Network driver (IB)
+
+### Nvidia GPU Operator
+
+运行脚本安装 GPU Operator：
+
+```bash
+ansible-playbook ../ks-clusters/t9k-playbooks/3-install-gpu-operator.yml \         
+    -i inventory/inventory.ini
+```
+
+TODO：将安装驱动的部分拆出来。
+
+### Nvidia Network Operator
+
+运行脚本安装  Network Operator:
+
+```bash
+ansible-playbook ../ks-clusters/t9k-playbooks/4-install-network-operator.yml \         
+    -i inventory/inventory.ini
+```
+
+TODO：将安装驱动的部分拆出来。 
+
 ### 加固集群安全
 
 <https://github.com/kubernetes-sigs/kubespray/blob/master/docs/hardening.md>
@@ -533,7 +561,7 @@ $ ansible-playbook ../ks-clusters/t9k-playbooks/12-install-ceph-csi.yml \
 
 <https://github.com/kubernetes-sigs/kubespray/blob/master/docs/nodes.md#addingreplacing-a-worker-node>
 
-1. 修改 inventory.ini，以增加新的节点。请先参考 [inventory 准备]()修改已有的 inventory 来增加节点。下面是一个增加节点（nc15，worker node）的示例：
+1. 修改 inventory.ini，以增加新的节点。请先参考 [inventory 准备](unknown)修改已有的 inventory 来增加节点。下面是一个增加节点（nc15，worker node）的示例：
 
 ```bash
 $ diff -u inventory-old.ini inventory-new.ini
@@ -624,7 +652,7 @@ $ ansible-playbook ../kubespray/remove-node.yml \
 1. <https://github.com/kubernetes-sigs/kubespray/blob/master/docs/nodes.md#addingreplacing-a-control-plane-node>
 1. <https://github.com/kubernetes-sigs/kubespray/blob/master/docs/nodes.md#replacing-a-first-control-plane-node>
 
-#### 集群拆除
+### 集群拆除
 
 <aside class="note warning">
 <div class="title">警告</div>
@@ -642,7 +670,7 @@ $ ansible-playbook ../kubespray/reset.yml \
     --become --become-user root -K
 ```
 
-#### 升级 K8s 版本
+### 升级 K8s 版本
 
 <aside class="note">
 <div class="title">注意</div>
@@ -678,3 +706,204 @@ nc15                       : ok=742  changed=61   unreachable=0    failed=0    s
 ```
 
 参考：<https://github.com/kubernetes-sigs/kubespray/blob/master/docs/upgrades.md>
+
+## 常见问题
+
+### 大集群安装
+
+If your cluster size is ~>100, read this doc. https://github.com/kubernetes-sigs/kubespray/blob/master/docs/large-deployments.md
+
+### 离线安装集群
+
+https://github.com/kubernetes-sigs/kubespray/blob/master/docs/offline-environment.md
+
+### 修改 LVM size
+
+在准备节点的过程中，有时需要调整 LVM size。
+
+参考：<https://www.redhat.com/sysadmin/resize-lvm-simple>
+
+```bash
+root@nc06:/home/t9k# lsblk
+NAME                      MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT
+loop0                       7:0    0  63.5M  1 loop /snap/core20/1950
+loop1                       7:1    0  91.9M  1 loop /snap/lxd/24061
+loop2                       7:2    0  49.9M  1 loop 
+loop3                       7:3    0  67.8M  1 loop /snap/lxd/22753
+loop4                       7:4    0  63.3M  1 loop 
+loop5                       7:5    0  53.3M  1 loop /snap/snapd/19457
+loop6                       7:6    0  53.3M  1 loop /snap/snapd/19361
+loop7                       7:7    0  63.5M  1 loop /snap/core20/1974
+nvme0n1                   259:0    0 465.8G  0 disk 
+├─nvme0n1p1               259:1    0   1.1G  0 part /boot/efi
+├─nvme0n1p2               259:2    0     2G  0 part /boot
+└─nvme0n1p3               259:3    0 462.7G  0 part 
+  └─ubuntu--vg-ubuntu--lv 253:0    0 462.7G  0 lvm  /
+```
+
+```bash
+root@nc06:/home/t9k# df -hl
+Filesystem                         Size  Used Avail Use% Mounted on
+udev                                16G     0   16G   0% /dev
+tmpfs                              3.2G   16M  3.1G   1% /run
+/dev/mapper/ubuntu--vg-ubuntu--lv   98G   63G   30G  68% /
+tmpfs                               16G     0   16G   0% /dev/shm
+tmpfs                              5.0M     0  5.0M   0% /run/lock
+tmpfs                               16G     0   16G   0% /sys/fs/cgroup
+/dev/nvme0n1p2                     2.0G  109M  1.7G   6% /boot
+/dev/nvme0n1p1                     1.1G  6.1M  1.1G   1% /boot/efi
+/dev/loop1                          92M   92M     0 100% /snap/lxd/24061
+/dev/loop3                          68M   68M     0 100% /snap/lxd/22753
+```
+
+Identify the Logical Volume：
+
+```bash
+root@nc06:/home/t9k# lvs
+  LV        VG        Attr       LSize   Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+  ubuntu-lv ubuntu-vg -wi-ao---- 100.00g 
+```
+
+Extend the Logical Volume，这里除了使用 `-l +100%FREE` 指定百分比以外，也可以使用 `-L +50G` 的方式指定具体的大小：
+
+```bash
+root@nc06:/home/t9k# lvextend -l +100%FREE /dev/ubuntu-vg/ubuntu-lv 
+  Size of logical volume ubuntu-vg/ubuntu-lv changed from 100.00 GiB (25600 extents) to <462.71 GiB (118453 extents).
+  Logical volume ubuntu-vg/ubuntu-lv successfully resized.
+```
+
+验证：
+
+```bash
+root@nc06:/home/t9k# lsblk
+NAME                      MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT
+loop0                       7:0    0  63.5M  1 loop /snap/core20/1950
+loop1                       7:1    0  91.9M  1 loop /snap/lxd/24061
+loop2                       7:2    0  49.9M  1 loop 
+loop3                       7:3    0  67.8M  1 loop /snap/lxd/22753
+loop4                       7:4    0  63.3M  1 loop 
+loop5                       7:5    0  53.3M  1 loop /snap/snapd/19457
+loop6                       7:6    0  53.3M  1 loop /snap/snapd/19361
+loop7                       7:7    0  63.5M  1 loop /snap/core20/1974
+nvme0n1                   259:0    0 465.8G  0 disk 
+├─nvme0n1p1               259:1    0   1.1G  0 part /boot/efi
+├─nvme0n1p2               259:2    0     2G  0 part /boot
+└─nvme0n1p3               259:3    0 462.7G  0 part 
+  └─ubuntu--vg-ubuntu--lv 253:0    0 462.7G  0 lvm  /
+```
+
+但是文件系统不会自动扩大：
+
+```bash
+root@nc06:/home/t9k# df -hl
+Filesystem                         Size  Used Avail Use% Mounted on
+udev                                16G     0   16G   0% /dev
+tmpfs                              3.2G   16M  3.1G   1% /run
+/dev/mapper/ubuntu--vg-ubuntu--lv   98G   63G   30G  68% /
+tmpfs                               16G     0   16G   0% /dev/shm
+tmpfs                              5.0M     0  5.0M   0% /run/lock
+tmpfs                               16G     0   16G   0% /sys/fs/cgroup
+/dev/nvme0n1p2                     2.0G  109M  1.7G   6% /boot
+/dev/nvme0n1p1                     1.1G  6.1M  1.1G   1% /boot/efi
+/dev/loop1                          92M   92M     0 100% /snap/lxd/24061
+/dev/loop3                          68M   68M     0 100% /snap/lxd/22753
+```
+
+Extend the filesystem，在调整文件系统大小之前，您应该确保文件系统已备份，并且没有错误。
+
+<aside class="note">
+<div class="title">注意</div>
+
+resize2fs 是针对 ext2, ext3, ext4 文件系统调整大小的命令，如果您使用的是其他文件系统，请查找对应的命令。
+
+</aside>
+
+```bash
+root@nc06:/home/t9k# resize2fs /dev/mapper/ubuntu--vg-ubuntu--lv
+resize2fs 1.45.5 (07-Jan-2020)
+Filesystem at /dev/mapper/ubuntu--vg-ubuntu--lv is mounted on /; on-line resizing required
+old_desc_blocks = 13, new_desc_blocks = 58
+The filesystem on /dev/mapper/ubuntu--vg-ubuntu--lv is now 121295872 (4k) blocks long.
+```
+
+验证：
+
+```bash
+root@nc06:/home/t9k# df -hl
+Filesystem                         Size  Used Avail Use% Mounted on
+udev                                16G     0   16G   0% /dev
+tmpfs                              3.2G   16M  3.1G   1% /run
+/dev/mapper/ubuntu--vg-ubuntu--lv  455G   63G  373G  15% /
+tmpfs                               16G     0   16G   0% /dev/shm
+tmpfs                              5.0M     0  5.0M   0% /run/lock
+tmpfs                               16G     0   16G   0% /sys/fs/cgroup
+/dev/nvme0n1p2                     2.0G  109M  1.7G   6% /boot
+/dev/nvme0n1p1                     1.1G  6.1M  1.1G   1% /boot/efi
+/dev/loop1                          92M   92M     0 100% /snap/lxd/24061
+/dev/loop3                          68M   68M     0 100% /snap/lxd/22753
+```
+
+### 日志收集不完整
+
+问题表现为 kubelet cadvisor 收集的 container_network_receive_bytes_total 等 metrics 缺失 container 信息。
+
+该问题在 issue 中有非常清晰的描述：
+
+* <https://github.com/rancher/rancher/issues/38934#issuecomment-1294585708>
+* <https://github.com/kubernetes/website/issues/30681#issuecomment-1205677145>
+
+
+上述的两个 issue 中，前一个 issue 中的回答解释了问题的原因，并提供了一个 workaround。后一个 issue 简单介绍了这个问题的原因和现状，并附上了相关 KEP 的[链接](https://github.com/kubernetes/enhancements/blob/master/keps/sig-node/2371-cri-pod-container-stats/README.md)。
+
+### 无法拉取 docker hub 镜像
+
+使用下面的命令验证 docker 可以从 docker hub 拉取镜像：
+
+```bash
+$ docker pull t9kpublic/hello-world
+$ docker pull hello-world
+```
+
+如果节点无法顺利拉取 docker.io 的镜像，可以通过设置 registry-mirrors 来解决。Docker Hub 镜像源参考：<https://juejin.cn/post/7165806699461378085>。
+
+### 节点已加入 K8s 集群
+
+修改 docker 的配置文件：
+
+```bash
+# 编辑 /etc/systemd/system/docker.service.d/docker-options.conf
+$ sudo vim /etc/systemd/system/docker.service.d/docker-options.conf
+
+# 进行以下修改：
+$ diff -u docker-options.old.conf docker-options.new.conf 
+--- ./docker-options.old.conf	2023-08-15 10:23:44.388444563 +0000
++++ ./docker-options.new.conf	2023-08-15 10:23:22.120168571 +0000
+@@ -2,7 +2,7 @@
+ Environment="DOCKER_OPTS= --iptables=false \
+ --exec-opt native.cgroupdriver=systemd \
+  \
+- \
++--registry-mirror=https://dockerproxy.com/ --registry-mirror=https://hub-mirror.c.163.com/ --registry-mirror=https://mirror.baidubce.com/ --registry-mirror=https://ccr.ccs.tencentyun.com/  \
+ --data-root=/var/lib/docker \
+ --log-opt max-size=50m --log-opt max-file=5"
+
+# 加载配置，并重启 docker
+$ systemctl daemon-reload
+$ systemctl restart docker
+
+# 验证生效
+$ sudo docker info
+…
+Server:
+…
+ Registry Mirrors:
+  https://dockerproxy.com/
+  https://hub-mirror.c.163.com/
+  https://mirror.baidubce.com/
+  https://ccr.ccs.tencentyun.com/
+…
+```
+
+### 节点未加入 K8s 集群
+
+Kubespray 添加节点的过程会安装 Docker，而移除节点的过程会卸载 Docker。我们可以修改 kubespray inventory 的配置来直接完成配置，具体见[修改 docker.yml](#group_varsalldockeryml)。

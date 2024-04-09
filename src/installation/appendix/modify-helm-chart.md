@@ -52,7 +52,7 @@ $ helm package elasticsearch
 $ helm push ./elasticsearch-7.13.4.tgz oci://tsz.io/t9kcharts
 ```
 
-# GPU Operator
+## GPU Operator
 
 下载并解压 Helm Chart:
 

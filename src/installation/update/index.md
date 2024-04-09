@@ -24,7 +24,7 @@ $ vim values.yaml
 
 使用 Helm upgrade 命令逐个升级产品（以产品 “t9k-csi-s3” 的 1.79.0 版本为例）：
 
-```yaml
+```bash
 $ helm upgrade -n t9k-system t9k-csi-s3 \
     oci://tsz.io/t9kcharts/t9k-csi-s3 \
     --version 1.79.0 \

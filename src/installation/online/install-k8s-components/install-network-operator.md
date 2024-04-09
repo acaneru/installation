@@ -2,7 +2,7 @@
 
 ## 前提条件
 
-节点包含 IB 网卡，且正确连接了 IB 网线
+1. 节点包含 IB 网卡，且正确连接了 IB 网线
 
 ## 安装 MLNX_OFED 驱动
 
@@ -18,7 +18,7 @@ ansible-playbook ks-clusters/t9k-playbooks/4-install-ib-driver.yml \
 
 本脚本暂不支持离线安装，您可以参考[附录：手动安装 MLNX_OFED 驱动](../../appendix/manually-install-mlnx-ofed-driver.md)来手动安装 MLNX_OFED 驱动。
 
-安装 Network Operator
+## 安装 Network Operator
 
 1. 按照[准备节点和安装 K8s](../prepare-nodes-and-install-k8s.md) 准备 Inventory，并完成 K8s 集群的部署。
 

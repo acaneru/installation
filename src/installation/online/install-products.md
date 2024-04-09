@@ -49,7 +49,7 @@ T9k 产品安装分为以下三个阶段：
 
 ### 解析
 
-在域名服务商处设置域名解析。为 `*.sample.t9kcloud.cn` 域名添加一条 A （或者 CNAME）记录，使其最终正确指向 K8s 集群的 ingress 服务的 IP 地址。
+在域名服务商处设置域名解析。为 `*.sample.t9kcloud.cn` 域名添加一条 A （或者 CNAME）记录，使其最终正确指向 K8s 集群的 [ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/#what-is-ingress) 服务的 IP 地址。
 
 验证为期望值：
 
@@ -135,17 +135,11 @@ done
 
 您需要创建以下 Secret：
 
-| Resource name     | Resource Namespace | 说明                      |
-| ----------------- | ------------------ | ------------------------- |
-| cert.landing-page | istio-system       | 平台主入口的 ingress 使用 |
-
-(`home.sample.t9kcloud.cn`)                   |
-| cert.keycloak     | t9k-system         | 安全系统的 ingress 使用
-
-(`auth.sample.t9kcloud.cn`)                    |
-| cert.lakefs       | t9k-system         | AI 资产和实验管理服务的 S3 接口地址的 ingress 使用
-
-(`lakefs.sample.t9kcloud.cn`) |
+| Resource name     | Resource Namespace | 说明                                                                              |
+| ----------------- | ------------------ | --------------------------------------------------------------------------------- |
+| cert.landing-page | istio-system       | 平台主入口的 ingress 使用（`home.sample.t9kcloud.cn`）                            |
+| cert.keycloak     | t9k-system         | 安全系统的 ingress 使用（`auth.sample.t9kcloud.cn`）                              |
+| cert.lakefs       | t9k-system         | AI 资产和实验管理服务的 S3 接口地址的 ingress 使用（`lakefs.sample.t9kcloud.cn`） |
 
 如果我们使用多域名证书，可以使用同一份 cert 文件创建这些 secret：
 
@@ -166,8 +160,8 @@ kubectl create secret tls cert.lakefs \
 
 说明：
 
-* 如果使用单独的证书，需要在上面的命令中使用不同的文件分别创建 secret。
-* 目前模型推理服务的 ingress (*.ksvc.sample.t9kcloud.cn) 使用 HTTP 协议，不需要配置 cert/secret
+1. 如果使用单独的证书，需要在上面的命令中使用不同的文件分别创建 secret。
+1. 目前模型推理服务的 ingress (*.ksvc.sample.t9kcloud.cn) 使用 HTTP 协议，不需要配置 cert/secret
 
 #### Ingress
 
@@ -211,7 +205,7 @@ EOF
 
 说明：
 
-* 其他 ingress 将在后续安装过程中自动创建
+1. 其他 ingress 将在后续安装过程中自动创建
 
 ### 设置 
 
@@ -244,7 +238,7 @@ done
 
 ### 安装产品
 
-产品列表及其最新版本见：T9k Releases
+产品列表及其最新版本见：[T9k Releases](https://docs.google.com/document/d/13aBfNmEYTysJJS_S7bMPPZkTqms6ZrUkVL6bv-IaRPc/edit)
 
 登录到 Registry：
 
@@ -401,6 +395,8 @@ kubectl label namespace demo tensorstack.dev/resource-keeper=true
 
 在 K8s 1.24 及之后的版本，kubelet cadvisor 无法提供有效的 metrics 信息。管理员需要单独部署 cadvisor 服务来提供集群的 metrics 信息。已测试过存在该问题的 K8s 版本有 1.24.10，1.25.9，其他未测试版本根据 <a target="_blank" rel="noopener noreferrer" href="https://github.com/google/cadvisor/issues/2785#issuecomment-1205538108">issue</a> 中的讨论也存在相同的问题。
 
+参考：[T9k Monitoring & Alert 问题记录](https://docs.google.com/document/d/141Vyd2joYRgdL0gttc6iLZnOFvWsHXFWFPXiafOkV0w/edit#heading=h.8zt69amb1stn)
+
 <aside class="note">
 <div class="title">注意</div>
 
@@ -408,7 +404,7 @@ kubectl label namespace demo tensorstack.dev/resource-keeper=true
 
 </aside>
 
-1. 删除 servicemonitor kubelet 的 cadvisor 部分：
+a）删除 servicemonitor kubelet 的 cadvisor 部分：
 
 ```bash
 $ kubectl -n t9k-monitoring edit servicemonitor kubelet
@@ -418,14 +414,14 @@ $ kubectl -n t9k-monitoring get servicemonitor kubelet \
     -o jsonpath="{.spec.endpoints[?(@.path=='/metrics/cadvisor')]}"
 ```
 
-2. [离线安装场景]修改镜像仓库的设置：
+b）[离线安装场景]修改镜像仓库的设置：
 
 ```bash
 $ sed -i "s|docker.io/t9kpublic|192.168.101.159:5000/t9kpublic|g" \
     ../ks-clusters/additionals/monitoring/cadvisor.yaml
 ```
 
-3. 部署 cadvisor 服务：
+c）部署 cadvisor 服务：
 
 ```bash
 $ kubectl apply -n kube-system -f ../ks-clusters/additionals/monitoring/cadvisor.yaml
@@ -433,9 +429,9 @@ $ kubectl apply -n kube-system -f ../ks-clusters/additionals/monitoring/cadvisor
 
 #### 配置 Alert Manager
 
-管理员可以通过创建 <a target="_blank" rel="noopener noreferrer" href="https://prometheus-operator.dev/docs/operator/api/#monitoring.coreos.com/v1alpha1.AlertmanagerConfig">AlertmanagerConfig</a> 来配置警报通知的处理，包括报警接收方 receivers, 报警路由 route，报警抑制规则 inhibitRules。Alertmanager  支持多种订阅警报消息的方式，包括邮件、微信等等。
+管理员可以通过创建 <a target="_blank" rel="noopener noreferrer" href="https://prometheus-operator.dev/docs/operator/api/#monitoring.coreos.com/v1alpha1.AlertmanagerConfig">AlertmanagerConfig</a> 来配置警报通知的处理，包括报警接收方 receivers，报警路由 route，报警抑制规则 inhibitRules。Alertmanager 支持多种订阅警报消息的方式，包括邮件、微信等等。
 
-AlertmanagerConfig 是 namespace-scope resource，多个配置聚合在一起完成 Alertmanager 的配置功能。AlertmanagerConfig 需要与 Alertmanager 服务在同一个 namespace 中， 并且包含以下 label，才能被系统识别：
+AlertmanagerConfig 是 namespace-scope resource，多个配置聚合在一起完成 Alertmanager 的配置功能。AlertmanagerConfig 需要与 Alertmanager 服务在同一个 namespace 中，并且包含以下 label，才能被系统识别：
 
 ```bash
 tensorstack.dev/component: alertmanager-config

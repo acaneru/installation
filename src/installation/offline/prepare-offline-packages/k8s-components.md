@@ -2,7 +2,7 @@
 
 ## K8s 组件离线安装准备
 
-本章操作在 `ks-clusters/tools/offline-additionals` 中进行：
+下面的操作在 `ks-clusters/tools/offline-additionals` 中进行：
 
 ```bash
 $ cd ~/ansible/ks-clusters/tools/offline-additionals

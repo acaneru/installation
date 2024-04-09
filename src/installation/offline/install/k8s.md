@@ -63,8 +63,8 @@ $ ./serve-offline-files.sh
 
 1. 控制节点和 K8s 集群中的节点可以访问该镜像仓库
 1. 控制节点有权限向镜像仓库的地址 `<registry>/<any-prefix>/t9kpublic` 上传镜像
-1. 如果条件允许，推荐省略 `/<any-prefix>`，直接使用 `<registry>/t9kpublic`
-K8s 集群中的节点有权限拉取第 2 步上传的镜像
+    1. 如果条件允许，推荐省略 `/<any-prefix>`，直接使用 `<registry>/t9kpublic`
+1. K8s 集群中的节点有权限拉取第 2 步上传的镜像
 
 验证上述需求：
 
@@ -85,7 +85,7 @@ $ ./manage-offline-container-images.sh \
     --option register --registry <registry>/<any-prefix>
 ```
 
-在使用已有的镜像仓库服务时，下文所有的镜像仓库地址 “<control-node-ip>:5000” 都需要替换为 “<registry>/<any-prefix>”。
+在使用已有的镜像仓库服务时，下文所有的镜像仓库地址 `<control-node-ip>:5000` 都需要替换为 `<registry>/<any-prefix>`。
 
 6）如果离线环境中没有可用的镜像仓库服务，则运行一个容器 Registry（默认 5000 端口）服务，并将 container-images/ 中的镜像上传到该 Registry 中：
 
@@ -147,7 +147,7 @@ $ sudo docker pull <hostname>:5000/t9kpublic/etcd:v3.5.6
 <aside class="note">
 <div class="title">注意</div>
 
-如果遇到错误信息 server gave HTTP response to HTTPS client，可以参考附录解决。
+如果遇到错误信息 server gave HTTP response to HTTPS client，可以参考[附录：配置 Docker Insecure Registry](../../appendix/configure-docker-insecure-registry.md) 解决。
 
 </aside>
 
@@ -259,11 +259,11 @@ $ sudo docker pull <control-node-ip>:5000/t9kpublic/etcd:v3.5.6
 $ sudo apt install -y nvidia-driver-525-server
 ```
 
-安装完成后，需要参考 [NVIDIA GPU Operator]() 进行 Post Install 设置。
+安装完成后，需要参考 [NVIDIA GPU Operator](../../online/) 进行 Post Install 设置。
 
 ## 安装 K8s 集群
 
-1）编辑 inventory (~/ansible/$T9K_CLUSTER/inventory/group_vars/all/download.yml)，设置以下变量。其中 `<control-node-ip>` 为“控制节点”的 IP 地址：
+1）编辑 inventory (~/ansible/`$T9K_CLUSTER`/inventory/group_vars/all/download.yml)，设置以下变量。其中 `<control-node-ip>` 为“控制节点”的 IP 地址：
 
 ```yaml
 files_repo: "http://<control-node-ip>:8080"

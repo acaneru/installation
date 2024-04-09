@@ -152,10 +152,11 @@ Wed Aug  2 06:50:41 2023
 <aside class="note">
 <div class="title">注意</div>
 
-510.x.x 及之后的 driver，在 nvidia driver bug 未修复前，还需要 Disable GSP 
-验证
+510.x.x 及之后的 driver，在 nvidia driver bug 未修复前，还需要 [Disable GSP](#disable-gsp)。
 
 </aside>
+
+#### 验证
 
 Driver 安装后，可使用 nvidia-smi 查看 GPU 信息：
 
@@ -174,7 +175,7 @@ GPU 6: NVIDIA A40 (UUID: GPU-5246cdd0-db79-cea0-eaf5-d067784e4648)
 
 p2pBandwidthLatencyTest
 
-### 其他
+#### 其他
 
 ```bash
 # 检查安装状态

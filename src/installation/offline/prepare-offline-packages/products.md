@@ -36,7 +36,7 @@ $ ./download-charts.sh --config productlist/t9k-2024-02-01.list
 <aside class="note">
 <div class="title">注意</div>
 
-1. 如果您需要修改 values.yaml 中对容器镜像的设置，您需要自行准备 T9k 产品镜像列表。
+1. 如果您需要修改 values.yaml 中对容器镜像的设置，您需要自行[准备 T9k 产品镜像列表](../../appendix/generate-t9k-product-image-list.md)。
 1. 这个步骤的下载耗时很长，建议使用 root 用户下载，以避免多次输入 sudo 密码的需求。
 1. 需要确保剩余的可用存储空间大于 200 GB。
 
@@ -65,6 +65,7 @@ $ cp -r ~/.acme.sh/\*.sample.t9kcloud.cn_ecc  certs/
 ```
 
 ### 其他
+
 “其他” 中包含 Serving 使用的镜像，kubectl 和 helm 命令行工具，用于保障单独部署 T9k 产品时这些功能可以正常使用。
 
 #### Registry 镜像

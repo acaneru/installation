@@ -8,8 +8,8 @@
 
 参考[准备节点与安装 K8s](./prepare-nodes-and-install-k8s.md)完成以下准备工作：
 
-* 安装 ansible
-* 将本机的 SSH 公钥复制到所有受控节点上
+1. 安装 ansible
+1. 将本机的 SSH 公钥复制到所有受控节点上
 
 ### inventory 准备
 
@@ -46,11 +46,11 @@ gpu_nodes:
 
 以下节点分组必填：
 
-* all: 需要检查的所有节点
-* k8s_cluster: k8s 集群的所有节点
-* kube_control_plane: k8s 集群的控制平面节点
-* kube_node: k8s 集群的工作节点
-* gpu_nodes: k8s 集群中装有 GPU 的节点
+* `all`: 需要检查的所有节点
+* `k8s_cluster`: k8s 集群的所有节点
+* `kube_control_plane`: k8s 集群的控制平面节点
+* `kube_node`: k8s 集群的工作节点
+* `gpu_nodes`: k8s 集群中装有 GPU 的节点
 
 ### 变量准备
 
@@ -113,7 +113,7 @@ $ cat ./roles/check-installation/defaults/main.yml
 $ ansible-playbook -i inventory.yml 99-check-installation.yml --ask-become-pass
 ```
 
-ansible 会对每个节点输出一行 task 运行结果统计，需要关注的是标记为 failed 的数量。
+ansible 会对每个节点输出一行 task 运行结果统计，需要关注的是**标记为 failed 的数量**。
 
 检查成功的运行结果如下：
 

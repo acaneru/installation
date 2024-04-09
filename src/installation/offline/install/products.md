@@ -47,8 +47,8 @@ $ ./manage-offline-container-images.sh --option register
 3）如果离线环境中已经存在其他镜像仓库服务 ，我们用 `<registry>` 指代该镜像仓库服务的域名或 IP 地址以及服务端口，`<any-prefix>` 是任意名称前缀。您需要配置控制节点和镜像仓库，来满足以下条件：
 
 1. 控制节点和 K8s 集群中的节点可以访问该镜像仓库
-1. 控制节点有权限向镜像仓库的地址 <registry>/<any-prefix>/t9kpublic 上传镜像
-    1. 如果条件允许，推荐省略 “/<any-prefix>”，直接使用 <registry>/t9kpublic
+1. 控制节点有权限向镜像仓库的地址 `<registry>/<any-prefix>/t9kpublic` 上传镜像
+    1. 如果条件允许，推荐省略 `/<any-prefix>`，直接使用 `<registry>/t9kpublic`
 1. K8s 集群中的节点有权限拉取第 2 步上传的镜像
 
 验证上述需求：
@@ -96,7 +96,7 @@ $ docker pull <hostname>:5000/t9kpublic/landing-page-web:1.78.4
 
 #### TLS 证书
 
-域名证书位于 certs/，可以供测试使用。
+域名证书位于 `certs/`，可以供测试使用。
 
 #### 设置 DNS
 

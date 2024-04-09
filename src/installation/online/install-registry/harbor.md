@@ -90,7 +90,7 @@ $ cd harbor
 $ cp harbor.yml.tmpl harbor.yml
 ```
 
-然后根据[配置 Harbor 部分](#配置-harbor)的说明，修改 harbor.yml。
+然后根据[配置 Harbor](#配置-harbor) 的说明，修改 harbor.yml。
 
 4. 启动 Harbor：
 
@@ -223,7 +223,7 @@ Harbor 服务通过 docker-compose 运行，本章节说明 docker-compose 的�
 <aside class="note">
 <div class="title">注意</div>
 
-下列命令需要在 harbor 目录（即 docker-compose.yml 所在路径）下运行。
+下列命令需要在 [harbor 目录](#配置-harbor)（即 docker-compose.yml 所在路径）下运行。
 
 </aside>
 

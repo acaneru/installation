@@ -8,7 +8,7 @@ T9k 产品需要使用 Istio 的 routing 功能 （e.g. Gateway, VirtualService�
 
 ### 安装
 
-根据 Support status of Istio releases 以及之前的使用经验，这里我们选择安装 Istio-1.15.2。
+根据 [Support status of Istio releases](https://istio.io/latest/docs/releases/supported-releases/#support-status-of-istio-releases) 以及之前的使用经验，这里我们选择安装 Istio-1.15.2。
 
 下载 istio 命令行工具：
 
@@ -42,7 +42,7 @@ $ sed -i "s|hub: docker.io/t9kpublic|hub: 192.168.101.159:5000/t9kpublic|g" \
 $ istioctl install -f ../ks-clusters/additionals/istio/config.yaml
 ```
 
-文件中的配置解释（参考 IstioOperator Options）：
+文件中的配置解释（参考 [IstioOperator Options](https://istio.io/latest/docs/reference/config/istio.operator.v1alpha1/)）：
 
 1. `autoInject: disabled` 默认禁止自动注入 sidecar，仅在 Pod 或者 Pod 所在的 namespace 配置中要求了注入。我们不希望使用 istio 的 sidecar 注入功能。
 1. `sidecarInjectorWebhook.enableNamespacesByDefault: false` 新创建的命名空间默认禁用自动注入。同上，我们不希望使用 istio 的 sidecar 注入功能。

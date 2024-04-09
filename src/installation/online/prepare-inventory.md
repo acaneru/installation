@@ -41,7 +41,7 @@ $ python -m pip install --no-index \
 
 ### 准备 inventory
 
-集群的所有配置等存放在一个子目录 $T9K_CLUSTER 中。
+集群的所有配置等存放在一个子目录 T9K_CLUSTER 中。
 
 ```bash
 $ T9K_CLUSTER=demo
