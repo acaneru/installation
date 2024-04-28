@@ -40,6 +40,39 @@
   <img alt="create-project" src="../../../assets/installation/online/create-project.png" />
 </figure>
 
+## T9k 调度器配置
+
+### 创建默认队列
+
+如果集群部署了 T9k 调度器，你需要在集群管理页面：
+1. 为 T9k 调度器创建名为 default 的队列
+2. 修改 default 队列的配置，允许所有用户使用该队列
+
+首先打开**集群管理（Cluster Admin）** 页面（参考[登录管理员账号](#登录管理员账号)）
+
+点击**资源管理 > T9k 调度器 > 队列**，进入队列列表页面。
+
+<figure class="screenshot">
+  <img alt="queue-list" src="../../../assets/installation/online/queue-list.png" />
+</figure>
+
+点击右上角的 **+** 来创建一个新队列，队列名称填写为 `default`，其他字段按需填写（参考 [设置 Queue 的属性](../../../resource-management/t9k-scheduler.md#设置-queue-的属性)）。
+
+<figure class="screenshot">
+  <img alt="queue-list" src="../../../assets/installation/online/create-queue.png" />
+</figure>
+
+回到队列列表页面，点击 `default` 队列的名称，进入队列详情页面。
+
+<figure class="screenshot">
+  <img alt="queue-list" src="../../../assets/installation/online/queue-detail.png" />
+</figure>
+
+点击**限制 > 用户/组**的编辑按钮，将用户权限设置为所有人。
+
+<figure class="screenshot">
+  <img alt="queue-list" src="../../../assets/installation/online/queue-all-users.png" />
+</figure>
 
 ## 监控系统
 
