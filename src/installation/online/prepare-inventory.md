@@ -1,64 +1,103 @@
 # 准备 Inventory
 
-## 基本场景
+我们使用 <a target="_blank" rel="noopener noreferrer" href="https://docs.ansible.com/">ansible</a> 安装 K8s 及各种辅助组件，因此，我们需要准备一台电脑作为 <a target="_blank" rel="noopener noreferrer" href="https://docs.ansible.com/ansible/latest/network/getting_started/basic_concepts.html">ansible 控制节点</a>，以运行 ansible 命令，并在这个控制节点上，准备 ansible 的 <a target="_blank" rel="noopener noreferrer" href="https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html">inventory</a>。
 
-在 ansible 控制节点上设置环境。
+## 基本步骤
 
-### clone repos
+首先，在 ansible 控制节点上设置环境。可按照如下步骤执行：
+
+1. 安装 ansible
+2. 克隆相关的 git repos
+3. 准备本次安装的 inventory 目录
+
+### 1. 安装 ansible
+
+使用 conda 管理 python 环境：
+
+```bash
+conda create -n kubespray python=3.10
+conda activate kubespray
+```
+
+安装 ansible：
+
+```bash
+# Use -i https://pypi.tuna.tsinghua.edu.cn/simple or other pypi index may help with slow connections.
+python -m pip install -r kubespray/requirements.txt
+```
+
+如果无 Internet 链接，可使用本地 python package：
+
+```bash
+# use offline package directory
+python -m pip install --no-index \
+    --find-links=<python-packages-folder> -r kubespray/requirements.txt
+```
+
+确认 ansible 安装成功：
+
+```bash
+ansible --version
+```
+
+
+### 2. clone repos
 
 ```bash
 # create directory and clone repos
-mkdir -p ~/ansible/charts
+mkdir -p ~/ansible
 cd ~/ansible
+
 git clone  git@github.com:t9k/ks-clusters.git
 git clone git@github.com:t9k/kubespray.git
 ```
 
-将 kubespray 切换到合适分支
+将 kubespray 切换到合适分支：
 
 ```bash
 # 将 kubespray 切换到合适分支，例如 kubernetes-1.25.9
-$ cd kubespray
-$ git checkout -b kubernetes-<version> origin/kubernetes-<version>
-$ cd ..
+cd kubespray
+git checkout -b kubernetes-<version> origin/kubernetes-<version>
+cd ..
 ```
 
-### 安装 ansible
+### 3. 准备 inventory
 
-使用 conda 管理 python 环境。
+集群的所有配置等存放在环境变量 T9K_CLUSTER 指向的子目录中：
 
 ```bash
-$ conda create -n kubespray python=3.10
-$ conda activate kubespray
+cd ~/ansible
 
-# Use -i https://pypi.tuna.tsinghua.edu.cn/simple or other pypi index may help with slow connections.
-$ python -m pip install -r kubespray/requirements.txt
-
-# If in offline enviroment
-$ python -m pip install --no-index \
-    --find-links=<python-packages-folder> -r kubespray/requirements.txt
+T9K_CLUSTER=demo
+mkdir -p $T9K_CLUSTER && cd $T9K_CLUSTER
 ```
 
-### 准备 inventory
-
-集群的所有配置等存放在一个子目录 T9K_CLUSTER 中。
+另外，推荐使用 git 对此 inventory 进行版本管理：
 
 ```bash
-$ T9K_CLUSTER=demo
-# mkdir for cluster-specific files; 
-$ mkdir -p $T9K_CLUSTER && cd $T9K_CLUSTER
-
 # recommended: version this folder
-$ git init .
+git init .
+```
 
+复制模版文件：
+
+```bash
 # for some default configs
-$ cp ../ks-clusters/inventory/ansible.cfg .
+cp ../ks-clusters/inventory/ansible.cfg .
 
-# 1. copy a sample inventory to current directory
+# copy a sample inventory to current directory
 cp -r ../ks-clusters/inventory/sample-<variant> inventory
+```
 
-# 2. edit this inventory to suit your needs
-$ tree inventory/
+查看文件树：
+
+```bash
+# edit this inventory to suit your needs
+tree inventory/
+```
+
+目录结构：
+```
 inventory/
 ├── group_vars
 │   ├── all
@@ -73,8 +112,12 @@ inventory/
 └── patches
     ├── kube-controller-manager+merge.yaml
     └── kube-scheduler+merge.yaml
+```
 
-# 3. review variables
+进一步的查看设置的 variables：
+
+```bash
+# review variables
 grep -Ev "^$|^\s*#" inventory/group_vars/all/all.yml
 grep -Ev "^$|^\s*#" inventory/group_vars/all/docker.yml
 grep -Ev "^$|^\s*#" inventory/group_vars/all/download.yml
@@ -83,6 +126,7 @@ grep -Ev "^$|^\s*#" inventory/group_vars/all/etcd.yml
 grep -Ev "^$|^\s*#" inventory/group_vars/k8s_cluster/addons.yml
 grep -Ev "^$|^\s*#" inventory/group_vars/k8s_cluster/k8s-cluster.yml
 ```
+
 
 ## 其他
 
