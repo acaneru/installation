@@ -10,7 +10,7 @@
 2. 克隆相关的 git repos
 3. 准备本次安装的 inventory 目录
 
-### 1. 安装 ansible
+### 安装 ansible
 
 使用 conda 管理 python 环境：
 
@@ -41,7 +41,7 @@ ansible --version
 ```
 
 
-### 2. clone repos
+### Clone repos
 
 ```bash
 # create directory and clone repos
@@ -61,7 +61,7 @@ git checkout -b kubernetes-<version> origin/kubernetes-<version>
 cd ..
 ```
 
-### 3. 准备 inventory
+### 准备 inventory
 
 集群的所有配置等存放在环境变量 T9K_CLUSTER 指向的子目录中：
 
@@ -130,8 +130,18 @@ grep -Ev "^$|^\s*#" inventory/group_vars/k8s_cluster/k8s-cluster.yml
 
 ## 其他
 
+TODO: Finish this section.
+
 ### 使用 jump host
 
 ### 使用 ansible vault
 
 ### 复制 SSH 公钥
+
+## 下一步
+
+准备好 ansible inventory 之后，我们可进行[准备节点](./prepare-nodes.md) 的工作。
+
+## 参考
+
+<https://docs.ansible.com/>

@@ -155,3 +155,7 @@ ks-clusters 的 git repo 里已经配置了 `.gitignore` 文件以避免 `admin.
 ```bash
 KUBECONFIG=~/.kube/example-cluster.conf kubectl get node
 ```
+
+## 下一步
+
+- [设置集群存储](./k8s-storage.md)

@@ -95,4 +95,4 @@ chrony_client_ip_range:
 
 ## 下一步
 
-准备好节点之后，我们可进行[安装 K8s](./install-k8s.md) 的工作。
+准备好节点之后，我们可进行[安装 K8s](./k8s-install.md) 的工作。

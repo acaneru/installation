@@ -1,0 +1,113 @@
+# Elastic Search
+
+Install ES into t9k-monitoring.
+
+## 安装
+
+如果 namespace t9k-monitoring 不存在，则需创建：
+
+```bash
+$ kubectl create ns t9k-monitoring
+```
+
+[离线安装场景]修改镜像仓库的设置：
+
+```bash
+$ cat >> ../ks-clusters/additionals/elasticsearch/master.yaml << EOF
+image: "192.168.101.159:5000/t9kpublic/elasticsearch"
+EOF
+$ cat >> ../ks-clusters/additionals/elasticsearch/client.yaml << EOF
+image: "192.168.101.159:5000/t9kpublic/elasticsearch"
+EOF
+$ cat >> ../ks-clusters/additionals/elasticsearch/data.yaml << EOF
+image: "192.168.101.159:5000/t9kpublic/elasticsearch"
+EOF
+$ cat >> ../ks-clusters/additionals/elasticsearch/single.yaml << EOF
+image: "192.168.101.159:5000/t9kpublic/elasticsearch"
+EOF
+```
+
+多节点 K8s 集群中的安装方式：
+
+```bash
+# online installation
+$ helm install elasticsearch-master \
+    oci://tsz.io/t9kcharts/elasticsearch \
+    -n t9k-monitoring \
+    -f ../ks-clusters/additionals/elasticsearch/master.yaml
+
+$ helm install elasticsearch-client \
+    oci://tsz.io/t9kcharts/elasticsearch \
+    -n t9k-monitoring \
+    -f ../ks-clusters/additionals/elasticsearch/client.yaml
+
+$ helm install elasticsearch-data \
+    oci://tsz.io/t9kcharts/elasticsearch \
+    -n t9k-monitoring \
+    -f ../ks-clusters/additionals/elasticsearch/data.yaml
+
+# offline install
+$ helm install elasticsearch-master \
+    ../ks-clusters/tools/offline-additionals/charts/elasticsearch-7.13.4.tgz \
+    -n t9k-monitoring \
+    -f ../ks-clusters/additionals/elasticsearch/master.yaml
+
+$ helm install elasticsearch-client \
+    ../ks-clusters/tools/offline-additionals/charts/elasticsearch-7.13.4.tgz \
+    -n t9k-monitoring \
+    -f ../ks-clusters/additionals/elasticsearch/client.yaml
+
+$ helm install elasticsearch-data \
+    ../ks-clusters/tools/offline-additionals/charts/elasticsearch-7.13.4.tgz \
+    -n t9k-monitoring \
+    -f ../ks-clusters/additionals/elasticsearch/data.yaml
+```
+
+其中 Helm Chart 的来源参考：[Elastic Search 的 Helm Chart 修改](../../appendix/modify-helm-chart.md#elastic-search)
+
+单节点安装方式：
+
+```bash
+# online installation
+$ helm install elasticsearch-single \
+    oci://tsz.io/t9kcharts/elasticsearch \
+    -n t9k-monitoring \
+    -f ../ks-clusters/additionals/elasticsearch/single.yaml
+
+# offline install
+$ helm install elasticsearch-single \
+    ../ks-clusters/tools/offline-additionals/charts/elasticsearch-7.13.4.tgz \
+    -n t9k-monitoring \
+    -f ../ks-clusters/additionals/elasticsearch/single.yaml
+```
+
+<aside class="note">
+<div class="title">注意</div>
+
+单节点安装方式仅在只有一个 K8s 节点的测试场景中适用。
+
+</aside>
+
+## 验证
+
+验证 elasticsearch Pod 正常运行：
+
+```bash
+$ kubectl -n t9k-monitoring get pod
+NAME                                   READY   STATUS    RESTARTS        AGE
+elasticsearch-client-0                 1/1     Running   43 (200d ago)   200d
+elasticsearch-client-1                 1/1     Running   1 (100d ago)    190d
+elasticsearch-data-0                   1/1     Running   1 (100d ago)    190d
+elasticsearch-data-1                   1/1     Running   0               99d
+elasticsearch-data-2                   1/1     Running   0               221d
+elasticsearch-master-0                 1/1     Running   1 (100d ago)    190d
+elasticsearch-master-1                 1/1     Running   0               23h
+elasticsearch-master-2                 1/1     Running   0               221d
+```
+
+<aside class="note">
+<div class="title">注意</div>
+
+在 Post Install 流程中，我们还需要为 Elasticsearch 配置 Index。
+
+</aside>
