@@ -1,12 +1,26 @@
 # 安装 K8s
 
+## 目的
+
+完成一个最基本的 K8s 集群安装。
+
 ## 前提条件
 
 准备好了 inventory 并且服务器节点满足要求，可按照前述 [准备 Inventory](./prepare-inventory.md) 和 [准备节点](./prepare-nodes.md) 步骤执行。
 
+## 配置
+
+ TODO：描述如何设置 CRI, CNI, Ingress, LoadBalancer 等的选项。
+
 ## 安装集群
 
-运行 ansible 脚本，安装一个新的 K8s 集群。
+进入为此次安装准备的 inventory 目录：
+
+```bash
+cd ~/ansible/$T9K_CLUSTER 
+```
+
+运行 ansible 脚本，以安装 K8s 集群。
 
 方法 1 - 交互式输入 become password：
 
@@ -37,10 +51,11 @@ ansible-playbook ../kubespray/cluster.yml \
 ```
 </aside>
 
+## 过程解释
 
-### 运行内容
+### 脚本内容
 
-Kubespray `cluster.yml` 脚本需要执行 ~1300 个 Task，可以通过下面的命令输出完整的 Task 列表：
+集群安装脚本 `cluster.yml` 需要执行 ~1300 个 ansible Tasks，可以通过下面的命令输出完整的 Task 列表：
 
 ```bash
 ansible-playbook ../kubespray/playbooks/cluster.yml \
@@ -48,13 +63,13 @@ ansible-playbook ../kubespray/playbooks/cluster.yml \
     --list-tasks
 ```
 
-### 运行时间
+### 安装时常
 
 安装 K8s 集群所需要的时间受网络下载速度（主要因素）、节点性能、节点当前状态影响。
 
 初次运行该脚本的用时通常在 30 分钟到 1 小时范围内。其中，命令行工具、镜像等内容的下载约 25 分钟，下载之外的运行时间约 20 分钟。
 
-### 运行进度
+### 安装进度
 
 Ansible 在执行过程中会输出当前运行的 Task 名称（方括号中的内容），及对每个节点的运行结果。格式如下：
 
@@ -67,7 +82,7 @@ changed: [nuc]
 changed: [nc14]
 ```
 
-### 运行结果
+### 查看结果
 
 Ansible playbook 在运行结束后会输出一个运行回顾，示例如下：
 

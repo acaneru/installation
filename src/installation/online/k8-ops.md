@@ -7,7 +7,7 @@
 1. 修改 inventory.ini，下面是一个增加节点（nc15，worker node）的示例：
 
     ```diff
-    $ diff -u inventory-old.ini inventory-new.ini
+    diff -u inventory-old.ini inventory-new.ini
     --- inventory-old.ini
     +++ inventory-new.ini
     @@ -1,6 +1,7 @@

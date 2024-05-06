@@ -1,36 +1,40 @@
 # 安装 NVIDIA GPU Operator
 
+```
+TODO: 1. 支持更多 OS/Kernel 版本组合  
+      2. 使用 ansible 或者 GPU operator 安装 nvidia driver
+      3. Run `p2pBandwidthLatencyTest`
+```
+
 ## 前置条件
 
 节点应该满足以下条件：
 
-* 已经加入 K8s 集群
-* 安装有 NVIDIA GPU 硬件
-* 没有安装 NVIDIA Driver
+1. 已经加入 K8s 集群
+1. 安装有 NVIDIA GPU 硬件
+1. 没有安装 NVIDIA Driver
 
 节点 OS 要求：
 
-* distribution: Ubuntu 20.04 server
-* kernel version: 
+1. Ubuntu 20.04 server
+1. Kernel version: 
     * 5.4.0-144-generic
     * 5.4.0-153-generic 
     * 5.4.0-155-generic 
 
-其他：
+## 安装
 
-* cluster-admin of K8s
-* root access to host
-
-## 安装流程
-
-### 节点主机安装 nvidia driver
+### nvidia driver
 
 #### 安装
 
 查看节点上 NVIDIA GPU 硬件：
 
 ```bash
-$ sudo lshw -C display
+sudo lshw -C display
+```
+
+```console
   *-display                 
        description: VGA compatible controller
        product: GP102 [TITAN X]
@@ -48,8 +52,11 @@ $ sudo lshw -C display
 安装 nvidia driver：
 
 ```bash
-$ sudo apt update
-$ sudo apt list nvidia-driver-*
+sudo apt update
+sudo apt list nvidia-driver-*
+```
+
+```console
 ...
 nvidia-driver-515-server/focal-updates,focal-security 515.86.01-0ubuntu0.20.04.2 amd64
 nvidia-driver-515/focal-updates,focal-security 515.86.01-0ubuntu0.20.04.1 amd64
@@ -58,16 +65,23 @@ nvidia-driver-520/focal-updates,focal-security 525.60.11-0ubuntu0.20.04.2 amd64
 nvidia-driver-525-open/focal-updates,focal-security 525.60.11-0ubuntu0.20.04.2 amd64
 nvidia-driver-525-server/focal-updates,focal-security 525.60.13-0ubuntu0.20.04.1 amd64
 ...
-$ sudo apt install -y nvidia-driver-525-server
-$ sudo apt-hold mark nvidia-driver-525-server
-$ sudo reboot
 ```
 
-开启 nvidia persistenced mode：nvidia driver 安装后，会在集群内添加 system unit 
-nvidia-persistenced.service，我们需要修改这个 unit 以启用  persistenced mode：
+```bash
+sudo apt install -y nvidia-driver-525-server
+sudo apt-hold mark nvidia-driver-525-server
+sudo reboot
+```
+
+开启 nvidia persistenced mode：
+
+> nvidia driver 安装后，会在集群内添加 system unit `nvidia-persistenced.service`，我们需要修改这个 unit 以启用  persistenced mode。
 
 ```bash
-lenovo@a45:~$ systemctl status nvidia-persistenced.service 
+sudo systemctl status nvidia-persistenced.service
+```
+
+```console
 ● nvidia-persistenced.service - NVIDIA Persistence Daemon
      Loaded: loaded (/lib/systemd/system/nvidia-persistenced.service; static; vendor preset: enabled)
      Active: active (running) since Wed 2023-08-02 05:11:57 UTC; 1h 33min ago
@@ -78,10 +92,15 @@ lenovo@a45:~$ systemctl status nvidia-persistenced.service
              └─2748 /usr/bin/nvidia-persistenced --user nvidia-persistenced --no-persistence-mode --verbose
 ```
 
-修改 nvidia-persistenced.service 的启动命令，删除 --no-persistence-mode 参数。下面是修改后的文件内容：
+修改 `nvidia-persistenced.service` 的启动命令，删除 --no-persistence-mode 参数。
 
 ```bash
-lenovo@a45:~$ cat /lib/systemd/system/nvidia-persistenced.service
+cat /lib/systemd/system/nvidia-persistenced.service
+```
+
+修改后的文件内容：
+
+```console
 [Unit]
 Description=NVIDIA Persistence Daemon
 Wants=syslog.target
@@ -96,72 +115,35 @@ ExecStopPost=/bin/rm -rf /var/run/nvidia-persistenced
 重启 nvidia-persistenced.service，重启之后运行 nvidia-smi 可以发现已经开启 nvidia persistenced mode：
 
 ```bash
-lenovo@a45:~$ sudo systemctl daemon-reload 
-lenovo@a45:~$ sudo systemctl restart nvidia-persistenced.service 
-lenovo@a45:~$ nvidia-smi 
-Wed Aug  2 06:50:41 2023       
-+-----------------------------------------------------------------------------+
-| NVIDIA-SMI 525.125.06   Driver Version: 525.125.06   CUDA Version: 12.0     |
-|-------------------------------+----------------------+----------------------+
-| GPU  Name        Persistence-M| Bus-Id        Disp.A | Volatile Uncorr. ECC |
-| Fan  Temp  Perf  Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
-|                               |                      |               MIG M. |
-|===============================+======================+======================|
-|   0  NVIDIA A40          On   | 00000000:19:00.0 Off |                    0 |
-|  0%   21C    P8    12W / 300W |      0MiB / 46068MiB |      0%      Default |
-|                               |                      |                  N/A |
-+-------------------------------+----------------------+----------------------+
-|   1  NVIDIA A40          On   | 00000000:1A:00.0 Off |                    0 |
-|  0%   22C    P8    20W / 300W |      0MiB / 46068MiB |      0%      Default |
-|                               |                      |                  N/A |
-+-------------------------------+----------------------+----------------------+
-|   2  NVIDIA A40          On   | 00000000:1B:00.0 Off |                    0 |
-|  0%   22C    P8    19W / 300W |      0MiB / 46068MiB |      0%      Default |
-|                               |                      |                  N/A |
-+-------------------------------+----------------------+----------------------+
-|   3  NVIDIA A40          On   | 00000000:1C:00.0 Off |                    0 |
-|  0%   23C    P8    18W / 300W |      0MiB / 46068MiB |      0%      Default |
-|                               |                      |                  N/A |
-+-------------------------------+----------------------+----------------------+
-|   4  NVIDIA A40          On   | 00000000:B3:00.0 Off |                    0 |
-|  0%   22C    P8    20W / 300W |      0MiB / 46068MiB |      0%      Default |
-|                               |                      |                  N/A |
-+-------------------------------+----------------------+----------------------+
-|   5  NVIDIA A40          On   | 00000000:B4:00.0 Off |                    0 |
-|  0%   22C    P8    18W / 300W |      0MiB / 46068MiB |      0%      Default |
-|                               |                      |                  N/A |
-+-------------------------------+----------------------+----------------------+
-|   6  NVIDIA A40          On   | 00000000:B5:00.0 Off |                    0 |
-|  0%   22C    P8    19W / 300W |      0MiB / 46068MiB |      0%      Default |
-|                               |                      |                  N/A |
-+-------------------------------+----------------------+----------------------+
-|   7  NVIDIA A40          On   | 00000000:B6:00.0 Off |                    0 |
-|  0%   22C    P8    18W / 300W |      0MiB / 46068MiB |      0%      Default |
-|                               |                      |                  N/A |
-+-------------------------------+----------------------+----------------------+
-                                                                               
-+-----------------------------------------------------------------------------+
-| Processes:                                                                  |
-|  GPU   GI   CI        PID   Type   Process name                  GPU Memory |
-|        ID   ID                                                   Usage      |
-|=============================================================================|
-|  No running processes found                                                 |
-+-----------------------------------------------------------------------------+
+sudo systemctl daemon-reload 
+sudo systemctl restart nvidia-persistenced.service
+
+nvidia-smi
 ```
 
-<aside class="note">
-<div class="title">注意</div>
+<details><summary><code class="hljs">nvidia-smi output</code></summary>
 
-510.x.x 及之后的 driver，在 nvidia driver bug 未修复前，还需要 [Disable GSP](#disable-gsp)。
+```console
+{{#include ../../../assets/installation/online/nvidia-gpu-operator/nvidia-smi.log}}
+```
 
-</aside>
+</details>
+
+
+#### 关闭 GSP
+
+注意：510.x.x 及之后的 driver，在 nvidia driver bug 未修复前，还需要 [Disable GSP](#disable-gsp)。
+
 
 #### 验证
 
 Driver 安装后，可使用 nvidia-smi 查看 GPU 信息：
 
 ```bash
-lenovo@a40:~$ nvidia-smi -L
+nvidia-smi -L
+```
+
+```console
 GPU 0: NVIDIA A40 (UUID: GPU-5219cc39-b9d9-48cd-b092-62e71dd15dd6)
 GPU 1: NVIDIA A40 (UUID: GPU-0045dae9-1bed-16e5-dc7c-56f2a9e7e186)
 GPU 2: NVIDIA A40 (UUID: GPU-132cba3f-bee7-ad56-e15b-bb0d8c855570)
@@ -173,13 +155,16 @@ GPU 6: NVIDIA A40 (UUID: GPU-5246cdd0-db79-cea0-eaf5-d067784e4648)
 
 运行测试程序：
 
-p2pBandwidthLatencyTest
+> TODO: Run p2pBandwidthLatencyTest.
 
 #### 其他
 
 ```bash
 # 检查安装状态
-$ dpkg -l nvidia-driver-525-server
+dpkg -l nvidia-driver-525-server
+```
+
+```
 Desired=Unknown/Install/Remove/Purge/Hold
 | Status=Not/Inst/Conf-files/Unpacked/halF-conf/Half-inst/trig-aWait/Trig-pend
 |/ Err?=(none)/Reinst-required (Status,Err: uppercase=bad)
@@ -188,9 +173,9 @@ Desired=Unknown/Install/Remove/Purge/Hold
 hi  nvidia-driver-525-server 525.125.06-0ubuntu0.20.04.2 amd64        NVIDIA Server Driver metapackage
 ```
 
-## 集群部署 gpu-operator
+### gpu-operator
 
-### helm template
+#### helm template
 
 运行 helm template 命令生成 template.yaml，并且：
 
@@ -205,9 +190,9 @@ helm template -n gpu-operator oci://tsz.io/t9kcharts/gpu-operator \
   > template.yaml
 ```
 
-其中 Helm Chart 来源见[附录：GPU Operator 的 Helm Chart 修改](../../appendix/modify-helm-chart.md#gpu-operator)。
+其中 Helm Chart 来源见 [附录：GPU Operator 的 Helm Chart 修改](../../appendix/modify-helm-chart.md#gpu-operator)。
 
-### 安装 gpu operator
+#### 安装
 
 以上配置修改完成之后，就可以安装 gpu operator 了：
 
@@ -216,17 +201,25 @@ kubectl create ns gpu-operator
 kubectl -n gpu-operator apply -f template.yaml
 ```
 
-### 验证
+#### 验证
 
-GPU Operator 安装完成后，在 namespace gpu-operator 中查看 GPU Operator 安装的组件：
+GPU Operator 安装完成后，在 namespace `gpu-operator` 中查看 GPU Operator 安装的组件：
 
 ```bash
-$ kubectl -n gpu-operator get deploy
+kubectl -n gpu-operator get deploy
+```
+
+```
 NAME                                READY   UP-TO-DATE   AVAILABLE   AGE
 gpu-operator                        1/1     1            1           18d
 t9k-node-feature-discovery-master   1/1     1            1           18d
+```
 
-$ kubectl -n gpu-operator get ds
+```bash
+kubectl -n gpu-operator get ds
+```
+
+```
 NAME
 gpu-feature-discovery               
 nvidia-container-toolkit-daemonset  
@@ -237,17 +230,20 @@ nvidia-operator-validator
 t9k-node-feature-discovery-worker  
 ```
 
-查看 gpu operator 的配置
+查看 gpu operator 的配置：
 
 ```bash
-$ kubectl -n gpu-operator get clusterpolicy cluster-policy  
+kubectl -n gpu-operator get clusterpolicy cluster-policy  
+```
+
+```
 NAME             AGE
 cluster-policy   2d18h
 ```
 
-安装的组件信息如下：
+#### 安装的组件信息
 
-全局组件
+##### 全局
 
 gpu-operator：
 
@@ -258,6 +254,9 @@ gpu-operator：
 
 * 运行在所有节点上，检测集群节点的硬件信息、系统信息，并将这些信息记录在节点标签上，这些标签前缀是 `feature.node.kubernetes.io/`。GPU Operator 依赖 node feature discovery 添加的节点标签。
 * 如何确认正常工作？Pod 运行正常，并且可以在节点上查看到相关的节点标签。
+
+
+##### NVIDIA GPU 节点
 
 下面这些组件只能运行在含有 NVIDIA GPU 的节点上
 
@@ -305,9 +304,9 @@ nvidia-operator-validator
 * The Validator for NVIDIA GPU Operator runs as a Daemonset and ensures that all components are working as expected on all GPU nodes. It runs through series of validations via InitContainers for each component and writes out status file as a result under /run/nvidia/validations. These status files allow each component to verify for their dependencies and start in correct order.
 * 如何确认正常工作？Pod 运行正常，Pod 日志显示 all validations are successful。
 
-## Post-Install
+## 安装后配置
 
-### 设置 time-slicing Configuration
+### 设置 time-slicing
 
 GPU Operator 安装完成后，可以通过以下设置，让 GPU 以 [time-slicing 方式](https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/gpu-sharing.html#configuration-for-shared-access-to-gpus-with-gpu-time-slicing)被共享使用。
 
@@ -315,40 +314,19 @@ GPU Operator 安装完成后，可以通过以下设置，让 GPU 以 [time-slic
 
 首先需要配置 GPU Operator 启用 time-slicing。
 
-创建 config.yaml 文件来定义 time-slicing config。在本示例中，ConfigMap 定义了 2 个 time-slicing config（config 设置[参考](https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/gpu-sharing.html#configuration-for-shared-access-to-gpus-with-gpu-time-slicing)）：a100-40gb 和 common。详情如下：
+创建 `config.yaml` 文件来定义 time-slicing config。
+
+<details><summary><code class="hljs">config.yaml</code></summary>
 
 ```yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
- name: time-slicing-config
- namespace: gpu-operator
-data:
-   a100-40gb: |-
-       version: v1
-       sharing:
-         timeSlicing:
-           renameByDefault: true
-           resources:
-           - name: nvidia.com/gpu
-             replicas: 8
-           - name: nvidia.com/mig-1g.5gb
-             replicas: 2
-           - name: nvidia.com/mig-2g.10gb
-             replicas: 2
-           - name: nvidia.com/mig-3g.20gb
-             replicas: 3
-           - name: nvidia.com/mig-7g.40gb
-             replicas: 7
-   common: |-
-       version: v1
-       sharing:
-         timeSlicing:
-           renameByDefault: true
-           resources:
-           - name: nvidia.com/gpu
-             replicas: 4
+{{#include ../../../assets/installation/online/nvidia-gpu-operator/config.yaml}}
 ```
+
+</details>
+
+在本示例中，ConfigMap 定义了 2 个 time-slicing config（config 设置[参考](https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/gpu-sharing.html#configuration-for-shared-access-to-gpus-with-gpu-time-slicing)）：`a100-40gb` 和 `common`。
+
+
 
 创建 ConfigMap time-slicing-config：
 
@@ -387,7 +365,7 @@ $ kubectl get node z02 -o json | jq .status.capacity
 
 #### (optional) 设置 T9k Scheduler Queue
 
-设置了共享 GPU 的节点后，你可以创建 T9k Scheduler Queue time-slicing-gpu，让 Queue 中的 Pod 只运行在共享 GPU 节点上。如果你想要创建使用共享 GPU 的 Pod，你只需要在 Pod 中设置扩展资源 `nvidia.com/gpu.shared`，并设置 Pod 使用 t9k-scheduler，同时指定 Pod Queue 为 time-slicing-gpu 即可。
+设置了共享 GPU 的节点后，你可以创建 T9k Scheduler Queue `shared-gpu`，让 Queue 中的 Pod 只运行在共享 GPU 节点上。如果你想要创建使用共享 GPU 的 Pod，你只需要在 Pod 中设置扩展资源 `nvidia.com/gpu.shared`，并设置 Pod 使用 `t9k-scheduler`，同时指定 Pod Queue 为 `shared-gpu` 即可。
 
 Queue 的 YAML 示例如下：
 
@@ -395,7 +373,7 @@ Queue 的 YAML 示例如下：
 apiVersion: scheduler.tensorstack.dev/v1beta1
 kind: Queue
 metadata:
- name: time-slicing-gpu
+ name: shared-gpu
  namespace: t9k-system
 spec:
  closed: false
@@ -414,61 +392,36 @@ spec:
 
 ### 节点禁用 GPU Operator
 
-如果你不想让 GPU Operator 运行在某个节点上，你可以运行下列命令：
+如果不想让 GPU Operator 运行在某个节点上，可运行下列命令：
 
 ```bash
-$ kubectl label nodes $NODE nvidia.com/gpu.deploy.operands=false
+kubectl label nodes $NODE nvidia.com/gpu.deploy.operands=false
 ```
 
 参考：<https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/latest/getting-started.html#operands>
 
 ### 配置 Prometheus
 
-GPU Operator 默认会在集群内部署 dcgm exporter，你需要创建 CRD ServiceMonitor 来配置 Prometheus 收集 dcgm exporter 提供的 metrics 数据。
+GPU Operator 默认会在集群内部署 dcgm exporter，你需要创建 CRD `ServiceMonitor ` 示例来配置 Prometheus 收集 dcgm exporter 提供的 metrics 数据。
 
 nvidia dcgm exporter 的 service 如下所示：
 
 ```bash
-$ kubectl -n gpu-operator get svc nvidia-dcgm-exporter  -o yaml
-apiVersion: v1
-kind: Service
-metadata:
-  annotations:
-    prometheus.io/scrape: "true"
-  labels:
-    app: nvidia-dcgm-exporter
-  name: nvidia-dcgm-exporter
-  namespace: gpu-operator
-  ownerReferences:
-  - apiVersion: nvidia.com/v1
-    blockOwnerDeletion: true
-    controller: true
-    kind: ClusterPolicy
-    name: cluster-policy
-    uid: aa21a324-8efc-43c9-b1fc-6e7b5e0869fd
-spec:
-  clusterIP: 10.233.51.234
-  clusterIPs:
-  - 10.233.51.234
-  internalTrafficPolicy: Cluster
-  ipFamilies:
-  - IPv4
-  ipFamilyPolicy: SingleStack
-  ports:
-  - name: gpu-metrics
-    port: 9400
-    protocol: TCP
-    targetPort: 9400
-  selector:
-    app: nvidia-dcgm-exporter
-  sessionAffinity: None
-  type: ClusterIP
+kubectl -n gpu-operator get svc nvidia-dcgm-exporter  -o yaml
 ```
+
+<details><summary><code class="hljs">svc-nvidia-dcgm-exporter.yaml</code></summary>
+
+```yaml
+{{#include ../../../assets/installation/online/nvidia-gpu-operator/svc-nvidia-dcgm-exporter.yaml}}
+```
+
+</details>
 
 创建 ServiceMonitor ：
 
 ```bash
-$ kubectl -n t9k-monitoring create -f - << EOF
+kubectl -n t9k-monitoring create -f - << EOF
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
@@ -499,26 +452,37 @@ EOF
 
 #### 什么是 GSP？
 
-Some GPUs include a GPU System Processor (GSP) which can be used to offload GPU initialization and management tasks. This processor is driven by the firmware file /lib/firmware/nvidia/510.39.01/gsp.bin. A few select products currently use GSP by default, and more products will take advantage of GSP in future driver releases. 
-
-Offloading tasks which were traditionally performed by the driver on the CPU can improve performance due to lower latency access to GPU hardware internals.（来源）
+> Some GPUs include a GPU System Processor (GSP) which can be used to offload GPU initialization and management tasks. This processor is driven by the firmware file `/lib/firmware/nvidia/510.39.01/gsp.bin`. A few select products currently use GSP by default, and more products will take advantage of GSP in future driver releases.
+> Offloading tasks which were traditionally performed by the driver on the CPU can improve performance due to lower latency access to GPU hardware internals.
 
 #### Why disable GSP
 
-从 510 版本开始，NVIDIA Driver 引入了 GSP Feature，但是他有 Bug。这个 Bug 可能会导致在使用/查询 GPU 时产生错误："Timeout waiting for RPC from GSP!"（详情请见：https://github.com/NVIDIA/open-gpu-kernel-modules/issues/446）。
+从 510 版本开始，NVIDIA Driver 引入了 GSP Feature，但是他有 Bug。这个 Bug 可能会导致在使用/查询 GPU 时产生错误："Timeout waiting for RPC from GSP!"（详情：<https://github.com/NVIDIA/open-gpu-kernel-modules/issues/446>）。
 
-disable GSP 可以解决上述 Bug。
+关闭 GSP 可以解决上述 Bug。
 
 #### How to disable GSP
 
 命令如下：
 
 ```bash
-lenovo@a45:~$ sudo su -c 'echo options nvidia NVreg_EnableGpuFirmware=0 > /etc/modprobe.d/nvidia-gsp.conf'
-lenovo@a45:~$ sudo update-initramfs -u
-lenovo@a45:~$ sudo reboot
+sudo su -c 'echo options nvidia NVreg_EnableGpuFirmware=0 > /etc/modprobe.d/nvidia-gsp.conf'
+sudo update-initramfs -u
+sudo reboot
+```
+
+检查：
+
+```bash
 # EnableGpuFirmware is 0 means GSP feature is disabled
-lenovo@a45:~$ cat /proc/driver/nvidia/params | grep EnableGpuFirmware
+cat /proc/driver/nvidia/params | grep EnableGpuFirmware
+```
+
+```
 EnableGpuFirmware: 0
 EnableGpuFirmwareLogs: 2
 ```
+
+## 参考
+
+<https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/latest/getting-started.html>

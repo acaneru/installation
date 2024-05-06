@@ -2,22 +2,34 @@
 
 我们支持在 Ubuntu 20.04, 22.04 上安装 K8s，其它版本将会适时提供支持。
 
+## 目的
+
+1. 使用 ansible 对集群服务器做基本的配置;
+2. 获取并审查节点基本信息，以保证接下来的安装工作能够正确执行。
+
 ## 前提条件
 
-1. 准备好物理主机，获得其 IP 地址，获得适当的访问凭证；
-2. 准备 ansible 运行环境和 [inventory](./prepare-inventory.md)。
+完成 [准备 inventory](./prepare-inventory.md) 中的工作。
+
+确认 inventory 可用：
+
+```bash
+# 进入为此次安装准备的 inventory 目录
+cd ~/ansible/$T9K_CLUSTER 
+
+# 确认 server 列表
+ansible-inventory -i inventory/inventory.ini --list
+
+# 测试可访问
+ansible all -m ping -i inventory/inventory.ini
+```
 
 ## 配置节点
 
 安装 K8s 之前，需要做如下准备工作：
 
-1. 禁用 Ubuntu 自动更新
-1. 设置自动同步系统时钟
-1. 网络
-    1. 基本设置检查
-    1. 如果是 IB 网络，配置并验证正确
-1. GPU 驱动程序安装
-    1. 确保硬件正常
+1. 禁用 Ubuntu 自动更新；
+1. 设置自动同步系统时钟。
 
 <aside class="note">
 <div class="title">注意</div>
@@ -25,14 +37,6 @@
 如果为临时测试目的，可跳过 “禁止 Ubuntu 自动更新” 和 “设置自动同步系统时钟”。
 
 </aside>
-
-```bash
-# 进入为此次安装准备的 inventory 目录
-cd ~/ansible/$T9K_CLUSTER 
-
-# 查看设置
-cat inventory/inventory.ini
-```
 
 ### 获取节点信息
 
@@ -50,9 +54,11 @@ ansible-playbook ../ks-clusters/t9k-playbooks/0-gather-information.yml \
 ls /tmp/facts/
 ```
 
+特别地，确认 GPU、网络设备等信息是否复合预期。
+
 ### 禁用 Ubuntu 自动更新
 
-<aside class="note">
+<aside class="note warning">
 <div class="title">注意</div>
 
 该脚本中包含重启节点的操作。

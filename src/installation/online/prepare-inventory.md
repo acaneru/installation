@@ -2,9 +2,18 @@
 
 我们使用 <a target="_blank" rel="noopener noreferrer" href="https://docs.ansible.com/">ansible</a> 安装 K8s 及各种辅助组件，因此，我们需要准备一台电脑作为 <a target="_blank" rel="noopener noreferrer" href="https://docs.ansible.com/ansible/latest/network/getting_started/basic_concepts.html">ansible 控制节点</a>，以运行 ansible 命令，并在这个控制节点上，准备 ansible 的 <a target="_blank" rel="noopener noreferrer" href="https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html">inventory</a>。
 
+## 目的
+
+1. 准备好使用 ansible 的环境；
+2. 确认目标集群服务器可通过 ansible 访问。
+
+## 前提条件
+
+可通过网络访问集群的服务器，并具备适当的（root 或者 sudo）访问凭证。
+
 ## 基本步骤
 
-首先，在 ansible 控制节点上设置环境。可按照如下步骤执行：
+首先，在 ansible 控制节点上设置环境，可按照如下步骤执行：
 
 1. 安装 ansible
 2. 克隆相关的 git repos
@@ -58,18 +67,18 @@ git clone git@github.com:t9k/kubespray.git
 # 将 kubespray 切换到合适分支，例如 kubernetes-1.25.9
 cd kubespray
 git checkout -b kubernetes-<version> origin/kubernetes-<version>
-cd ..
 ```
 
-### 准备 inventory
+### 复制 inventory 模版
 
-集群的所有配置等存放在环境变量 T9K_CLUSTER 指向的子目录中：
+集群的所有配置等存放在环境变量 `T9K_CLUSTER` 指向的子目录中：
 
 ```bash
-cd ~/ansible
-
+# 注意：当使用合适的集群名字
 T9K_CLUSTER=demo
-mkdir -p $T9K_CLUSTER && cd $T9K_CLUSTER
+
+# 创建目录
+mkdir -p ~/ansible/$T9K_CLUSTER && cd ~/ansible/$T9K_CLUSTER
 ```
 
 另外，推荐使用 git 对此 inventory 进行版本管理：
@@ -82,6 +91,8 @@ git init .
 复制模版文件：
 
 ```bash
+cd ~/ansible/$T9K_CLUSTER
+
 # for some default configs
 cp ../ks-clusters/inventory/ansible.cfg .
 
@@ -127,6 +138,25 @@ grep -Ev "^$|^\s*#" inventory/group_vars/k8s_cluster/addons.yml
 grep -Ev "^$|^\s*#" inventory/group_vars/k8s_cluster/k8s-cluster.yml
 ```
 
+### 设置 inventory
+
+在 `inventory.ini` 中填入服务器信息：
+
+```bash
+cd ~/ansible/$T9K_CLUSTER
+
+vim inventory/inventory.ini
+```
+
+确认 inventory 设置正常：
+
+```bash
+# 确认 server 列表
+ansible-inventory -i inventory/inventory.ini --list
+
+# 测试可访问
+ansible all -m ping -i inventory/inventory.ini
+```
 
 ## 其他
 
@@ -140,7 +170,7 @@ TODO: Finish this section.
 
 ## 下一步
 
-准备好 ansible inventory 之后，我们可进行[准备节点](./prepare-nodes.md) 的工作。
+准备好 ansible inventory 之后，即可进行下一步的 [准备节点](./prepare-nodes.md) 工作。
 
 ## 参考
 

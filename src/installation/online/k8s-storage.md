@@ -2,8 +2,11 @@
 
 K8s 集群至少需要安装一个 StorageClass 来提供集群存储服务，即 “<a target="_blank" rel="noopener noreferrer" href="https://kubernetes.io/docs/concepts/storage/dynamic-provisioning/">动态持久卷制备/Dynamic Volume Provisioning</a>”。
 
-
 我们可以使用多家存储系统产品，例如 NFS, Ceph, Lustre, GPFS 等。
+
+## 目的
+
+为 K8s 集群设置至少一个 StorageClass，以支持动态持久卷制备。
 
 ## 使用 NFS
 
@@ -21,9 +24,9 @@ NFS 适合小规模或者测试场景，可通过 ansible 方便的安装，详�
     运行脚本在 K8s  集群的节点上安装 Ceph packages：
 
     ```bash
-    $ ansible-playbook ../ks-clusters/t9k-playbooks/11-install-ceph-package.yml \
-        -i inventory/inventory.ini \
-        --become -K
+    ansible-playbook ../ks-clusters/t9k-playbooks/11-install-ceph-package.yml \
+      -i inventory/inventory.ini \
+      --become -K
     ```
 
 1. 安装 CSI driver
