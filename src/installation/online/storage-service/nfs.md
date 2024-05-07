@@ -82,7 +82,7 @@ ansible-playbook ../ks-clusters/t9k-playbooks/10-install-nfs.yml \
 ansible-playbook ../ks-clusters/t9k-playbooks/10-install-nfs.yml \
   -i inventory/inventory.ini \
   --become \
-  -e "@~/ansible/<cluster-name>/vault.yml" \
+  -e "@~/ansible/$T9K_CLUSTER/vault.yml" \
   --vault-password-file=~/ansible/.vault-password.txt \
   -e nfs_server_ip="x.x.x.x" \
   -e nfs_share_network="x.x.x.x/24"

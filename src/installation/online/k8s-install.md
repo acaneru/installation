@@ -36,7 +36,7 @@ ansible-playbook ../kubespray/cluster.yml \
 ansible-playbook ../kubespray/cluster.yml \
     -i inventory/inventory.ini \
     --become \
-    -e "@~/ansible/<cluster-name>/vault.yml" \
+    -e "@~/ansible/$T9K_CLUSTER/vault.yml" \
     --vault-password-file=~/ansible/.vault-password.txt
 ```
 

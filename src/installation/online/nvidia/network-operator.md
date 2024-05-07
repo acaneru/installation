@@ -4,15 +4,20 @@
 
 节点包含 IB 网卡，且正确连接了 IB 网线。
 
+```bash
+# 进入为此次安装准备的 inventory 目录
+cd ~/ansible/$T9K_CLUSTER
+```
+
 ## 安装 MLNX_OFED 驱动
 
 运行脚本安装驱动：
 
 ```bash
 ansible-playbook ks-clusters/t9k-playbooks/4-install-ib-driver.yml \         
-    -i ks-clusters/inventory/<cluster-name>/inventory.ini
+    -i inventory/inventory.ini \
     --become \
-    -e "@~/ansible/<cluster-name>/vault.yml" \
+    -e "@~/ansible/$T9K_CLUSTER/vault.yml" \
     --vault-password-file=~/ansible/.vault-password.txt
 ```
 
@@ -50,17 +55,17 @@ ansible-playbook ks-clusters/t9k-playbooks/4-install-ib-driver.yml \
     ```bash
     # 使用 ansible vault 中保存的 become password
     ansible-playbook ks-clusters/t9k-playbooks/4-install-network-operator.yml \         
-      -i ks-clusters/inventory/<cluster-name>/inventory.ini
+      -i inventory/inventory.ini \
       --become \
-      -e "@~/ansible/<cluster-name>/vault.yml" \
+      -e "@~/ansible/$T9K_CLUSTER/vault.yml" \
       --vault-password-file=~/ansible/.vault-password.txt
 
 
     # 运行脚本时设置参数
     ansible-playbook ks-clusters/t9k-playbooks/4-install-network-operator.yml \         
-      -i ks-clusters/inventory/<cluster-name>/inventory.ini
+      -i inventory/inventory.ini \
       --become \
-      -e "@~/ansible/<cluster-name>/vault.yml" \
+      -e "@~/ansible/$T9K_CLUSTER/vault.yml" \
       --vault-password-file=~/ansible/.vault-password.txt \
       -e rdma_shared_device_name=rdma_shared_device_a \
       -e rdma_shared_device_vendor=15b3 \
@@ -71,16 +76,16 @@ ansible-playbook ks-clusters/t9k-playbooks/4-install-ib-driver.yml \
     # 离线安装时，需要根据实际情况
     # 设置 network_operator_charts 参数和 network_operator_image_registry 参数
     ansible-playbook ks-clusters/t9k-playbooks/4-install-network-operator.yml \         
-      -i ks-clusters/inventory/<cluster-name>/inventory.ini
+      -i inventory/inventory.ini \
       --become \
-      -e "@~/ansible/<cluster-name>/vault.yml" \
+      -e "@~/ansible/$T9K_CLUSTER/vault.yml" \
       --vault-password-file=~/ansible/.vault-password.txt \
       -e network_operator_charts=../ks-clusters/tools/offline-additionals/charts/network-operator-23.10.0.tgz \
       -e network_operator_image_registry=192.168.101.159:5000/t9kpublic
 
     # 交互式输入 become password
     ansible-playbook ks-clusters/t9k-playbooks/4-install-network-operator.yml \
-      -i ks-clusters/inventory/<cluster-name>/inventory.ini \
+      -i inventory/inventory.ini \
       --become -K
     ```
 
