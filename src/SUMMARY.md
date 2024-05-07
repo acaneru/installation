@@ -27,7 +27,7 @@
                 * [Network Operator](installation/online/nvidia/network-operator.md)
         * [安装 TensorStack AI](installation/online/products/index.md)
             * [安装前准备](installation/online/products/pre-install.md)
-            * [安装](installation/online/products/install.md)
+            * [安装产品](installation/online/products/install.md)
             * [安装后配置](installation/online/products/post-install.md)
         * [安装 Harbor Registry](installation/online/registry/harbor.md)
         * [安装存储服务](installation/online/storage-service/index.md)

@@ -81,6 +81,10 @@ t9k-cluster-admin               t9k-system      1               2023-11-19 06:02
 t9k-aistore                     t9k-system      3               2023-11-19 06:37:17.947109956 +0000 UTC deployed        t9k-aistore-1.78.5                      1.78.5
 ```
 
+## 下一步
+
+进行 [安装后配置](./post-install.md)。
+
 ## 参考
 
 <https://helm.sh/docs/>
