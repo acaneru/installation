@@ -117,25 +117,56 @@ helm install elasticsearch-single \
 
 ## 验证
 
-验证 elasticsearch Pod 正常运行：
+以多节点安装为例，查看 helm status：
 
 ```bash
-kubectl -n t9k-monitoring get pod
+helm status -n t9k-monitoring elasticsearch-master
+
+helm status -n t9k-monitoring elasticsearch-client
+
+helm status -n t9k-monitoring elasticsearch-data
+```
+
+以多节点安装为例，确认 elasticsearch Pod 正常运行：
+
+```bash
+kubectl get pods --namespace=t9k-monitoring -l app=elasticsearch-master
 ```
 
 输出：
 
-```console
-NAME                                   READY   STATUS    RESTARTS        AGE
-elasticsearch-client-0                 1/1     Running   43 (200d ago)   200d
-elasticsearch-client-1                 1/1     Running   1 (100d ago)    190d
-elasticsearch-data-0                   1/1     Running   1 (100d ago)    190d
-elasticsearch-data-1                   1/1     Running   0               99d
-elasticsearch-data-2                   1/1     Running   0               221d
-elasticsearch-master-0                 1/1     Running   1 (100d ago)    190d
-elasticsearch-master-1                 1/1     Running   0               23h
-elasticsearch-master-2                 1/1     Running   0               221d
 ```
+NAME                     READY   STATUS    RESTARTS   AGE
+elasticsearch-master-0   1/1     Running   0          64d
+elasticsearch-master-1   1/1     Running   0          105d
+elasticsearch-master-2   1/1     Running   0          11d
+```
+
+```bash
+kubectl get pods --namespace=t9k-monitoring -l app=elasticsearch-client
+```
+
+输出：
+
+```
+NAME                     READY   STATUS    RESTARTS   AGE
+elasticsearch-client-0   1/1     Running   0          11d
+elasticsearch-client-1   1/1     Running   0          64d
+```
+
+```bash
+kubectl get pods --namespace=t9k-monitoring -l app=elasticsearch-data
+```
+
+输出：
+
+```
+NAME                   READY   STATUS    RESTARTS   AGE
+elasticsearch-data-0   1/1     Running   0          132d
+elasticsearch-data-1   1/1     Running   0          11d
+elasticsearch-data-2   1/1     Running   0          64d
+```
+
 
 <aside class="note">
 <div class="title">注意</div>
