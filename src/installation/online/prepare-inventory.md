@@ -100,45 +100,16 @@ cp ../ks-clusters/inventory/ansible.cfg .
 cp -r ../ks-clusters/inventory/sample-<variant> inventory
 ```
 
-查看文件树：
-
-```bash
-# edit this inventory to suit your needs
-tree inventory/
-```
-
-目录结构：
-```
-inventory/
-├── group_vars
-│   ├── all
-│   │   ├── all.yml
-│   │   ├── docker.yml
-│   │   ├── download.yml
-│   │   └── etcd.yml
-│   └── k8s_cluster
-│       ├── addons.yml
-│       └── k8s-cluster.yml
-├── inventory.ini
-└── patches
-    ├── kube-controller-manager+merge.yaml
-    └── kube-scheduler+merge.yaml
-```
-
-进一步的查看设置的 variables：
-
-```bash
-# review variables
-grep -Ev "^$|^\s*#" inventory/group_vars/all/all.yml
-grep -Ev "^$|^\s*#" inventory/group_vars/all/docker.yml
-grep -Ev "^$|^\s*#" inventory/group_vars/all/download.yml
-grep -Ev "^$|^\s*#" inventory/group_vars/all/etcd.yml
-
-grep -Ev "^$|^\s*#" inventory/group_vars/k8s_cluster/addons.yml
-grep -Ev "^$|^\s*#" inventory/group_vars/k8s_cluster/k8s-cluster.yml
-```
+>  此步骤复制的 `inventory` 子目录里的内容详情见：[Inventory 结构](#inventory-结构)。
 
 ### 设置 inventory
+
+<aside class="note">
+<div class="title">注意</div>
+
+此部分需要根据集群的实际情况进行填写，例如服务器节点等。
+
+</aside>
 
 在 `inventory.ini` 中填入服务器信息（参考：[节点组](#节点组)）：
 
@@ -158,37 +129,10 @@ ansible-inventory -i inventory/inventory.ini --list
 ansible all -m ping -i inventory/inventory.ini
 ```
 
-#### 节点组
-
-Kubespray playbooks 使用 `inventory.ini` 中的如下分组：
-
-* `all` - 集群所有节点，可在此设置 `ansible_host`, `ansible_user` 等额外信息；
-* `kube_control_plane` - 集群控制平面的节点；
-* `etcd` - etcd 服务的节点；
-* `kube_node` - K8s 集群的工作节点；
-* `ingress-node` - 运行 Ingress controller 的节点，
-* `bastion` - 指定 bastion 节点，以支持访问无法直接访问的节点。
-
-<aside class="note info">
-<div class="title">节点分组</div>
-
-* 如果一个节点仅在 `kube_node` 中，它会作为工作节点加入 K8s 集群；
-* 如果一个节点仅在 `kube_control_plane` 中，它会作为 control plane 节点加入 K8s 集群，并添加 `node-role.kubernetes.io/control-plane:NoSchedule` 的 Taint；
-* 如果一个节点同时在 `kube_node` 和 `kube_control_plane` 中，它会作为 control plane 节点加入 K8s 集群，但不添加 `node-role.kubernetes.io/control-plane:NoSchedule` 的 Taint。
-
-</aside>
-
-
-#### 其它分组
-
-下列分组被非 Kubespray playbooks 使用：
-
-* `chronyserver` -  使用 `t9k-playbooks/2-sync-time.yml` 安装 chrony 时，此 group 指定 chrony server 节点；
-* `chronyclients` - 同上，安装 chrony 时，此 group 指定 chrony client 节点；
-* `nfs_server` -  使用 `t9k-playbooks/10-install-nfs.yml` 安装 nfs 作为集群存储时，需要用这个 group 指定 nfs server 节点（nfs server 只使用一个节点，即此 group 中的第一个节点）。
-
+更高级的设置，请参考下文。
 
 ## 其他
+
 
 ### 使用 jump host
 
@@ -331,6 +275,86 @@ ansible all \
 ```bash
 ansible -i inventory/inventory.ini -m ping all
 ```
+
+### Inventory 结构
+
+#### 节点组
+
+`inventory.ini` 文件中定义了多个节点组，解释如下。
+
+**Kubespray 节点组**
+
+Kubespray playbooks 使用 `inventory.ini` 中的如下分组：
+
+* `all` - 集群所有节点，可在此设置 `ansible_host`, `ansible_user` 等额外信息；
+* `kube_control_plane` - 集群控制平面的节点；
+* `etcd` - etcd 服务的节点；
+* `kube_node` - K8s 集群的工作节点；
+* `ingress-node` - 运行 Ingress controller 的节点，
+* `bastion` - 指定 bastion 节点，以支持访问无法直接访问的节点。
+
+<aside class="note info">
+<div class="title">节点分组</div>
+
+* 如果一个节点仅在 `kube_node` 中，它会作为工作节点加入 K8s 集群；
+* 如果一个节点仅在 `kube_control_plane` 中，它会作为 control plane 节点加入 K8s 集群，并添加 `node-role.kubernetes.io/control-plane:NoSchedule` 的 Taint；
+* 如果一个节点同时在 `kube_node` 和 `kube_control_plane` 中，它会作为 control plane 节点加入 K8s 集群，但不添加 `node-role.kubernetes.io/control-plane:NoSchedule` 的 Taint。
+
+</aside>
+
+
+**其它分组**
+
+下列分组被非 Kubespray playbooks 使用：
+
+* `chronyserver` -  使用 `t9k-playbooks/2-sync-time.yml` 安装 chrony 时，此 group 指定 chrony server 节点；
+* `chronyclients` - 同上，安装 chrony 时，此 group 指定 chrony client 节点；
+* `nfs_server` -  使用 `t9k-playbooks/10-install-nfs.yml` 安装 nfs 作为集群存储时，需要用这个 group 指定 nfs server 节点（nfs server 只使用一个节点，即此 group 中的第一个节点）。
+
+
+#### 目录结构
+
+查看文件树：
+
+```bash
+# edit this inventory to suit your needs
+tree inventory/
+```
+
+输出：
+
+```
+inventory/
+├── group_vars
+│   ├── all
+│   │   ├── all.yml
+│   │   ├── docker.yml
+│   │   ├── download.yml
+│   │   └── etcd.yml
+│   └── k8s_cluster
+│       ├── addons.yml
+│       └── k8s-cluster.yml
+├── inventory.ini
+└── patches
+    ├── kube-controller-manager+merge.yaml
+    └── kube-scheduler+merge.yaml
+```
+
+#### 设置的 variables
+
+进一步的查看设置的 variables：
+
+```bash
+# review variables
+grep -Ev "^$|^\s*#" inventory/group_vars/all/all.yml
+grep -Ev "^$|^\s*#" inventory/group_vars/all/docker.yml
+grep -Ev "^$|^\s*#" inventory/group_vars/all/download.yml
+grep -Ev "^$|^\s*#" inventory/group_vars/all/etcd.yml
+
+grep -Ev "^$|^\s*#" inventory/group_vars/k8s_cluster/addons.yml
+grep -Ev "^$|^\s*#" inventory/group_vars/k8s_cluster/k8s-cluster.yml
+```
+
 
 ## 下一步
 
