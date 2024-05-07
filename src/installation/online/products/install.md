@@ -1,10 +1,25 @@
-# 安装
+# 安装产品
 
-## 安装产品
+```
+TODO:
+    1. 说明无法访问 tsz.io 时的安装方式；
+    2. 提供 charts 列表；
+    3. 提供推荐的 Chart 安装顺序；
+    4. 使用 helm status 检查 chart 安装示例
+    5. 增加 github 上 产品 release 链接
+```
 
-产品列表及其最新版本见：[T9k Releases](https://docs.google.com/document/d/13aBfNmEYTysJJS_S7bMPPZkTqms6ZrUkVL6bv-IaRPc/edit)
+## 目的
 
-登录到 Registry：
+在 K8s 集群中安装 T9k 产品。
+
+## 前置条件
+
+完成 [安装前准备](./pre-install.md)。
+
+## 安装
+
+登录到 OCI Registry：
 
 ```bash
 # 要求 helm version >= v3.8.0
@@ -14,9 +29,7 @@ helm registry login tsz.io
 helm registry logout tsz.io
 ```
 
-从 <a target="_blank" rel="noopener noreferrer" href="https://github.com/t9k/ks-clusters/tree/master/values">ks-clusters</a> 中获取 values-sample.yaml，并根据文件中的注释进行修改，其中标注了 MUST 的项目必须修改。
-
-安装单个产品：
+使用 [安装前准备](./pre-install.md) 中准备的 `valuea.yaml` 安装，以 Chart `t9k-core` 为例：
 
 ```bash
 # --version 指定的参数为 Helm Chart 的版本，如果省略则安装最新版本
@@ -27,12 +40,13 @@ helm install t9k-core \
    --version <version>
 ```
 
+**推荐的安装顺序**
+
+
+
 ## 基本检查
 
-等待并确认 K8s 集群中所有的 Pod 都正常工作：
-
-* 如果执行了 Pre-Pull Image 的操作，根据集群性能不同，通常需要等待 3-5 分钟
-* 如果没有执行 Pre-Pull Image 的操作，根据集群网络环境，通常需要等待 30-60 分钟
+等待并确认集群中所有的 Pod 都正常工作，根据网络情况，可能需要 5~60 分钟不等：
 
 ```bash
 # 持续查看 K8s 集群中的所有 Pod 状态
@@ -66,3 +80,7 @@ t9k-experiment-management       t9k-system      1               2023-11-19 04:58
 t9k-cluster-admin               t9k-system      1               2023-11-19 06:02:45.082613774 +0000 UTC deployed        t9k-cluster-admin-1.78.8                1.78.8
 t9k-aistore                     t9k-system      3               2023-11-19 06:37:17.947109956 +0000 UTC deployed        t9k-aistore-1.78.5                      1.78.5
 ```
+
+## 参考
+
+<https://helm.sh/docs/>
