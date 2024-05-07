@@ -11,7 +11,7 @@
 
 ## 前置条件
 
-准备 Inventory，并完成 K8s 集群的部署。
+完成 [K8s 基本集群](../k8s-install.md) 的部署。
 
 ## 安装
 
@@ -19,32 +19,40 @@
 
 ### 离线设置
 
-如果无 Internet 链接，需要使用本地设置的容器镜像仓库，设置如下：
+<aside class="note">
+<div class="title">注意</div>
+
+如果[离线安装 K8s 集群](../../offline/install/k8s.md#安装-k8s-集群)时已经设置过这个变量，则检查变量设置符合预期即可。
+
+</aside>
+
+如果无 Internet 连接，需要使用本地设置的容器镜像仓库，设置如下：
 
 ```bash
-# TODO: Make changes in the invenntory, NOT the playbook.
-$ cd ~/ansible/ks-clusters/t9k-playbooks/roles/nfs
+# 进入为此次安装准备的 inventory 目录
+cd ~/ansible/$T9K_CLUSTER
 
-# change docker_image_repo
-$ vim defaults/main.yml
+# 修改 inventory/group_vars/all/download.yml
+vim inventory/group_vars/all/download.yml
 ```
 
-示例修改，使用运行在 `192.169.101.159:5000` 的 image registry：
+示例，使用运行在 `192.169.101.159:5000` 的 image registry：
 
 ```diff
-$ diff -u main.yml new-main.yml 
---- main.yml
-+++ new-main.yml
-@@ -1,7 +1,7 @@
- # default settings in the inventory
- kube_config_dir: "/etc/kubernetes"
- bin_dir: "/usr/local/bin"
+diff -u ./inventory/group_vars/all/download.yml ./inventory/group_vars/all/new-download.yml
+--- ./inventory/group_vars/all/download.yml
++++ ./inventory/group_vars/all/new-download.yml
+@@ -16,7 +16,7 @@
+ ## Container Registry overrides
+ gcr_image_repo: "docker.io/t9kpublic"
+ kube_image_repo: "docker.io/t9kpublic"
 -docker_image_repo: "docker.io/t9kpublic"
 +docker_image_repo: "192.169.101.159:5000/t9kpublic"
- 
- # directory on control_plane[0] to save nfs manifests
- nfs_manifests_dir: "{{ kube_config_dir }}/addons/nfs"
+ quay_image_repo: "docker.io/t9kpublic"
+ # github_image_repo: "{{ registry_host }}"
 ```
+
+
 
 ### 设置变量
 
@@ -74,8 +82,8 @@ ansible-playbook ../ks-clusters/t9k-playbooks/10-install-nfs.yml \
 ansible-playbook ../ks-clusters/t9k-playbooks/10-install-nfs.yml \
   -i inventory/inventory.ini \
   --become \
-  -e "@~/ansible/<new-cluster-name>-<version>/vault.yml" \
-  --vault-password-file=~/.vault-password.txt \
+  -e "@~/ansible/<cluster-name>/vault.yml" \
+  --vault-password-file=~/ansible/.vault-password.txt \
   -e nfs_server_ip="x.x.x.x" \
   -e nfs_share_network="x.x.x.x/24"
 ```

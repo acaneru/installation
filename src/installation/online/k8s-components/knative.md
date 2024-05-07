@@ -1,19 +1,26 @@
 # Knative
 
-TODO: 修改此文档以支持各种版本的 k8s/istio 安装。
-
 ## 目的
 
-安装 Knative，版本 v1.9.0
+安装 Knative。
 
 ## 前置条件
 
-1. Kubernetes 集群版本：v1.25.9
-1. <a target="_blank" rel="noopener noreferrer" href="https://istio.io/">Istio</a>，v1.15.2
-1. <a target="_blank" rel="noopener noreferrer" href="https://kubernetes.github.io/ingress-nginx/deploy/">NGINX Ingress Controller</a>，v1.7.1
+Knative 依赖 K8s 集群、<a target="_blank" rel="noopener noreferrer" href="https://istio.io/">Istio</a> 以及 <a target="_blank" rel="noopener noreferrer" href="https://kubernetes.github.io/ingress-nginx/deploy/">NGINX Ingress Controller</a>。其中 NGINX Ingress Controller 默认会在[安装集群](../k8s-install.md#安装集群)时一同被安装，选择与 K8s 兼容的版本即可。
+
+安装的 Knative 版本需要与 K8s、Istio 版本相适应的，参考文档是：[RELEASE-SCHEDULE](https://github.com/knative/community/blob/main/mechanics/RELEASE-SCHEDULE.md)。
+
+我们根据实际使用的经验，给出以下版本建议：
+
+* Kubernetes 版本 v1.22.0，Istio 版本 1.15.2，适用 Knative v1.7.1
+* Kubernetes 版本 v1.25.9，Istio 版本 1.15.2，适用 Knative v1.9.0
+* Kubernetes 版本 v1.28.6，Istio 版本 1.20.6，适用 Knative v1.13.1
+
+
 
 ## 安装
 
+下面以安装 Knative v1.9.0 为例。如需安装其他版本，可以选择相应的文件夹进行安装。
 
 <aside class="note">
 <div class="title">离线安装</div>

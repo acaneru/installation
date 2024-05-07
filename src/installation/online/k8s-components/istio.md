@@ -5,17 +5,24 @@ T9k 产品需要使用 Istio 的 routing API (e.g. Gateway, VirtualService) 以�
 
 ## 安装
 
-根据 [Support status of Istio releases](https://istio.io/latest/docs/releases/supported-releases/#support-status-of-istio-releases) 以及之前的使用经验，这里我们选择安装 Istio-1.15.2。
+文档 [Support status of Istio releases](https://istio.io/latest/docs/releases/supported-releases/#support-status-of-istio-releases) 记录了各个 Istio 版本兼容的 K8s 版本。
+
+结合上述文档和之前的使用经验，我们提供以下安装建议：
+
+* Kubernetes v1.22 到 v1.25，安装 Istio 1.15.2。
+* Kubernetes v1.26 到 v1.28，安装 Istio 1.20.6。
 
 ### 下载 istio
+
+以安装 Istio 1.15.2 为例，其他版本的 Istio 安装只需要修改下载的 istioctl 版本即可。
 
 ```bash
 cd ~/ansible/$T9K_CLUSTER
 
-# online install
+# online install, istio-1.15.2
 curl -LO https://github.com/istio/istio/releases/download/1.15.2/istio-1.15.2-linux-amd64.tar.gz
 
-# offline install
+# offline install, istio-1.15.2
 cp ../ks-clusters/tools/offline-additionals/misc/istio-1.15.2-linux-amd64.tar.gz ./
 
 tar zxvf istio-1.15.2-linux-amd64.tar.gz
@@ -23,6 +30,25 @@ cd istio-1.15.2
 export PATH=$PWD/bin:$PATH
 cd ..
 ```
+
+再提供一个 Istio 1.20.6 的例子：
+
+```bash
+cd ~/ansible/$T9K_CLUSTER
+
+# online install, istio-1.20.6
+curl -LO https://github.com/istio/istio/releases/download/1.20.6/istio-1.20.6-linux-amd64.tar.gz
+
+# offline install, istio-1.20.6
+cp ../ks-clusters/tools/offline-additionals/misc/istio-1.20.6-linux-amd64.tar.gz ./
+
+tar zxvf istio-1.20.6-linux-amd64.tar.gz
+cd istio-1.20.6
+export PATH=$PWD/bin:$PATH
+cd ..
+```
+
+后续操作适用于不同版本的 Istio，不需要额外的修改。
 
 ### 修改配置
 

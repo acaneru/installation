@@ -139,7 +139,7 @@ ansible-playbook ../kubespray/upgrade-cluster.yml \
     -i inventory/inventory.ini \
     --become \
     -e "@~/nc15-1.25.9/vault.yml" \
-    --vault-password-file=~/.vault-password.txt
+    --vault-password-file=~/ansible/.vault-password.txt
 ```
 
 运行成功的 PLAY RECAP 示例：

@@ -36,8 +36,8 @@ ansible-playbook ../kubespray/cluster.yml \
 ansible-playbook ../kubespray/cluster.yml \
     -i inventory/inventory.ini \
     --become \
-    -e "@~/ansible/<new-cluster-name>-<version>/vault.yml" \
-    --vault-password-file=~/.vault-password.txt
+    -e "@~/ansible/<cluster-name>/vault.yml" \
+    --vault-password-file=~/ansible/.vault-password.txt
 ```
 
 <aside class="note">
