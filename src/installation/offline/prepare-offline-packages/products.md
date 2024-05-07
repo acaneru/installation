@@ -1,37 +1,45 @@
 # 产品
 
-下面的操作在 `ks-clusters/tools/offline-t9k` 中进行：
-
-```bash
-$ cd ~/ansible/ks-clusters/tools/offline-t9k
+```
+TODO:
+    1. 增加验证部分；
+    2. "A120 - 域名证书管理" 放入本 repo
 ```
 
-下面准备的离线文件一览：
+本文准备的离线文件：
 
 | 内容             | 存放路径                       |
 | -------------- | -------------------------- |
-| 1. Helm Chart | charts/                    |
-| 2. 镜像（images） | 可修改，默认值为 container-images/ |
-| 3. 域名证书       | certs/                     |
-| 4. 其他         | misc/                      |
+| Helm Charts | charts/                    |
+| 容器镜像（images） | 可修改，默认值为 container-images/ |
+| 域名证书       | certs/                     |
+| 其他         | misc/                      |
 
-“其他”中包含 Serving 使用的镜像，kubectl 和 helm 命令行工具，用于保障单独部署 T9k 产品时这些功能可以正常使用。
+> 说明：“其他” 中包含 Serving 使用的镜像，kubectl 和 helm 命令行工具，用于保障单独部署 T9k 产品时这些功能可以正常使用。
 
-### 下载 Helm Chart
+## 准备
+
+```bash
+cd ~/ansible/ks-clusters/tools/offline-t9k
+```
+
+## 下载
+
+### Helm Chart
 
 查看下载版本：
 
 ```bash
-$ cat productlist/t9k-2024-01-12.list
+cat productlist/t9k-2024-01-12.list
 ```
 
 下载 Helm Chart，下载目录为 `charts`：
 
 ```bash
-$ ./download-charts.sh --config productlist/t9k-2024-02-01.list
+./download-charts.sh --config productlist/t9k-2024-02-01.list
 ```
 
-### 下载镜像
+### 镜像
 
 <aside class="note">
 <div class="title">注意</div>
@@ -45,30 +53,29 @@ $ ./download-charts.sh --config productlist/t9k-2024-02-01.list
 查看镜像列表：
 
 ```bash
-$ cat imagelist/t9k-2024-02-01.list
+cat imagelist/t9k-2024-02-01.list
 ```
 
 下载镜像，下载目录为 `container-images`：
 
 ```bash
-$ ./manage-offline-container-images.sh --option create \
-    --config imagelist/t9k-2024-01-12.list --dir container-images
+./manage-offline-container-images.sh \
+  --option create \
+  --config imagelist/t9k-2024-01-12.list \
+  --dir container-images
 ```
 
 ### 域名证书
 
-准备一份域名证书。参考[A120 - 域名证书管理](https://docs.google.com/document/d/1QPBMi1jThcRd7SQcr95Ainm18_L9wnx_-OpEc1l2LEY/edit?usp=sharing)生成域名证书。然后复制到目录中：
+准备一份域名证书。参考 [A120 - 域名证书管理](https://docs.google.com/document/d/1QPBMi1jThcRd7SQcr95Ainm18_L9wnx_-OpEc1l2LEY/edit?usp=sharing)生成域名证书。然后复制到目录中：
 
 ```bash
-$ mkdir certs
-$ cp -r ~/.acme.sh/\*.sample.t9kcloud.cn_ecc  certs/
+mkdir certs
+cp -r ~/.acme.sh/\*.sample.t9kcloud.cn_ecc  certs/
 ```
 
-### 其他
 
-“其他” 中包含 Serving 使用的镜像，kubectl 和 helm 命令行工具，用于保障单独部署 T9k 产品时这些功能可以正常使用。
-
-#### Registry 镜像
+### Registry 镜像
 
 下载 Registry 镜像：
 
@@ -79,9 +86,9 @@ sudo docker save docker.io/t9kpublic/registry:offline-2023-09 \
     -o docker.io-t9kpublic-registry-offline-2023-09.tar
 ```
 
-#### 命令行工具
+### 命令行工具
 
-下载命令行工具：
+下载 `kubectl` 和 `helm` ：
 
 ```bash
 wget -O kubectl \
@@ -91,5 +98,4 @@ wget -O helm-v3.12.0-linux-amd64.tar.gz \
   https://get.helm.sh/helm-v3.12.0-linux-amd64.tar.gz 
 ```
 
-
-
+## 验证
