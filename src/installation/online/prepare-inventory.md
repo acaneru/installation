@@ -165,29 +165,38 @@ bastion ansible_host=<x.x.x.x> ansible_user=<some_user>
 
 首先创建一个文件保存 ansible vault 的密码：
 
-``` bash
-# 从 stdin 读入 vault 密码，并保存在此文件中
-cat > ~/ansible/.vault-password.txt
-
-chmod 600 ~/ansible/.vault-password.txt
-```
-
-<aside class="note">
-<div class="title">注意</div>
+<aside class="note warning">
+<div class="title">警告</div>
 
 `vault-password.txt` 文件应当设置私有的可读权限，以避免泄漏 vault 的密码。该文件也可以使用更加安全的方式，例如 MacOS 的 <a target="_blank" rel="noopener noreferrer" href="https://support.apple.com/guide/keychain-access/what-is-keychain-access-kyca1083/mac">Keychain Access</a> 来保存。
 
 </aside>
 
+``` bash
+# 从 stdin 读入 vault 密码，并保存
+cat > ~/ansible/.vault-password.txt
+
+chmod 600 ~/ansible/.vault-password.txt
+```
+
+
 创建 `vault.yml` 以保存变量的值：
+
+<aside class="note warning">
+<div class="title">警告</div>
+
+虽然 `vault.yml` 被加密，但不要放在公开的代码仓库中，以防止暴力破解等风险。
+
+</aside>
 
 ``` bash
 # 创建一个文件夹来保存 vault.yml
-mkdir ~/ansible/<cluster-name>
+mkdir -p ~/ansible/$T9K_CLUSTER && cd ~/ansible/$T9K_CLUSTER
+
+grep ^vault.yml .gitignore || echo vault.yml >> .gitignore
 
 # 使用上面创建的 vault password 加密
-# 警告：虽然 vault.yml 被加密，但不要放在公开的代码仓库中，以防止暴力破解等风险
-ansible-vault create ~/ansible/<cluster-name>/vault.yml \
+ansible-vault create ~/ansible/$T9K_CLUSTER/vault.yml \
   --vault-password-file ~/ansible/.vault-password.txt
 ```
 
@@ -200,7 +209,7 @@ ansible_become_password: <your-become-password>
 保存之后，ansible-vault 会加密 `vault.yml`，可通过以下命令编辑文件：
 
 ``` bash
-ansible-vault edit ~/ansible/<cluster-name>/vault.yml \
+ansible-vault edit ~/ansible/$T9K_CLUSTER/vault.yml \
   --vault-password-file ~/ansible/.vault-password.txt
 ```
 
@@ -211,8 +220,8 @@ ansible-vault edit ~/ansible/<cluster-name>/vault.yml \
 
 ```ini
 [all]
-node1 ansible_become_pass="{{ nuc.vault_ansible_become_pass }}"
-node2 ansible_become_pass="{{ nc11.vault_ansible_become_pass }}"
+node1 ansible_become_pass="{{ node1.vault_ansible_become_pass }}"
+node2 ansible_become_pass="{{ node2.vault_ansible_become_pass }}"
 ```
 
 在 ansible-vault 打开的编辑器中设定 var 的值：
@@ -232,7 +241,7 @@ node2:
 ansible-playbook ../kubespray/cluster.yml \
   -i inventory/inventory.ini \
   --become \
-  -e "@~/ansible/<cluster-name>/vault.yml" \
+  -e "@~/ansible/$T9K_CLUSTER/vault.yml" \
   --vault-password-file=~/ansible/.vault-password.txt
 ```
 
