@@ -1,13 +1,18 @@
-# 查看运行状态
+# 系统状态和配置
+
+本文讨论：1）如何查看系统各个模块的运行状态；2）如何修改这些模块的一些配置。
 
 ## LDAP
 
-如果您使用的是自行部署的 LDAP 服务器，请查看其对应的管理手册。
+如果使用的是自行部署的 LDAP 服务器，请查看其对应的管理手册。
 
-如果您使用的是平台提供的 OpenLDAP 服务器，运行以下命令查看 LDAP 运行状态：
+如果使用的是平台提供的 OpenLDAP 服务器，运行以下命令查看 LDAP 运行状态：
 
 ```bash
-$ kubectl get pods -n t9k-system -l app.kubernetes.io/name=openldap
+kubectl get pods -n t9k-system -l app=openldap
+```
+
+```
 NAME                        READY   STATUS    RESTARTS   AGE
 openldap-7bbfc86447-qkjwv   1/1     Running   0          27d
 ```
@@ -15,7 +20,12 @@ openldap-7bbfc86447-qkjwv   1/1     Running   0          27d
 查看日志：
 
 ```bash
-$ kubectl logs -n t9k-system -l app.kubernetes.io/name=openldap --tail 100 -f
+kubectl logs -n t9k-system -l app=openldap --tail 100 -f
+```
+
+<details><summary><code class="hljs">output</code></summary>
+
+```
 65e067b6.015ed61f 0x7ff5e10fb700 conn=1324 op=0 BIND dn="cn=admin,dc=t9k,dc=cn" method=128
 65e067b6.01601428 0x7ff5e10fb700 conn=1324 op=0 BIND dn="cn=admin,dc=t9k,dc=cn" mech=SIMPLE bind_ssf=0 ssf=0
 65e067b6.01620ea8 0x7ff5f17e4700 conn=1322 op=1 SRCH base="ou=users,dc=t9k,dc=cn" scope=1 deref=3 filter="(&(objectClass=*)(uid=demo))"
@@ -25,16 +35,21 @@ $ kubectl logs -n t9k-system -l app.kubernetes.io/name=openldap --tail 100 -f
 65e067b6.01656a4f 0x7ff5e1bfd700 conn=1323 op=1 SRCH attr=uid mail uidNumber gidNumber sn cn objectclass createTimestamp modifyTimestamp
 ```
 
+</details>
+
 ## Keycloak
 
-Keycloak 中的的相关概念以及平台如何配置 Keycloak 详见[附录：Keycloak](./reference/keycloak.md)。
+Keycloak 中的的相关概念以及平台如何配置 Keycloak 详见 [附录：Keycloak](./appendix/keycloak.md)。
 
-### 查看运行状态
+### 运行状态
 
 Keycloak 组件包括一个服务器和一个 PostgreSQL 数据库，运行以下命令查看 Keycloak 运行状态：
 
 ```bash
-$ kubectl get pods -n t9k-system -l app=keycloak
+kubectl get pods -n t9k-system -l app=keycloak
+```
+
+```
 NAME                                   READY   STATUS    RESTARTS   AGE
 keycloak-d6b8cfd94-856x7               1/1     Running   0          18h
 keycloak-postgresql-76b66864bd-x4c7q   1/1     Running   0          18d
@@ -43,8 +58,11 @@ keycloak-postgresql-76b66864bd-x4c7q   1/1     Running   0          18d
 查看日志：
 
 ```bash
-$ kubectl logs -n t9k-system keycloak-d6b8cfd94-856x7 --tail 100 -f
-$ kubectl logs -n t9k-system keycloak-postgresql-76b66864bd-x4c7q --tail 100 -f
+# keycloak postgresql
+kubectl logs -n t9k-system -l app=keycloak,component=database --tail 100 -f
+
+# keycloak
+kubectl logs -n t9k-system -l app=keycloak,component=keycloak --tail 100 -f
 ```
 
 ### 查看配置
@@ -55,17 +73,17 @@ $ kubectl logs -n t9k-system keycloak-postgresql-76b66864bd-x4c7q --tail 100 -f
   <img alt="admin-console" src="../assets/user-and-security-management/view-running-status/admin-console.png" />
 </figure>
 
-您可以在此查看 Keycloak 的所有配置：
+可以在此查看 Keycloak 的所有配置：
 
 <figure class="screenshot">
   <img alt="keycloak-config" src="../assets/user-and-security-management/view-running-status/keycloak-config.png" />
 </figure>
 
-<u>一般情况下，请勿修改 Keycloak 配置！</u>
+> 一般情况下，请勿修改 Keycloak 配置。
 
 ### 修改 LDAP 配置
 
-如果您需要修改 LDAP 配置（例如使用自行部署的 LDAP 服务），请按照以下步骤执行。
+如果需要修改 LDAP 配置（例如使用其它 LDAP 服务），请按照以下步骤执行。
 
 进入 Keycloak UI，选择 **User Federation > ldap** 进入 LDAP 配置页面：
 
@@ -79,9 +97,9 @@ $ kubectl logs -n t9k-system keycloak-postgresql-76b66864bd-x4c7q --tail 100 -f
   <img alt="ldap-config" src="../assets/user-and-security-management/view-running-status/ldap-config.png" />
 </figure>
 
-<u>红框标记以外的字段请勿修改，否则可能会导致用户管理服务错误；修改内容应与 LDAP 实际部署情况对应。</u>
+> 红框标记以外的字段请勿修改，否则可能会导致用户管理服务错误；修改内容应与 LDAP 实际部署情况对应。
 
-#### Groups Mapper
+**Groups Mapper**
 
 如果 groups 的 DN 发生改变，需要修改 Groups Mapper：
 
@@ -93,16 +111,19 @@ $ kubectl logs -n t9k-system keycloak-postgresql-76b66864bd-x4c7q --tail 100 -f
   <img alt="group-config" src="../assets/user-and-security-management/view-running-status/group-config.png" />
 </figure>
 
-<u>红框标记以外的字段请勿修改，否则可能会导致用户管理服务错误；修改内容应与 LDAP 实际部署情况对应。</u>
+> 红框标记以外的字段请勿修改，否则可能会导致用户管理服务错误；修改内容应与 LDAP 实际部署情况对应。
 
 ## Security Console
 
-### 查看运行状态
+### 运行状态
 
 运行以下命令查看 Security Console 的运行状态：
 
 ```bash
-$ kubectl get po -n t9k-system -l app=security-console-server
+kubectl get po -n t9k-system -l app=security-console-server
+```
+
+```
 NAME                                       READY   STATUS    RESTARTS   AGE
 security-console-server-689dd89d8f-j42bg   3/3     Running   0          23h
 ```
@@ -110,7 +131,10 @@ security-console-server-689dd89d8f-j42bg   3/3     Running   0          23h
 查看日志：
 
 ```bash
-$ kubectl logs -n t9k-system -l app=security-console-server --tail 100 -f
+kubectl logs -n t9k-system -l app=security-console-server --tail 100 -f
+```
+
+```
 I1 03/01 05:20:46 handler.go:96 security console/rbac-handler [GET /rbac-proxy/queues/evaluate?user=demo&queue=r003-test] http=HTTP/1.1
 I1 03/01 05:21:04 handler.go:96 security console/rbac-handler [GET /rbac-proxy/projects/owner?projects=demo] http=HTTP/1.1
 I4 03/01 05:21:04 cache.go:244 security console/rbac-handler [Refresh Cache]
@@ -123,16 +147,18 @@ Security Console 的配置支持三种来源：命令行参数、环境变量和
 运行以下命令查看命令行参数和环境变量：
 
 ```bash
-$ kubectl get pods -n t9k-system -l app=security-console-server -o yaml
+kubectl get pods -n t9k-system -l app=security-console-server -o yaml
 ```
 
 运行以下命令查看配置文件：
 
 ```bash
-$ kubectl -n t9k-system get cm security-console-config -o yaml
+kubectl -n t9k-system get cm security-console-config -o yaml
 ```
 
 配置文件示例如下：
+
+<details><summary><code class="hljs">security-console-config.yaml</code></summary>
 
 ```yaml
 kind: ConfigMap
@@ -180,6 +206,8 @@ data:
     }
 ```
 
+</details>
+
 以 `admin.username` 为例，配置文件中的字段可以用对应命令行参数或环境变量进行设置：
 
 * 命令行参数 `--admin.username=admin`，规则为：配置文件中的每一个字段，都可以用它在 json 中的路径作为命令行参数。
@@ -187,34 +215,34 @@ data:
 
 配置说明：
 
-* admin：keycloak 管理员账号。
-* keycloak：keycloak 配置信息。
-* log：日志配置，包括日志等级、日志显示样式。
-* resources：是否支持管理 Project、Queue 的权限，以及两种资源的 GVR 等信息。
-* apikey：
-    * sql：记录 postgresql 服务器配置，用于存储 apikey。
-    * clients：支持用 apikey 代表哪些 Keycloak Client 中的资源权限，举例来讲：如果删除 clients 中的 t9k-aistore，则无法在使用 apikey 访问 AssetHub 和 ExperimentManagement 中的数据。
-* cookieSecret：cookie 加密用的密钥，建议使用 32 位随机字符串。
-* clients：Security Console 负责哪些 Keycloak Client 的安全管理。
+* `admin`：keycloak 管理员账号。
+* `keycloak`：keycloak 配置信息。
+* `log`：日志配置，包括日志等级、日志显示样式。
+* `resources`：是否支持管理 Project、Queue 的权限，以及两种资源的 GVR 等信息。
+* `apikey`：
+    * `sql`：记录 postgresql 服务器配置，用于存储 apikey。
+    * `clients`：支持用 apikey 代表哪些 Keycloak Client 中的资源权限，举例来讲：如果删除 clients 中的 t9k-aistore，则无法在使用 apikey 访问 AssetHub 和 ExperimentManagement 中的数据。
+* `cookieSecret`：cookie 加密用的密钥，建议使用 32 位随机字符串。
+* `clients`：Security Console 负责哪些 Keycloak Client 的安全管理。
 
 ### 修改配置
 
 如果管理员需要修改 Security Console 配置（如日志等级、替换 postgresql 服务等），建议只修改 ConfigMap 中的配置，原因是 ConfigMap 中的配置更有结构化，比较清楚：
 
 ```bash
-$ kubectl -n t9k-system edit cm security-console-config
+kubectl -n t9k-system edit cm security-console-config
 ```
 
 在修改完 ConfigMap 后，重启 Security Console 来使配置生效：
 
 ```bash
-$ kubectl rollout restart deployment -n t9k-system --selector=app=security-console-server
+kubectl rollout restart deployment -n t9k-system --selector=app=security-console-server
 ```
 
 执行以下命令，通过命令行参数和环境变量修改配置：
 
 ```bash
-$ kubectl -n t9k-system edit deploy security-console-server
+kubectl -n t9k-system edit deploy security-console-server
 ```
 
 ## PEP Proxy
@@ -228,10 +256,12 @@ $ kubectl -n t9k-system edit deploy security-console-server
 
 <figure class="architecture">
   <img alt="notebook-pep-proxy" src="../assets/user-and-security-management/view-running-status/notebook-pep-proxy.drawio.svg" />
-  <figcaption>图 2：Notebook 中的 PEP Proxy 示意图。用户通过浏览器访问 Notebook 时，PEP Proxy 首先接到请求，向 Keycloak 验证当前访问的用户是否拥有权限（例如，是否是 Notebook 所在项目的成员）。如果验证通过，转发请求到真正的 Notebook 容器，否则拒绝该请求</figcaption>
+  <figcaption>Notebook 中的 PEP Proxy 示意图。用户通过浏览器访问 Notebook 时，PEP Proxy 首先接到请求，向 Keycloak 验证当前访问的用户是否拥有权限（例如，是否是 Notebook 所在项目的成员）。如果验证通过，转发请求到真正的 Notebook 容器，否则拒绝该请求</figcaption>
 </figure>
 
 以下面的 Notebook 为例：
+
+<details><summary><code class="hljs">tutorial.yaml</code></summary>
 
 ```yaml
 apiVersion: tensorstack.dev/v1beta1
@@ -296,12 +326,17 @@ status:
   url: https://proxy.nc201.kube.tensorstack.net/t9k/notebooks/projects/demo/name/tutorial/lab
 ```
 
-### 查看 PEP Proxy 运行状态
+</details>
 
-其底层 Pod 名称为 `managed-notebook-af483-0`，运行以下命令查看运行状态：
+### 运行状态
+
+根据 `status.pod.reference.name` 可知其 Pod 名称为 `managed-notebook-af483-0`，运行以下命令查看运行状态：
 
 ```bash
-$ kubectl get pod -n demo managed-notebook-af483-0
+kubectl get pod -n demo managed-notebook-af483-0
+```
+
+```
 NAME                       READY   STATUS    RESTARTS   AGE
 managed-notebook-af483-0   2/2     Running   0          130m
 ```
@@ -311,7 +346,9 @@ managed-notebook-af483-0   2/2     Running   0          130m
 查看 PEP Proxy 日志：
 
 ```bash
-$ kubectl logs -n demo managed-notebook-af483-0 -c pep-proxy
+kubectl logs -n demo managed-notebook-af483-0 -c pep-proxy
+```
+```
 [2024/03/01 06:56:22] [keycloak_authz.go:54] Permission granted when user admin requests /project:demo
 10.233.89.136:55468 - 3731cc0c-393c-4fdf-ae9a-a0b97b7535d4 - 8df824d1-ab3d-427e-ab4b-3f20a0eea3da [2024/03/01 06:56:22] proxy.nc201.kube.tensorstack.net GET / "/t9k/notebooks/projects/demo/name/tutorial/api/terminals?1709276182651" HTTP/1.1 "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36" 200 63 0.019
 [2024/03/01 06:56:23] [keycloak_authz.go:54] Permission granted when user admin requests /project:demo
@@ -320,13 +357,14 @@ $ kubectl logs -n demo managed-notebook-af483-0 -c pep-proxy
 10.233.89.136:55468 - b114b21e-6fad-43c9-9b96-7f851275e31e - 8df824d1-ab3d-427e-ab4b-3f20a0eea3da [2024/03/01 06:56:23] proxy.nc201.kube.tensorstack.net GET / "/t9k/notebooks/projects/demo/name/tutorial/api/contents/tutorial-examples/build-image/build-image-on-platform?content=1&1709276183493" HTTP/1.1 "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36" 200 1504 0.021
 ```
 
-### 查看 PEP Proxy 配置
+### 配置
 
-PEP Proxy 配置分为基本配置和 PEP 配置两部分，详见[附录：PEP Proxy 配置](./reference/pep-proxy-config.md)。
+PEP Proxy 配置分为**基本配置**和 **PEP 配置**两部分，详见 [附录：PEP Proxy 配置](./reference/pep-proxy-config.md)。
 
-查看该 Pod 详情，黄色高亮部分即为基本配置：
+查看该 Pod 详情，黄色高亮部分即为**基本配置**：
 
-<pre><div class="buttons"><button class="fa fa-copy clip-button" title="Copy to clipboard" aria-label="Copy to clipboard"><i class="tooltiptext"></i></button></div><code class="language-bash hljs">$ kubectl get pod -n demo managed-notebook-af483-0 -o yaml
+<details><summary><code class="hljs">notebook-pod.yaml</code></summary>
+<pre><code class="language-bash hljs">
 apiVersion: v1
 kind: Pod
 metadata:
@@ -537,10 +575,17 @@ status:
   startTime: <span class="hljs-string">"2024-03-01T06:54:34Z"</span>
 </code></pre>
 
-查看上述 Pod 绑定的 ConfigMap `managed-notebook-af483` 详情，其中存储了 PEP 配置：
+</details>
+
+查看上述 Pod 绑定的 ConfigMap `managed-notebook-af483` 详情，其中存储了 **PEP 配置**：
 
 ```bash
-$ kubectl get configmap -n demo managed-notebook-af483 -o yaml
+kubectl get configmap -n demo managed-notebook-af483 -o yaml
+```
+
+<details><summary><code class="hljs">notebook-configmap.yaml</code></summary>
+
+```yaml
 apiVersion: v1
 data:
   pep-config.yaml: |
@@ -572,3 +617,5 @@ metadata:
   resourceVersion: "716026628"
   uid: 19034602-d200-4c27-ab00-d39fb5b53de2
 ```
+
+</details>
