@@ -97,6 +97,13 @@ tensorstack.dev/component: alertmanager-config
 tensorstack.dev/component-type: system
 ```
 
+查看 `t9k-monitoring` 中的 AlertmanagerConfig：
+
+```bash
+kubectl -n t9k-monitoring get AlertmanagerConfig  \
+  -l tensorstack.dev/component=alertmanager-config,tensorstack.dev/component-type=system
+```
+
 #### 邮件接收
 
 想要通过邮件接受警报消息，管理员需要创建：
@@ -113,52 +120,13 @@ AlertmanagerConfig 需要设置 `spec.receivers.emailConfig` 字段，并提供�
 
 示例如下：
 
+<details><summary><code class="hljs">alert-mananger-config-email.yaml</code></summary>
+
 ```yaml
-apiVersion: monitoring.coreos.com/v1alpha1
-kind: AlertmanagerConfig
-metadata:
-labels:
-  tensorstack.dev/component: alertmanager-config
-  tensorstack.dev/component-type: system
-name: email
-namespace: t9k-monitoring
-spec:
- receivers:
- - emailConfigs:
-   - authPassword:
-       key: password
-       name: email-password
-     authUsername: <username-for-authentication>
-     from: <sender-address>
-     smarthost: <SMTP-server-host>
-     to: <alert-recipient-address>
-   name: t9k-sre
- route:
-   groupBy:
-   - alertname
-   matchers:
-   - name: severity
-     value: critical
-   - name: component
-     value: t9k-user
-     matchType: !=
-   - name: namespace
-     value: "|ceph.*|gatekeeper-system|gpu-operator|ingress-nginx|istio-system|keycloak-operator|knative-serving|kube-system|kubernetes-dashboard|t9k-monitoring|t9k-system"
-     matchType: "=~"
-   groupInterval: 5m
-   groupWait: 30s
-   receiver: t9k-sre
-   repeatInterval: 6h
----
-apiVersion: v1
-kind: Secret
-metadata:
- name: email-password
- namespace: t9k-monitoring
-type: Opaque
-data:
- password: <base64-encoded-password-for-authentication>
+{{#include ../../../assets/installation/online/product/alert-mananger-config-email.yaml}}
 ```
+
+</details>
 
 
 #### 微信接收
@@ -178,53 +146,13 @@ AlertmanagerConfig 需要设置 `spec.receivers.wechatConfig` 字段，并提供
 
 示例如下：
 
-```yaml
-apiVersion: monitoring.coreos.com/v1alpha1
-kind: AlertmanagerConfig
-metadata:
- labels:
-   tensorstack.dev/component: alertmanager-config
-   tensorstack.dev/component-type: system
- name: wechat-test
- namespace: t9k-monitoring
-spec:
- receivers:
- - wechatConfigs:
-   - corpID: <corpID>
-     agentID: <agentID>
-     toUser: <toUser>
-     message: '{{ template "wechat.t9k.message" . }}'
-     apiSecret:
-       name: wechat-apisecret
-       key: apiSecret
-   name: 'wechat'
- route:
-   groupBy:
-   - alertname
-   matchers:
-   - name: severity
-     value: critical|warning
-     matchType: =~
-   - name: component
-     value: t9k-user
-     matchType: !=
-   - name: namespace
-     value: "|ceph.*|gatekeeper-system|gpu-operator|ingress-nginx|istio-system|keycloak-operator|knative-serving|kube-system|kubernetes-dashboard|t9k-monitoring|t9k-system"
-   groupInterval: 5s
-   groupWait: 10s
-   receiver: wechat
-   repeatInterval: 6h
----
+<details><summary><code class="hljs">alert-mananger-config-wechat.yaml</code></summary>
 
-apiVersion: v1
-kind: Secret
-metadata:
- name: wechat-apisecret
- namespace: t9k-monitoring
-type: Opaque
-data:
- apiSecret: <base64-encoded-apiSecret-for-authentication>
+```yaml
+{{#include ../../../assets/installation/online/product/alert-mananger-config-wechat.yaml}}
 ```
+
+</details>
 
 #### 查看配置
 
@@ -293,7 +221,9 @@ curl -X PUT "http://localhost:9200/_template/logging_policy_template?pretty" \
 curl -X GET "http://localhost:9200/_ilm/policy"  | jq .\"t9k-policy\"
 ```
 
-```
+<details><summary><code class="hljs">output</code></summary>
+
+```json
 {
   "version": 1,
   "modified_date": "2023-09-21T06:40:38.863Z",
@@ -315,12 +245,14 @@ curl -X GET "http://localhost:9200/_ilm/policy"  | jq .\"t9k-policy\"
   }
 }
 ```
+</details>
 
 ```bash
 curl -G "http://localhost:9200/_template" | jq .\"logging_policy_template\" 
 ```
+<details><summary><code class="hljs">output</code></summary>
 
-```
+```json
 {
   "order": 0,
   "index_patterns": [
@@ -346,6 +278,8 @@ curl -G "http://localhost:9200/_template" | jq .\"logging_policy_template\"
   "aliases": {}
 }
 ```
+
+</details>
 
 ### 节点 Label
 
@@ -418,6 +352,8 @@ kubectl edit daemonset -n t9k-monitoring fluentd-ds
 
 修改挂载的 volumes：
 
+<details><summary><code class="hljs">fluentd-ds.yaml</code></summary>
+
 ```yaml
 apiVersion: apps/v1
 kind: DaemonSet
@@ -449,6 +385,8 @@ spec:
         name: mntsdcdockercontainers
       - ...
 ```
+
+</details>
 
 >注意： 所有节点的所有软链接上的路径都需要写到这里，因为所有节点上的 fluentd 都是这个 daemonset 创建的。
 >当然，也可以对每一个节点，单独创建 fluentd daemonset，但较麻烦。

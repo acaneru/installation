@@ -59,7 +59,12 @@ kubectl get pod -A -o wide | grep -Eiv "running|complete"
 查看所有的 helm chart releases：
 
 ```bash
-$ helm list -A -d
+helm list -A -d
+```
+
+<details><summary><code class="hljs">output</code></summary>
+
+```console
 NAME                            NAMESPACE       REVISION        UPDATED                                 STATUS          CHART                                   APP VERSION
 elasticsearch-single            t9k-monitoring  1               2023-11-19 04:42:24.939067616 +0000 UTC deployed        elasticsearch-7.13.4                    7.13.4
 t9k-gatekeeper                  t9k-system      2               2023-11-19 04:47:12.871874737 +0000 UTC deployed        gatekeeper-3.11.0                       v3.11.0
@@ -80,6 +85,8 @@ t9k-experiment-management       t9k-system      1               2023-11-19 04:58
 t9k-cluster-admin               t9k-system      1               2023-11-19 06:02:45.082613774 +0000 UTC deployed        t9k-cluster-admin-1.78.8                1.78.8
 t9k-aistore                     t9k-system      3               2023-11-19 06:37:17.947109956 +0000 UTC deployed        t9k-aistore-1.78.5                      1.78.5
 ```
+
+</details>
 
 ## 下一步
 

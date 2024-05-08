@@ -5,9 +5,10 @@
 ### 增加 node
 
 1. 修改 inventory.ini，下面是一个增加节点（nc15，worker node）的示例：
+    
+    <details><summary><code class="hljs">diff -u inventory-old.ini inventory-new.ini</code></summary>
 
     ```diff
-    diff -u inventory-old.ini inventory-new.ini
     --- inventory-old.ini
     +++ inventory-new.ini
     @@ -1,6 +1,7 @@
@@ -28,6 +29,8 @@
     nc14
     +nc15
     ```
+
+    </details>
 
 2. 更新 facts
 
@@ -63,7 +66,7 @@
 
 ### 移除 node
 
-<https://github.com/kubernetes-sigs/kubespray/blob/master/docs/nodes.md#addingreplacing-a-worker-node>
+> 参考：<https://github.com/kubernetes-sigs/kubespray/blob/master/docs/nodes.md#addingreplacing-a-worker-node>
 
 1. 更新 facts：
 
@@ -83,12 +86,12 @@
         -e node=nc12 --limit nc12 
     ```
 
-<aside class="note">
-<div class="title">注意</div>
+    <aside class="note">
+    <div class="title">注意</div>
 
-使用命令行参数 `-e` 设置 node 变量，指定要移除的节点。如果有多个节点需要移除，使用例如 `-e node=nc12,nc13 --limit nc12,nc13` 的格式指定。
+    使用命令行参数 `-e` 设置 node 变量，指定要移除的节点。如果有多个节点需要移除，使用例如 `-e node=nc12,nc13 --limit nc12,nc13` 的格式指定。
 
-</aside>
+    </aside>
 
 3. 修改 inventory 文件，删去已经移除的节点。
 
@@ -142,7 +145,7 @@ ansible-playbook ../kubespray/upgrade-cluster.yml \
     --vault-password-file=~/ansible/.vault-password.txt
 ```
 
-运行成功的 PLAY RECAP 示例：
+<details><summary><code class="hljs">运行成功的 PLAY RECAP 示例</code></summary>
 
 ```
 PLAY RECAP *********************************************
@@ -151,6 +154,8 @@ nc12                       : ok=483  changed=32   unreachable=0    failed=0    s
 nc14                       : ok=483  changed=32   unreachable=0    failed=0    skipped=814  rescued=0    ignored=1   
 nc15                       : ok=742  changed=61   unreachable=0    failed=0    skipped=1561 rescued=0    ignored=1
 ```
+
+</details>
 
 ## 参考
 
