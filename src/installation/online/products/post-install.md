@@ -44,13 +44,11 @@
 
 ### 创建默认队列
 
-如果集群部署了 T9k 调度器，你需要在集群管理页面：
-1. 为 T9k 调度器创建名为 default 的队列
-2. 修改 default 队列的配置，允许所有用户使用该队列
+如果集群部署了 T9k 调度器，您需要在集群管理页面：
+1. 为 T9k 调度器创建名为 `default` 的队列；
+2. 修改 default 队列的配置，允许所有用户使用该队列。
 
-首先打开**集群管理（Cluster Admin）** 页面（参考[登录管理员账号](#登录管理员账号)）
-
-点击**资源管理 > T9k 调度器 > 队列**，进入队列列表页面。
+打开**集群管理（Cluster Admin）** 页面（参考[登录管理员账号](#登录管理员账号)），点击**资源管理 > T9k 调度器 > 队列**，进入队列列表页面。
 
 <figure class="screenshot">
   <img alt="queue-list" src="../../../assets/installation/online/queue-list.png" />
