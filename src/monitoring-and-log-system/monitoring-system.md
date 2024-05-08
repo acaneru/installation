@@ -598,7 +598,7 @@ data:
     * `<corpID>`：企业微信的 Company ID
     * `<agentID>`：企业微信应用对应的 agentID
     * `<toUser>`：optional，想要发送给哪些用户，值是 @all 时表明发送给所有用户。
-1. 设置 Secret 的 `data.apiSecret` 字段，将企业微信的 API Secret 经 base64 编码后填写在这个字段上。具体如何获取 API Secret 请见[附录：配置企业微信](./reference/configure-wecom.md)。
+1. 设置 Secret 的 `data.apiSecret` 字段，将企业微信的 API Secret 经 base64 编码后填写在这个字段上。具体如何获取 API Secret 请见[附录：配置企业微信](./appendix/configure-wecom.md)。
 
 上述示例将 `spec.receivers[0].wechatConfigs[0].message` 字段设置为 '{{ template "wechat.t9k.message" . }}'，直接使用 wechat.t9k.message 消息模版，简化消息格式。
 

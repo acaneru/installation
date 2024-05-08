@@ -1,8 +1,10 @@
 # 配置企业微信
 
+本节介绍如何配置企业微信。
+
 ## 创建企业微信
 
-首先，需要创建一个<a target="_blank" rel="noopener noreferrer" href="https://work.weixin.qq.com>">企业微信</a>账号。
+首先，需要在  <a target="_blank" rel="noopener noreferrer" href="https://work.weixin.qq.com">https://work.weixin.qq.com</a> 创建一个企业微信账号。
 
 本示例使用 tensorstack 企业微信 ：
 

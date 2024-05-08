@@ -13,7 +13,7 @@
 
 ### 部署
 
-部署 ES 的文档：[K8s 组件](../installation/online/install-k8s-components/index.md)
+部署 ES 的文档：[K8s 组件](../installation/online/k8s-components/index.md)
 
 ### 修改配置
 
@@ -54,17 +54,17 @@ esConfig:
 使用以下命令更新 Elasticsearch 配置：
 
 ```bash
-$ helm upgrade elasticsearch-data \
-    oci://tsz.io/t9kcharts/elasticsearch \
-    -n t9k-monitoring \
-    --version 7.13.4 \
-    --values data.yaml
+helm upgrade elasticsearch-data \
+  oci://tsz.io/t9kcharts/elasticsearch \
+  -n t9k-monitoring \
+  --version 7.13.4 \
+  --values data.yaml
 ```
 
 使用该命令不能修改 PVC 的大小，请手动修改 pvc：
 
 ```bash
-$ kubectl edit pvc -n t9k-monitoring elasticsearch-data-elasticsearch-data-0
+kubectl edit pvc -n t9k-monitoring elasticsearch-data-elasticsearch-data-0
 ```
 
 ### 配置日志生命周期
@@ -184,8 +184,10 @@ $ kubectl -n t9k-monitoring get configmap fluentd-ds
 运行下列命令可以修改 Fluentd 配置：
 
 ```bash
-$ kubectl -n t9k-monitoring edit configmap fluentd-ds
+kubectl -n t9k-monitoring edit configmap fluentd-ds
 ```
+
+<details><summary><code class="hljs">configmap-fluentd-ds.yaml</code></summary>
 
 ```yaml
 kind: ConfigMap
@@ -244,6 +246,8 @@ data:
     </match>
 ...
 ```
+
+</details>
 
 在上述配置中：
 
@@ -393,12 +397,18 @@ Event Router 将集群中所有事件以日志形式，打印到标准输出中�
 查看 Event Router 运行状态：
 
 ```bash
-$ kubectl -n t9k-monitoring get deploy eventrouter
+kubectl -n t9k-monitoring get deploy eventrouter
+```
+
+```
 NAME           READY   UP-TO-DATE   AVAILABLE   AGE
 eventrouter   1/1     1            1           239d
-$ kubectl get pods -n t9k-monitoring -l app=eventrouter
-NAME                          READY   STATUS    RESTARTS   AGE
-eventrouter-7949d78bf-vd2tm   1/1     Running   0          75m
+```
+
+查看日志：
+
+```bash
+kubectl logs -n t9k-monitoring -l app=eventrouter --tail=100 -f
 ```
 
 ## Event Controller
@@ -410,7 +420,7 @@ Event controller 负责监听系统中一些资源的生命周期变化，然后
 在 project-operator-event-ctl-config 中配置 Event Controller 要监控的集群资源，通过以下命令查看 Event Controller 配置：
 
 ```bash
-kubectl -n t9k-system get configmap project-operator-event-ctl-config
+kubectl -n t9k-system get configmap project-operator-event-ctl-config -o yaml
 ```
 
 ### 修改配置
@@ -439,5 +449,17 @@ kind: ConfigMap
 配置修改后，需要重启 project operator 使配置生效：
 
 ```bash
-kubectl delete -n t9k-system -l control-plane=project-ctl
+kubectl -n t9k-system rollout restart deploy/project-operator-controller-manager 
+```
+
+查看 Pod：
+
+```
+kubectl -n t9k-system get pod -l control-plane=project-ctl -w
+```
+
+确认 log 正常：
+
+```bash
+kubectl -n t9k-system logs -l control-plane=project-ctl --tail=-1 -f
 ```
