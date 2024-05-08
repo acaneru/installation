@@ -1,5 +1,10 @@
 # 安装 K8s
 
+```
+TODO：
+    1. 描述如何设置 CRI, CNI, Ingress, LoadBalancer 等的选项。
+```
+
 ## 目的
 
 完成一个最基本的 K8s 集群安装。
@@ -10,9 +15,7 @@
 
 ## 配置
 
- TODO：描述如何设置 CRI, CNI, Ingress, LoadBalancer 等的选项。
-
-## 安装集群
+## 安装 K8s
 
 进入为此次安装准备的 inventory 目录：
 
@@ -51,7 +54,7 @@ ansible-playbook ../kubespray/cluster.yml \
 ```
 </aside>
 
-> 使用 ansible 安装 K8s 过程的更多详情，请参考：[安装 K8s 注释 > 过程解释](../appendix/k8s-install-notes.md)
+> 使用 ansible 安装 K8s 过程的更多详情，请参考：[安装 K8s 注释 > 过程解释](../appendix/k8s-install-notes.md#过程解释)
 
 ## 获取 kubeconfig
 
@@ -109,3 +112,7 @@ KUBECONFIG=~/.kube/example-cluster.conf kubectl get node
 ## 下一步
 
 - [设置集群存储](./k8s-storage.md)
+
+## 参考
+
+- [使用 ansible 安装 K8s 过程的注释](../appendix/k8s-install-notes.md)

@@ -24,7 +24,7 @@ ansible-inventory -i inventory/inventory.ini --list
 ansible all -m ping -i inventory/inventory.ini
 ```
 
-## 配置节点
+## 准备节点
 
 安装 K8s 之前，需要做如下准备工作：
 
@@ -101,4 +101,4 @@ chrony_client_ip_range:
 
 ## 下一步
 
-准备好节点之后，我们可进行[安装 K8s](./k8s-install.md) 的工作。
+准备好节点之后，我们可进行 [安装 K8s](./k8s-install.md) 的工作。

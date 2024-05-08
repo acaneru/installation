@@ -6,10 +6,11 @@
 
 * [安装](installation/index.md)
     * [在线安装](installation/online/index.md)
-        * [准备 Inventory](installation/online/prepare-inventory.md)
+        * [设置 Inventory](installation/online/prepare-inventory.md)
+          * [高级设置](installation/online/inventory-advanced.md)
         * [准备节点](installation/online/prepare-nodes.md)
         * [安装 K8s](installation/online/k8s-index.md)
-          * [基本设置](installation/online/k8s-install.md) 
+          * [基本安装](installation/online/k8s-install.md) 
           * [设置集群存储](installation/online/k8s-storage.md)
           * [集群维护](installation/online/k8-ops.md)
           * [常见问题](installation/online/k8s-install-faqs.md)

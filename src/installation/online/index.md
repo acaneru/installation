@@ -15,7 +15,7 @@
 
 ## 下一步
 
-我们首先准备工具和环境：[准备 Inventory](./prepare-inventory.md)。
+我们首先准备工具和环境：[设置 Inventory](./prepare-inventory.md)。
 
 ## 参考
 
