@@ -50,6 +50,7 @@
         * [在线安装 Docker Compose](installation/appendix/install-docker-compose.md)
         * [配置 Docker Insecure Registry](installation/appendix/configure-docker-insecure-registry.md)
         * [在线安装 s3cmd](installation/appendix/install-s3cmd.md)
+        * [安装 K8s 注释](installation/appendix/k8s-install-notes.md)
         * [生成 K8s 文件和镜像列表](installation/appendix/generate-k8s-file-and-image-list.md)
         * [生成 T9k 产品镜像列表](installation/appendix/generate-t9k-product-image-list.md)
         * [Helm Chart 修改](installation/appendix/modify-helm-chart.md)
