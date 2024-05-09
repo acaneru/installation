@@ -1,10 +1,10 @@
-# Duration Keeper
+# 时长限制（Duration Keeper）
 
 ```
 TODO: 说明如何在系统中关闭 Duration Keeper。
 ```
 
-Duration Keeper 限制 Pod 的最大运行时长。例如，如果管理员为一个 Queue 设置了最大运行时长，则当使用其资源的 Pod 运行时间超出时，Duration Keeper 将尝试终止此 Pod。
+时长限制（Duration Keeper） 限制 Pod 的最大运行时长。例如，如果管理员为一个 Queue 设置了最大运行时长，则当使用其资源的 Pod 运行时间超出时，Duration Keeper 将尝试终止此 Pod。
 
 Duration Keeper 遵守下列规则：
 

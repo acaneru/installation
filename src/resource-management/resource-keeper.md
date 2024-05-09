@@ -1,6 +1,6 @@
-# Resource Keeper
+# 资源回收（Resource Keeper）
 
-Resource Keeper 是一种资源回收机制。当一些特定类型的工作负载处于空闲状态超过一定时间之后，Resource Keeper 将工作负载标记为暂停状态并回收其占用的计算资源，用户需要时可手动重启工作负载。
+资源回收（Resource Keeper）是一种资源回收机制。当一些特定类型的工作负载处于空闲状态超过一定时间之后，Resource Keeper 将工作负载标记为暂停状态并回收其占用的计算资源，用户需要时可手动重启工作负载。
 
 目前，Resource Keeper 支持以下三种类型的工作负载：
 

@@ -4,7 +4,7 @@
 
 <a target="_blank" rel="noopener noreferrer" href="https://open-policy-agent.github.io/gatekeeper/website/docs">Gatekeeper</a>  是一个用于执行准入策略的 Webhook 认证器 (Validating Webhook)，实现对 Kubernetes 集群的准入控制。Gatekeeper 可以帮助集群管理员实施和执行各种治理策略，确保集群中的资源满足特定的合规标准和最佳实践。
 
-> 快速了解 Gatekeeper 原理，请参考：[Gatekeeper 基本介绍](../appendix/gatekeeper.md)
+> 快速了解 Gatekeeper 原理，请参考：[Gatekeeper 基本介绍](./appendix/gatekeeper.md)
 
 ## 运行状态
 
@@ -77,7 +77,7 @@ https://t9k-admission-provider.t9k-system:443/resource_shape/info
 https://t9k-admission-provider.t9k-system:443/workload/container_resources
 ```
 
-> 上述 4 个默认部署的 provider 均由 T9k Admission Provider 提供服务，T9k Admission Provider 详情见 [附录：T9k Admission Provider](../appendix/t9k-admission-provider.md)。
+> 上述 4 个默认部署的 provider 均由 T9k Admission Provider 提供服务，T9k Admission Provider 详情见 [附录：T9k Admission Provider](./appendix/t9k-admission-provider.md)。
 
 运行这些 provider 的 Pod 及 Service：
 
@@ -112,7 +112,7 @@ kubectl -n t9k-system logs -l app=t9k-admission-provider --tail=50 -f
 
 T9k 会在集群内部署一些默认的 ConstraintTemplate，并会为大多数 ConstraintTemplate 部署一个默认的 Constraint。管理员可以按需修改，不建议管理员删除这些 ConstraintTemplate，如果你想要关闭对应的验证规则，删除对应的 Constraint 即可。
 
-T9k 提供的验证规则列表见 [附录：T9k 验证规则列表](../appendix/t9k-verification-rules.md)。
+T9k 提供的验证规则列表见 [附录：T9k 验证规则列表](./appendix/t9k-verification-rules.md)。
 
 
 运行下列命令可以查看已有 ConstraintTemplate：
@@ -187,14 +187,14 @@ Gatekeeper 生成 constraint CRD 时，会将 CRD 的 `spec.names.categories` �
 
 常见的修改方法有：
 
-1. 修改 Constraint 的 [`spec.enforcementAction`](../reference/gatekeeper.md#enforcementaction) 字段，来控制 Validation 如何处理违规资源对象。
-1. 修改 Constraint 的 [`spec.match`](../reference/gatekeeper.md#match) 字段，控制验证规则作用于哪些资源对象、哪些 namespace。
+1. 修改 Constraint 的 [`spec.enforcementAction`](./appendix/gatekeeper.md#enforcementaction) 字段，来控制 Validation 如何处理违规资源对象。
+1. 修改 Constraint 的 [`spec.match`](./appendix/gatekeeper.md#match) 字段，控制验证规则作用于哪些资源对象、哪些 namespace。
 
 ### 禁用
 
 有下列几种方法可以使得验证规则失效：
 
-1. 修改 Constraint 的 `spec.enforcementAction` 为 warn 或 dryrun。详情见[附录：Constraint Spec](../reference/gatekeeper.md#constraint)。
+1. 修改 Constraint 的 `spec.enforcementAction` 为 warn 或 dryrun。详情见[附录：Constraint Spec](./appendix/gatekeeper.md#constraint)。
 2. 删除 Constraint 即可禁用其对应的验证规则。以默认验证规则为例，运行下列命令可以禁用验证规则 `disallowunauthorizeduseofqueue.constraints.gatekeeper.sh/all-workloads`：
 
 ```bash
@@ -275,7 +275,7 @@ kubectl get provider queue-authz -o yaml
 kubectl get provider workload-info  -o yaml
 ```
 
-手动生成 ssl 证书的方法见 [附录：手动生成 TSL 证书](../reference/generate-tsl-cert.md)。
+手动生成 ssl 证书的方法见 [附录：手动生成 TSL 证书](./appendix/generate-tsl-cert.md)。
 
 
 ## 参考
