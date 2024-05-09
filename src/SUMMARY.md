@@ -69,6 +69,7 @@
         * [验证控制](resource-management/admission-control/validation.md)
         * [变更控制](resource-management/admission-control/mutation.md)
     * [T9k Scheduler](resource-management/t9k-scheduler.md)
+      * [Queue](resource-management/queue.md)
     * [Duration Keeper](resource-management/duration-keeper.md)
     * [Resource Keeper](resource-management/resource-keeper.md)
     * [项目资源配额](resource-management/project-resource-quota.md)
