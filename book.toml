@@ -8,7 +8,7 @@ title = "TensorStack AI 计算平台 - 管理员手册"
 [output.html]
 additional-css = ["theme/sidebar.css", "theme/custom.css"]
 additional-js = ["theme/sidebar.js"]
-curly-quotes = true
+smart-punctuation = true
 
 [output.html.fold]
 enable = false
