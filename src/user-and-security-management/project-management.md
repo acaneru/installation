@@ -26,13 +26,18 @@
   <img alt="edit-project-member" src="../assets/user-and-security-management/project-management/edit-project-member.png" />
 </figure>
 
-## 网络策略
+## 管理网络策略
 
-管理员可以限制一个 Pod 能够通信的实体，可基于命名空间、标签、IP 地址、端口等信息来进行限制，包括上行方向（egress）和下行方向（ingress）。此功能通过创建一个 <a target="_blank" rel="noopener noreferrer" href="https://kubernetes.io/docs/concepts/services-networking/network-policies/">Kubernetes Network Policy</a> 资源实现。
+管理员可以制定策略以限制 Pod 能够通信的实体，包括出口方向（egress）和入口方向（ingress）的网络通信。此功能通过创建 <a target="_blank" rel="noopener noreferrer" href="https://kubernetes.io/docs/concepts/services-networking/network-policies/">Kubernetes Network Policy</a> 资源实现，可基于命名空间、标签、IP 地址、端口等信息来进行限制。
 
-### 管理项目网络策略
+### 项目策略
 
-默认情况下，每个项目会创建如下 NetworkPolicy（以 demo 项目为例）：
+默认情况下，T9k 系统会给每个项目自动地创建如下 NetworkPolicy 以达到如下目的：
+
+1. 出口（egress）流量，不做限制；
+1. 入口（ingress）方向，仅允许来自系统 namespace（t9k-system、kube-system、istio-system、t9k-monitoring、knative-serving） 以及该项目自身之间的网络请求；不同项目之间通信被禁止。
+
+以 demo 项目为例：
 
 ```yaml
 kind: NetworkPolicy
@@ -66,10 +71,6 @@ spec:
    - Ingress
 ```
 
-其中：
-
-* 只对下行（ingress）流量做限制，不对上行（egress）流量做限制。
-* 下行方向仅允许来自 t9k-system、kube-system、istio-system、t9k-monitoring、knative-serving 以及该项目本身的网络请求。
 
 在项目详情页面，点击**编辑网络策略**，可以修改上述默认网络策略：
 
@@ -83,12 +84,11 @@ spec:
   <img alt="edit-project-network" src="../assets/user-and-security-management/project-management/edit-project-network.png" />
 </figure>
 
-### 管理所有网络策略
-
-进入集群管理控制台，在左侧导航菜单中点击**安全管理 > 网络策略**进入网络策略管理页面：
+### 所有网络策略
+管理员也可以方便地管理系统中所有的 Network Policies：进入集群管理控制台，在左侧导航菜单中点击**安全管理 > 网络策略**进入网络策略管理页面：
 
 <figure class="screenshot">
   <img alt="network-policy" src="../assets/user-and-security-management/project-management/network-policy.png" />
 </figure>
 
-这里列出了集群中所有的 NetworkPolicy 资源，您可以在此创建、编辑、删除 NetworkPolicy。
+这里列出了集群中所有的 NetworkPolicy 资源，可以在此创建、编辑、删除 NetworkPolicy。

@@ -38,7 +38,7 @@
   <img alt="set-user-group" src="../assets/user-and-security-management/user-management/set-user-group.png" />
 </figure>
 
-### 授予用户权限
+### 授予权限
 
 在用户详情页面点击**角色**，来为该用户设置一些角色，授予该用户这些角色的权限：
 
@@ -59,7 +59,7 @@
 * cost-admin：计费系统的管理员，拥有查看各个项目费用、编辑资源价格的权限。
 * cost-monitor：计费系统的监控管理员，拥有查看各个项目费用的权限。
 
-### 重设用户密码
+### 重设密码
 
 在用户详情页面点击安全凭证，来为该用户重新设置密码（注：无需原密码）：
 

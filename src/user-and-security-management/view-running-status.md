@@ -348,6 +348,8 @@ managed-notebook-af483-0   2/2     Running   0          130m
 ```bash
 kubectl logs -n demo managed-notebook-af483-0 -c pep-proxy
 ```
+<details><summary><code class="hljs">pep-proxy.log</code></summary>
+
 ```
 [2024/03/01 06:56:22] [keycloak_authz.go:54] Permission granted when user admin requests /project:demo
 10.233.89.136:55468 - 3731cc0c-393c-4fdf-ae9a-a0b97b7535d4 - 8df824d1-ab3d-427e-ab4b-3f20a0eea3da [2024/03/01 06:56:22] proxy.nc201.kube.tensorstack.net GET / "/t9k/notebooks/projects/demo/name/tutorial/api/terminals?1709276182651" HTTP/1.1 "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36" 200 63 0.019
@@ -356,6 +358,8 @@ kubectl logs -n demo managed-notebook-af483-0 -c pep-proxy
 [2024/03/01 06:56:23] [keycloak_authz.go:54] Permission granted when user admin requests /project:demo
 10.233.89.136:55468 - b114b21e-6fad-43c9-9b96-7f851275e31e - 8df824d1-ab3d-427e-ab4b-3f20a0eea3da [2024/03/01 06:56:23] proxy.nc201.kube.tensorstack.net GET / "/t9k/notebooks/projects/demo/name/tutorial/api/contents/tutorial-examples/build-image/build-image-on-platform?content=1&1709276183493" HTTP/1.1 "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36" 200 1504 0.021
 ```
+
+</details>
 
 ### 配置
 
