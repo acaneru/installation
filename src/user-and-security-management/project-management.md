@@ -101,5 +101,5 @@ spec:
 
 ## 参考
 
-- [项目控制器](../resource-management/appendix/project-controller.md)
-- [事件控制器](../resource-management/appendix/event-controller.md)
+- [项目控制器](./project-controller.md)
+- [事件控制器](./event-controller.md)

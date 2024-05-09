@@ -7,7 +7,7 @@
 
 管理员在 `Project` 中支持设置资源配额，Project 控制器（controller） 则负责具体实施这些配置。
 
-查看详情： [项目控制器](./appendix/project-controller.md)。
+查看详情： [项目控制器](../user-and-security-management/project-controller.md)。
 
 </aside>
 
