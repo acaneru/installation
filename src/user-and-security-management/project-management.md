@@ -26,7 +26,7 @@
   <img alt="edit-project-member" src="../assets/user-and-security-management/project-management/edit-project-member.png" />
 </figure>
 
-## 管理网络策略
+## 网络策略
 
 管理员可以制定策略以限制 Pod 能够通信的实体，包括出口方向（egress）和入口方向（ingress）的网络通信。此功能通过创建 <a target="_blank" rel="noopener noreferrer" href="https://kubernetes.io/docs/concepts/services-networking/network-policies/">Kubernetes Network Policy</a> 资源实现，可基于命名空间、标签、IP 地址、端口等信息来进行限制。
 
@@ -92,3 +92,14 @@ spec:
 </figure>
 
 这里列出了集群中所有的 NetworkPolicy 资源，可以在此创建、编辑、删除 NetworkPolicy。
+
+## 资源配额
+
+通过设置项目（Project）资源配额，管理员可以限制该项目中可使用的计算资源（CPU, Memory, GPU, 存储等） 上限。
+
+查看详情： [设置项目（Project）资源配额](../resource-management/project-resource-quota.md)。
+
+## 参考
+
+- [项目控制器](../resource-management/appendix/project-controller.md)
+- [事件控制器](../resource-management/appendix/event-controller.md)
