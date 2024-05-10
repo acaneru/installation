@@ -2,18 +2,34 @@
 
 ## 查看运行状态
 
-查看 AIStore 运行状态：
+运行状态：
 
 ```bash
-$ kubectl get deploy -n t9k-system aistore-server
-NAME             READY   UP-TO-DATE   AVAILABLE   AGE
-aistore-server   1/1     1            1           26d
+kubectl get deploy -n t9k-system aistore-server
 ```
 
-查看 AIStore 的日志：
+```
+NAME             READY   UP-TO-DATE   AVAILABLE   AGE
+aistore-server   1/1     1            1           6d
+```
 
 ```bash
-$ kubectl logs -n t9k-system -l app=aistore-server -c aistore-server --tail=100 -f
+kubectl get pods -n t9k-system -l app=aistore-server
+```
+
+```
+NAME                              READY   STATUS    RESTARTS   AGE
+aistore-server-747d84854f-hc9nq   2/2     Running   0          6d
+```
+
+日志：
+
+```bash
+kubectl logs -n t9k-system -l app=aistore-server -c aistore-server --tail=100 -f
+```
+
+<details><summary><code class="hljs">output</code></summary>
+
 [read client config] {Log:{V:4 LogColors:false ShowErrorTrace:true} Postgres:{Host:aistore-postgresql.t9k-system Database:aistore Port:5432 User:postgres Password:******} LakeFS:{ServiceName:aistore-lakefs Address: Bucket:t9k-aistore-new AccessID:****** SecretKey:****** UnderlyingAddress:http://100.64.4.104 UnderlyingAccessID:****** UnderlyingSecretKey:****** ExternalAddress:https://lakefs.nc201.t9kcloud.cn} Token:{JWKsURI:https://kc.kube.tensorstack.net/auth/realms/t9k-realm/protocol/openid-connect/certs UserKey:******} SysNamespace:t9k-system}
 [init logger] {V:4 LogColors:false ShowErrorTrace:true}
 [new jwk client] jwks: https://kc.kube.tensorstack.net/auth/realms/t9k-realm/protocol/openid-connect/certs
@@ -25,6 +41,8 @@ I4 12/26 03:02:22 logger.go:28 aistore/LakeFS [LakeFS Request] method=GET reqHea
 I0 12/26 03:02:22 client.go:128 aistore/LakeFS [global repository already exists] repository={"creation_date":1697014131,"default_branch":"main","id":"t9k-aistore","storage_namespace":"s3://t9k-aistore-new/t9k-aistore"}
 ...
 ```
+
+</details>
 
 ## 查看配置
 
