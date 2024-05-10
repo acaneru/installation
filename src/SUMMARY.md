@@ -110,6 +110,7 @@
     * [费用和价格](cost/view-costs-and-prices.md)
 * [数据备份](data-backup/index.md)
     * [velero 备份](data-backup/velero-backup.md)
+        * [已知问题](data-backup/velero-backup-issues.md)
     * [etcd 备份](data-backup/etcd-backup.md)
     * [PostgreSQL 备份](data-backup/postgres-backup.md)
     * [附录](data-backup/appendix/index.md)

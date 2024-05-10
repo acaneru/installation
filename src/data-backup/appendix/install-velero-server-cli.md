@@ -1,11 +1,20 @@
 # 安装 velero server/cli
 
-从 <a target="_blank" rel="noopener noreferrer" href="https://github.com/vmware-tanzu/velero/releases/tag/v1.12.1">github release</a> 中下载 velero cli v1.12.1 并移动到 /usr/local/bin：
+从 <a target="_blank" rel="noopener noreferrer" href="https://github.com/vmware-tanzu/velero/releases/tag/v1.12.1">github release</a> 中下载 velero cli v1.12.1 并移动到 `/usr/local/bin`：
 
 ```bash
-$ which velero
+which velero
+```
+
+```
 /usr/local/bin/velero
-$ velero version
+```
+
+```bash
+velero version
+```
+
+```
 Client:
 	Version: v1.12.1
 	Git commit: 5c4fdfe147357ec7b908339f4516cd96d6b97c61
@@ -15,18 +24,23 @@ Client:
 启用 csi 功能（<a target="_blank" rel="noopener noreferrer" href="https://velero.io/docs/v1.12/csi/#installing-velero-with-csi-support">参考</a>）：
 
 ```bash
-$ velero client config set features=EnableCSI
+velero client config set features=EnableCSI
 ```
 
 通过以下命令安装 velero server，其中需要提供 s3 服务的 url、bucket、access key、secret key，用于存储所备份的 yaml 文件：
 
 ```bash
-$ cat ./credentials-velero
+cat ./credentials-velero
+```
+
+```
 [default]
 aws_access_key_id = <access-key>
 aws_secret_access_key = <secret-key>
+```
 
-$ velero install \
+```
+velero install \
 --features=EnableCSI \
 --provider aws \
 --plugins velero/velero-plugin-for-aws:v1.8.1,velero/velero-plugin-for-csi:v0.6.1 \
@@ -39,7 +53,10 @@ $ velero install \
 查看 velero server：
 
 ```bash
-$ kubectl get pod -n velero
+kubectl get pod -n velero
+```
+
+```
 NAME                      READY   STATUS    RESTARTS   AGE
 velero-758958764c-fw2x4   1/1     Running   0          76s
 ```
@@ -47,7 +64,10 @@ velero-758958764c-fw2x4   1/1     Running   0          76s
 查看 BackupStorageLocation：
 
 ```bash
-$ kubectl get BackupStorageLocation -n velero default -o yaml
+kubectl get BackupStorageLocation -n velero default -o yaml
+```
+
+```yaml
 apiVersion: velero.io/v1
 kind: BackupStorageLocation
 metadata:
@@ -77,7 +97,10 @@ status:
 查看 VolumeSnapshotLocation：
 
 ```bash
-$ kubectl get VolumeSnapshotLocation -n velero default -o yaml
+kubectl get VolumeSnapshotLocation -n velero default -o yaml
+```
+
+```yaml
 apiVersion: velero.io/v1
 kind: VolumeSnapshotLocation
 metadata:

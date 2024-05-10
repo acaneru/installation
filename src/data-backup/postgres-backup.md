@@ -58,11 +58,18 @@ psql 和 pg_dump 等工具可在 <a target="_blank" rel="noopener noreferrer" hr
 数据库对应集群中的资源：
 
 ```bash
-% kubectl get pods -n t9k-system -l app=keycloak -l component=database
+kubectl get pods -n t9k-system -l app=keycloak -l component=database
+```
+
+```
 NAME                                   READY   STATUS    RESTARTS   AGE
 keycloak-postgresql-76b66864bd-dlddd   1/1     Running   0          2d20h
+```
 
-% kubectl get service -n t9k-system keycloak-postgresql
+```bash
+kubectl get service -n t9k-system keycloak-postgresql
+```
+```
 NAME                  TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)    AGE
 keycloak-postgresql   ClusterIP   10.233.5.90   <none>        5432/TCP   55d
 ```
@@ -121,11 +128,17 @@ apikey=> \d
 数据库对应集群中的资源：
 
 ```bash
-% kubectl get pods -n t9k-system -l app.kubernetes.io/instance=aistore-postgresql
+kubectl get pods -n t9k-system -l app.kubernetes.io/instance=aistore-postgresql
+```
+
+```
 NAME                   READY   STATUS    RESTARTS   AGE
 aistore-postgresql-0   1/1     Running   0          11d
-
-% kubectl get service -n t9k-system aistore-postgresql
+```
+```bash
+kubectl get service -n t9k-system aistore-postgresql
+```
+```
 NAME                 TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
 aistore-postgresql   ClusterIP   10.233.48.204   <none>        5432/TCP   53d
 ```
@@ -186,11 +199,19 @@ aistore=# \d
 数据库对应集群中的资源：
 
 ```bash
-% kubectl get pods -n t9k-system -l app.kubernetes.io/instance=cost-server-postgresql
+kubectl get pods -n t9k-system -l app.kubernetes.io/instance=cost-server-postgresql
+```
+
+```
 NAME                       READY   STATUS    RESTARTS   AGE
 cost-server-postgresql-0   1/1     Running   0          9d
+```
 
-% kubectl get service -n t9k-system cost-server-postgresql
+```bash
+kubectl get service -n t9k-system cost-server-postgresql
+```
+
+```
 NAME                     TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE
 cost-server-postgresql   ClusterIP   10.233.25.58   <none>        5432/TCP   9d
 ```
