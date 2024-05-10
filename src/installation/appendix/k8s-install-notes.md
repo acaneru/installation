@@ -12,11 +12,11 @@ ansible-playbook ../kubespray/playbooks/cluster.yml \
     --list-tasks
 ```
 
-### 安装时常
+### 安装时长
 
 安装 K8s 集群所需要的时间受网络下载速度（主要因素）、节点性能、节点当前状态影响。
 
-初次运行该脚本的用时通常在 30 分钟到 1 小时范围内。其中，命令行工具、镜像等内容的下载约 25 分钟，下载之外的运行时间约 20 分钟。
+初次运行该脚本的用时通常在 30 分钟到 1 小时范围内。其中，命令行工具、镜像等内容的下载约 25 分钟，下载之外的运行时间约 20 分钟。但在网络环境较差的情况下，下载时间可能会延长到数个小时。
 
 ### 安装进度
 
@@ -30,6 +30,7 @@ changed: [nc11]
 changed: [nuc]
 changed: [nc14]
 ```
+
 
 ### 查看结果
 
@@ -48,10 +49,13 @@ nuc                        : ok=728  changed=45   unreachable=0    failed=0    s
 如果出现异常，需进一步检查：
 
 1. unreachable: 如果有节点显示为不可达，那么您应该检查该节点状态和网络连接。
-2. failed: 如果有任务失败，那么您应该检查失败原因，并尝试解决问题。
-3. ignored: 如果有错误被忽略，那么您应该检查忽略原因，并确定是否需要采取进一步的措施。这一步可以参考[常见 ignored fatal](https://docs.google.com/document/d/13X6vAjNVKEtzG6H5ydSNPcMx3Sbzzh1LFaFA-UKqBIo/edit#heading=h.rkmh2bn7pw2c)。
+2. failed: 如果有任务失败，那么您应该检查错误原因，并尝试解决问题。
+3. ignored: 如果有错误被忽略，那么您应该检查错误信息和忽略原因，并确定是否需要采取进一步的措施。
 
-如果安装完成后，部分节点的 unreachable 或 failed 不为 0，则需要处理错误。
+Kubespray 运行过程中一些错误可被忽略 （ignored） 。这些被忽略的错误并不会影响 Kubespray 正常运行和安装 K8s 集群（但是会显示在 PLAY RECAP 的 `ignored` 项中）。
+
+如果部分节点的 unreachable 或 failed 异常数量不为 0，则该节点的 K8s 安装失败，需要处理错误。
+
 
 ## 常见失败原因
 

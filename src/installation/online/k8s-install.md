@@ -15,6 +15,31 @@ TODO：
 
 ## 配置
 
+本章描述如何设置 K8s 安装使用的版本, 容器运行时, CNI 插件, Ingress, LoadBalancer 等选项。你可以通过修改 inventory 中的变量来配置上述选项。这些变量位于 inventory 目录中 `inventory/group_vars/`。
+
+> 详细的说明请参考文件中的注释以及相应版本的 Kubespray 文档 [Configurable Parameters in Kubespray](https://github.com/kubernetes-sigs/kubespray/blob/master/docs/vars.md)。下面仅列出较为重要的一些设置。
+
+### k8s-cluster.yml
+
+* `kube_version`: 设置 K8s 版本。
+* `container_manager`: 设置容器运行时。
+* `kube_network_plugin`: 设置 CNI 插件。
+* `kube_proxy_mode`: 设置 Kube proxy 代理模式。
+* `kube_service_addresses`: 分配给 service 的 IP 地址范围。
+* `kube_pods_subnet`: 分配给 Pod 的 IP 地址范围。
+* `kube_vip_enabled`: 启用 kube-vip，详见 [kube-vip](https://github.com/kubernetes-sigs/kubespray/blob/master/docs/kube-vip.md)。
+* `loadbalancer_apiserver`: 设置 apiserver 的负载均衡器，详见 [HA endpoints for K8s](https://github.com/kubernetes-sigs/kubespray/blob/master/docs/ha-mode.md)。
+
+### addons.yml
+
+* `ingress_nginx_enabled`: 启用 Ingress NGINX 功能（在安装 K8s 集群后自动安装 Ingress NGINX 作为 ingress 控制器）。
+* `helm_enabled`: 在 K8s 控制节点按章 helm 命令行工具。
+* `metrics_server_enabled`: 启用 Metrics Server 功能。
+
+### all.yml
+
+* `upstream_dns_servers`: 设置集群使用的上游 DNS 服务器，建议与当前环境中的 DNS 配置一致。
+
 ## 安装 K8s
 
 进入为此次安装准备的 inventory 目录：
@@ -55,6 +80,7 @@ ansible-playbook ../kubespray/cluster.yml \
 </aside>
 
 > 使用 ansible 安装 K8s 过程的更多详情，请参考：[安装 K8s 注释 > 过程解释](../appendix/k8s-install-notes.md#过程解释)
+
 
 ## 获取 kubeconfig
 
