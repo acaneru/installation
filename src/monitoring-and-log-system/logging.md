@@ -11,7 +11,9 @@ TODO:
 
 系统由以下四个组件构成：
 
-* Elasticsearch：负责存储数据，并提供查询服务；
-* Fluentd：数据收集器，负责收集日志并发送给 ElasticSearch；
-* Event Router：收集集群事件，并将事件以日志形式打印出来，方便 Fluentd 收集；
-* Event Controller：负责监控各 Project 中的资源，生成相应事件。
+* [ElasticSearch](./es.md)：负责存储数据，并提供查询服务；
+* [Fluentd](./fluentd.md)：数据收集器，负责收集日志并发送给 ElasticSearch；
+* [Event Router](./event-router.md)：收集集群事件，并将事件以日志形式打印出来，方便日志系统收集；
+* [Event Controller](../user-and-security-management/event-controller.md)：负责监控各 Project 中的资源，生成相应事件 [1]。
+
+> [1] Event Controller 的配置/管理在 [项目管理 > 事件控制器](../user-and-security-management/event-controller.md) 中提供。

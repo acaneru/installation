@@ -96,7 +96,6 @@
         * [ElasticSearch](monitoring-and-log-system/es.md)
         * [Fluentd](monitoring-and-log-system/fluentd.md)
         * [Event Router](monitoring-and-log-system/event-router.md)
-        * [Event Controller](monitoring-and-log-system/event-controller.md)
     * [附录](monitoring-and-log-system/appendix/index.md)
         * [配置企业微信](monitoring-and-log-system/appendix/configure-wecom.md)
 * [AI data](ai-data/index.md)
