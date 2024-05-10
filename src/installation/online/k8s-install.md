@@ -17,7 +17,7 @@ TODO：
 
 本章描述如何设置 K8s 安装使用的版本, 容器运行时, CNI 插件, Ingress, LoadBalancer 等选项。你可以通过修改 inventory 中的变量来配置上述选项。这些变量位于 inventory 目录中 `inventory/group_vars/`。
 
-> 详细的说明请参考文件中的注释以及相应版本的 Kubespray 文档 [Configurable Parameters in Kubespray](https://github.com/kubernetes-sigs/kubespray/blob/master/docs/vars.md)。下面仅列出较为重要的一些设置。
+> 详细说明请参考 Kubespray 文档 [Configurable Parameters in Kubespray](https://github.com/kubernetes-sigs/kubespray/blob/master/docs/vars.md)。下面仅列出较为重要的一些设置。
 
 ### k8s-cluster.yml
 

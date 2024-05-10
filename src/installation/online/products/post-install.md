@@ -48,13 +48,13 @@
 1. 为 T9k 调度器创建名为 `default` 的队列；
 2. 修改 default 队列的配置，允许所有用户使用该队列。
 
-打开**集群管理（Cluster Admin）** 页面（参考[登录管理员账号](#登录管理员账号)），点击**资源管理 > T9k 调度器 > 队列**，进入队列列表页面。
+打开 **集群管理（Cluster Admin）** 页面（参考 [登录管理员账号](#登录管理员账号)），点击 **资源管理 > T9k 调度器 > 队列**，进入队列列表页面。
 
 <figure class="screenshot">
   <img alt="queue-list" src="../../../assets/installation/online/queue-list.png" />
 </figure>
 
-点击右上角的 **+** 来创建一个新队列，队列名称填写为 `default`，其他字段按需填写（参考 [设置 Queue 的属性](../../../resource-management/t9k-scheduler.md#设置-queue-的属性)）。
+点击右上角的 **+** 来创建一个新队列，队列名称填写为 `default`，其他字段按需填写（参考 [管理员手册 > 设置 Queue 的属性](../../../resource-management/queue.md#设置-queue-的属性)）。
 
 <figure class="screenshot">
   <img alt="queue-list" src="../../../assets/installation/online/create-queue.png" />
@@ -119,119 +119,9 @@
 
 ### 告警通知
 
-参考 [告警通知](../../../monitoring-and-log-system/monitoring-system.md#告警通知) 来配置系统，告警信息可以通过邮件、企业微信的形式发送给运维人员。
+参考 [管理员手册 > 告警通知](../../../monitoring-and-log-system/monitoring-system.md#告警通知) 来配置系统，告警信息可以通过邮件、企业微信的形式发送给运维人员。
 
 ## Logging 系统
-
-### 配置 ElasticSearch
-
-新部署好的 ElasticSearch 需要添加以下设置：
-
-1. index 的生命周期：30 天自动删除，防止数据过多
-1. timestamp 类型设置为纳秒级别
-
-```yaml
-# 将部署好的 ElasticSearch 暴露出来：
-kubectl -n t9k-monitoring port-forward service/elasticsearch-client 9200:9200
-
-# 发送如下请求创建 ILM Policy，用于自动清理创建时间超过 30 天的 index：
-curl -X PUT "http://localhost:9200/_ilm/policy/t9k-policy?pretty" \
-   -H 'Content-Type: application/json' \
-   -d '{
-    "policy": {                       
-      "phases": {
-        "hot": {                      
-          "actions": {}
-        },
-        "delete": {
-          "min_age": "30d",           
-          "actions": { "delete": {} }
-        }
-      }
-    }
-  }'
-
-# 创建 Template，使 ElasticSearch 自动将 ILM Policy 绑定到合适的 Index（t9k-deploy-log-、t9k-deploy-log-、t9k-deploy-log-、t9k-event-）上，并设置 timestamp 的类型（在搜索的时候，如果时间精度不够会导致顺序错误）：
-curl -X PUT "http://localhost:9200/_template/logging_policy_template?pretty" \
- -H 'Content-Type: application/json' \
- -d '{
-  "index_patterns": ["t9k-build-log-*", "t9k-deploy-log-*", "t9k-system-log-*", "t9k-event-*"],
-  "mappings": {
-    "properties": {
-      "@timestamp": {
-        "type": "date_nanos"
-      }
-    }
-  },
-  "settings": { "index.lifecycle.name": "t9k-policy" }
-}'
-```
-
-#### 验证
-
-```bash
-curl -X GET "http://localhost:9200/_ilm/policy"  | jq .\"t9k-policy\"
-```
-
-<details><summary><code class="hljs">output</code></summary>
-
-```json
-{
-  "version": 1,
-  "modified_date": "2023-09-21T06:40:38.863Z",
-  "policy": {
-    "phases": {
-      "hot": {
-        "min_age": "0ms",
-        "actions": {}
-      },
-      "delete": {
-        "min_age": "30d",
-        "actions": {
-          "delete": {
-            "delete_searchable_snapshot": true
-          }
-        }
-      }
-    }
-  }
-}
-```
-</details>
-
-```bash
-curl -G "http://localhost:9200/_template" | jq .\"logging_policy_template\" 
-```
-<details><summary><code class="hljs">output</code></summary>
-
-```json
-{
-  "order": 0,
-  "index_patterns": [
-    "t9k-build-log-*",
-    "t9k-deploy-log-*",
-    "t9k-system-log-*",
-    "t9k-event-*"
-  ],
-  "settings": {
-    "index": {
-      "lifecycle": {
-        "name": "t9k-policy"
-      }
-    }
-  },
-  "mappings": {
-    "properties": {
-      "@timestamp": {
-        "type": "date_nanos"
-      }
-    }
-  },
-  "aliases": {}
-}
-```
-
-</details>
 
 ### 节点 Label
 
@@ -251,143 +141,25 @@ kubectl get node -l node-role.kubernetes.io/control-plane
 kubectl get node -l node-role.kubernetes.io/ingress
 ```
 
-### fluentd 的路径
+### 配置 ElasticSearch
 
-kubernetes 的日志系统是通过软连接组织的。日志的实际路径在节点安装的时候由安装人员指定。如果不知道，在本节后面有如何查看软链接的方法。
+新部署好的 ElasticSearch 需要添加以下设置：
 
-node01：
+1. index 的生命周期：30 天自动删除，防止数据过多
+1. timestamp 类型设置为纳秒级别
 
-```bash
-/var/log/pods/t9k-system_pinger-5bsln_49736add-de97-4160-8c84-e346a210494a/tpinger/0.log -> 
-/var/lib/docker/containers/f2f62d917f8ced6ff4969d64515e9b3eb2d976bb9035e9b95d594fcbd12f6300/f2f62d917f8ced6ff4969d64515e9b3eb2d976bb9035e9b95d594fcbd12f6300-json.log
-```
+详情请参考：[管理员手册 > 配置 ElasticSearch](../../../monitoring-and-log-system/es.md#修改配置)
 
-node02：
+### 配置 fluentd
 
-```bash
-/var/log/pods/t9k-system_pinger-jplh7_5ae0be2f-29e9-4a27-a6a5-6d97c2e6db42/tpinger/0.log ->
-/mnt/sdc/docker/containers/6a9948cc88659055176c24969db77e9cb1834e424e611328a5406200922e3072/6a9948cc88659055176c24969db77e9cb1834e424e611328a5406200922e3072-json.log
-```
+Kubernetes 底层可以使用不同的容器运行时。不同的运行时，存储的日志格式是不同的，因此需要根据使用的容器运行时进行配置。
 
-可以看到两个节点上的日志路径是不一样的，其中 node01 使用的是 docker 默认的地址，node02 是安装人员自行设置的磁盘路径。
+详情：[管理员手册 > 配置 Fluentd](../../../monitoring-and-log-system/fluentd.md#修改-fluentd-配置)
 
-软链接上的所有路径都必须绑定在 fluentd container 上，fluentd 程序才可以读取到日志。
-
-**软链接的查找方式**
-
-```bash
-# 列举所有节点，不同节点的日志路径可能不一样（取决于节点的安装方式），所以可能每一个节点都需要检查（）
-kubectl get nodes -o wide
-
-# 进入 node01 节点
-ssh node01
-```
-
-```bash
-# 从日志的起点开始列举（任选一个 pod/container）
-cd /var/log/pods/t9k-system_minio-2_1df1f922-f4ae-4142-8402-287fbc8653cc/minio
-ls -al
-
-# 结果为：
-lrwxrwxrwx 1 root root  165 Nov 20 16:25 0.log -> /mnt/sdc/docker/containers/87d726631391a07798cfcf981e2e8bc8c1b8d9fb00ea05ae3cf279e315b9c972/87d726631391a07798cfcf981e2e8bc8c1b8d9fb00ea05ae3cf279e315b9c972-json.log
-
-# 继续进入 /mnt/sdc/docker/containers/87d726631391a07798cfcf981e2e8bc8c1b8d9fb00ea05ae3cf279e315b9c972/ 查看日志的链接路径
-# 将完整路径记录下来（有一些节点，软链接路径不止两级），全部绑定到 fluentd 上
-```
-
-**磁盘绑定方式**
-
-```bash
-# 编辑 fluentd 的 daemonset
-kubectl edit daemonset -n t9k-monitoring fluentd-ds
-```
-
-修改挂载的 volumes：
-
-<details><summary><code class="hljs">fluentd-ds.yaml</code></summary>
-
-```yaml
-apiVersion: apps/v1
-kind: DaemonSet
-metadata:
-  name: fluentd-ds
-  ...
-spec:
-  ...
-  template:
-    spec:
-      containers:
-      - name: xxxx
-        volumeMounts:
-        - mountPath: /var/log/pods
-          name: varlogpods
-          readOnly: true
-        - mountPath: /mnt/sdc/docker/containers
-          name: mntsdcdockercontainers
-          readOnly: true
-        - ...
-      volumes:
-      - hostPath:
-          path: /var/log/pods
-          type: ""
-        name: varlogpods
-      - hostPath:
-          path: /mnt/sdc/docker/containers
-          type: ""
-        name: mntsdcdockercontainers
-      - ...
-```
-
-</details>
-
->注意： 所有节点的所有软链接上的路径都需要写到这里，因为所有节点上的 fluentd 都是这个 daemonset 创建的。
->当然，也可以对每一个节点，单独创建 fluentd daemonset，但较麻烦。
-
-### 日志格式
-
-Kubernetes 底层可以使用不同的容器运行时，比如在 [Kubernetes 1.24.7 适配](https://docs.google.com/document/d/11vrEiYmV8uwHDSJcgz1TGpd87bVtnsT15EKy3k7HGU0/edit#)的时候，就使用不同的容器运行时。不同的运行时，存储的日志格式是不同的：
-
-* 之前的版本日志格式：`{"log":" Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets=100 ] = 0.804\n","stream":"stdout","time":"2022-09-19T06:13:01.856641709Z"}`
-* 新版本日志格式：`2022-10-25T05:54:00.897711526Z stderr F 	/root/repos/aimd-server/gen/component/repos/aimd-server/pkg/lakefs/client.go:102 +0x251`
-
-所以日志的解析方式也需要变化，Fluentd 之前使用 json parser 对日志进行解析，现在需要使用 regexp parser 对日志进行解析（需要修改 fluentd-ds ConfigMap）。
-
-<aside class="note">
-<div class="title">注意</div>
-
-ConfigMap 中多处使用 parser 组件，只有 source 组件中的 parser 组件才是用来解析日志的，需要进行替换；其他的 parser 组件是用来解析其他字段的，不需要修改。
-
-</aside>
-
-之前版本（Docker）的日志解析方式：
-
-```
-<parse>
-  @type json
-  time_format %Y-%m-%dT%H:%M:%S.%NZ
-</parse>
-```
-
-将日志当成 json 来解析，提取其中的 time 字段作为当前日志的时间戳，time 字段的格式为 %Y-%m-%dT%H:%M:%S.%NZ。
-
-新版本（containerd）的日志解析方式：
-
-```
-<parse>
-  @type regexp
-  time_key logtime
-  expression /^(?<logtime>[^ ]*) (stdout|stderr) F (?<log>.*)$/
-  time_format %Y-%m-%dT%H:%M:%S.%NZ
-</parse>
-```
-
-用正则表达式（`/^(?<logtime>[^ ]*) (stdout|stderr) F (?<log>.*)$/`）分析日志，将其中 `<logtime>` 所匹配到的字符串作为日志的时间戳，其格式为 `%Y-%m-%dT%H:%M:%S.%NZ`。
 
 ## 下一步
 
-运行 <a target="_blank" rel="noopener noreferrer" href="https://t9k.github.io/user-manuals/latest/get-started/index.html"> 快速入门的例子 </a>，检验集群的功能。
-
-注意：如果没有预先下载用户文档中使用的镜像，第一次创建资源时需要等待较长时间（根据网络情况，约 10 分钟）。
+运行 <a target="_blank" rel="noopener noreferrer" href="https://t9k.github.io/user-manuals/latest/get-started/index.html"> 用户手册 > 快速入门的例子 </a>，检验产品的功能。
 
 
 ## 参考

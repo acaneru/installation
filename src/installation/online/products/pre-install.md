@@ -230,7 +230,7 @@ EOF
 
 可选，预先下载 T9k 产品需要的所有镜像。
 
-从 github 上获取与产品对应的<a target="_blank" rel="noopener noreferrer" href="https://github.com/t9k/ks-clusters/tree/master/tools/offline-t9k/imagelist">镜像列表</a>，拉取列表中的镜像：
+从 github 上获取与产品对应的 <a target="_blank" rel="noopener noreferrer" href="https://github.com/t9k/ks-clusters/tree/master/tools/offline-t9k/imagelist">镜像列表</a>，拉取列表中的镜像：
 
 ```bash
 for image in $(cat t9k-2024-02-01.list); do
@@ -238,7 +238,7 @@ for image in $(cat t9k-2024-02-01.list); do
 done
 ```
 
-> 如果计划安装的产品尚未生成镜像列表，则需要根据文档[生成 T9k 产品镜像列表](../appendix/generate-t9k-product-image-list.md)。
+> 如果计划安装的产品尚未生成镜像列表，则需要根据文档 [生成 T9k 产品镜像列表](../../appendix/generate-t9k-product-image-list.md)。
 
 ## 下一步
 
