@@ -117,88 +117,9 @@
     kubectl apply -n kube-system -f ../ks-clusters/additionals/monitoring/cadvisor.yaml
     ```
 
-### 配置 AlertManager
+### 告警通知
 
-管理员可以通过创建 <a target="_blank" rel="noopener noreferrer" href="https://prometheus-operator.dev/docs/operator/api/#monitoring.coreos.com/v1alpha1.AlertmanagerConfig">AlertmanagerConfig</a> 来配置警报通知的处理，包括报警接收方 receivers，报警路由 route，报警抑制规则 inhibitRules。Alertmanager 支持多种订阅警报消息的方式，包括邮件、微信等等。
-
-AlertmanagerConfig 是 namespace-scope resource，多个配置聚合在一起完成 Alertmanager 的配置功能。AlertmanagerConfig 需要与 Alertmanager 服务在同一个 namespace 中，并且包含以下 label，才能被系统识别：
-
-```yaml
-tensorstack.dev/component: alertmanager-config
-tensorstack.dev/component-type: system
-```
-
-查看 `t9k-monitoring` 中的 AlertmanagerConfig：
-
-```bash
-kubectl -n t9k-monitoring get AlertmanagerConfig  \
-  -l tensorstack.dev/component=alertmanager-config,tensorstack.dev/component-type=system
-```
-
-#### 邮件接收
-
-想要通过邮件接受警报消息，管理员需要创建：
-
-* Secret：存储 SMTP 用户密码
-* AlertmanagerConfig
-
-AlertmanagerConfig 需要设置 `spec.receivers.emailConfig` 字段，并提供如下信息：
-
-* `<SMTP-server-host>`：SMTP 服务器地址。
-* `<username-for-authentication>`：用于 SMTP 服务认证的用户名。
-* `<sender-address>`：警报消息的发送方邮件地址。
-* `<alert-recipient-address>`：警报消息的接收者的邮件地址。
-
-示例如下：
-
-<details><summary><code class="hljs">alert-mananger-config-email.yaml</code></summary>
-
-```yaml
-{{#include ../../../assets/installation/online/product/alert-mananger-config-email.yaml}}
-```
-
-</details>
-
-
-#### 微信接收
-
-想要通过企业微信接受警报消息，管理员需要创建：
-
-* Secret：存储企业微信 API Secret
-* AlertmanagerConfig
-
-AlertmanagerConfig 需要设置 `spec.receivers.wechatConfig` 字段，并提供如下信息：
-
-* `<corpID>`：企业微信的 Company ID
-* `<agentID>`：企业微信应用对应的 agentID
-* `<toUser>`：optional，想要发送给哪些用户，值是 @all 时表明发送给所有用户。
-
-如果想简化企业微信消息格式，可以将 `spec.receivers[0].wechatConfigs[0].message` 字段设置为 `{{ template "wechat.t9k.message" . }}`。
-
-示例如下：
-
-<details><summary><code class="hljs">alert-mananger-config-wechat.yaml</code></summary>
-
-```yaml
-{{#include ../../../assets/installation/online/product/alert-mananger-config-wechat.yaml}}
-```
-
-</details>
-
-#### 查看配置
-
-查看系统中的 AlertmanagerConfig
-
-```bash
-kubectl get AlertmanagerConfig -n t9k-monitoring \
-  -l tensorstack.dev/component=alertmanager-config
-```
-
-查看 email 账号的安全凭证（密码）配置
-
-```bash
-kubectl -n t9k-monitoring get secret email-password
-```
+参考 [告警通知](../../../monitoring-and-log-system/monitoring-system.md#告警通知) 来配置系统，告警信息可以通过邮件、企业微信的形式发送给运维人员。
 
 ## Logging 系统
 
