@@ -15,9 +15,11 @@ TensorStack AI 平台的计费系统由以下部分组成：
   <figcaption>图 1：TensorStack AI 平台的计费系统架构示意图。1）普通用户在 Account Console 查看自己管理的项目产生的费用，管理员在 Cost Web 查看集群中所有项目产生的费用；2）Cost Server 获取资源使用量、资源价格以及集群中所有容器的相关信息，据此计算费用，并存储到 PostgreSQL 数据库中；3）Prometheus 负责从一些底层组件中收集资源使用情况；4）资源价格存储在一个 ConfigMap 中，管理员可以修改资源价格，普通用户可以查看资源价格</figcaption>
 </figure>
 
-## 工作原理
+## 费用计算
 
 以如下 Pod 为例：
+
+<details><summary><code class="hljs">workload.yaml</code></summary>
 
 ```yaml
 apiVersion: v1
@@ -56,6 +58,9 @@ spec:
       persistentVolumeClaim:
         claimName: data
 ```
+
+</details>
+
 
 该 Pod 使用了下列资源：
 
