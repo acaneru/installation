@@ -61,25 +61,9 @@ resource-shape        20d
 workload-info         20d
 ```
 
-检查 Provider Server 详情：
+> 上述 4 个部署的 Provider 均由 T9k Admission Provider 提供服务，详情见 [附录：T9k Admission Provider](./appendix/t9k-admission-provider.md)。
 
-```bash
-kubectl get provider container-resources  -o jsonpath='{.spec.url}'
-kubectl get provider queue-authz -o jsonpath='{.spec.url}'
-kubectl get provider resource-shape   -o jsonpath='{.spec.url}'
-kubectl get provider workload-info -o jsonpath='{.spec.url}'
-```
-
-```
-https://t9k-admission-provider.t9k-system:443/authz/queue
-https://t9k-admission-provider.t9k-system:443/workload/info
-https://t9k-admission-provider.t9k-system:443/resource_shape/info
-https://t9k-admission-provider.t9k-system:443/workload/container_resources
-```
-
-> 上述 4 个默认部署的 provider 均由 T9k Admission Provider 提供服务，T9k Admission Provider 详情见 [附录：T9k Admission Provider](./appendix/t9k-admission-provider.md)。
-
-运行这些 provider 的 Pod 及 Service：
+T9k Admission Provider 的 Pod 及 Service：
 
 ```
 kubectl -n t9k-system get svc,pod -l app=t9k-admission-provider
@@ -93,7 +77,7 @@ NAME                                          READY   STATUS    RESTARTS   AGE
 pod/t9k-admission-provider-779bd676b5-4klms   1/1     Running   0          19d
 ```
 
-Pod logs：
+Pod 日志：
 
 ```bash
 kubectl -n t9k-system logs -l app=t9k-admission-provider --tail=50 -f
@@ -110,7 +94,8 @@ kubectl -n t9k-system logs -l app=t9k-admission-provider --tail=50 -f
 
 ### 查看
 
-T9k 会在集群内部署一些默认的 ConstraintTemplate，并会为大多数 ConstraintTemplate 部署一个默认的 Constraint。管理员可以按需修改，不建议管理员删除这些 ConstraintTemplate，如果你想要关闭对应的验证规则，删除对应的 Constraint 即可。
+T9k 在产品安装时部署一组默认的 ConstraintTemplate，并会为大多数 ConstraintTemplate 部署一个默认的 Constraint。
+管理员可以按需修改，但建议管理员不要删除这些 ConstraintTemplate。如果管理员想要关闭对应的验证规则，删除对应的 Constraint 即可。
 
 T9k 提供的验证规则列表见 [附录：T9k 验证规则列表](./appendix/t9k-verification-rules.md)。
 
