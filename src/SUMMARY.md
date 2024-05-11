@@ -98,7 +98,7 @@
         * [Event Router](monitoring-and-log-system/event-router.md)
     * [附录](monitoring-and-log-system/appendix/index.md)
         * [配置企业微信](monitoring-and-log-system/appendix/configure-wecom.md)
-* [AI data](ai-data/index.md)
+* [AI Data](ai-data/index.md)
     * [Asset-Hub](ai-data/asset-hub.md)
     * [Experiment-Manager](ai-data/experiment-manager.md)
     * [AIStore](ai-data/aistore.md)

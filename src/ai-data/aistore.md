@@ -30,6 +30,7 @@ kubectl logs -n t9k-system -l app=aistore-server -c aistore-server --tail=100 -f
 
 <details><summary><code class="hljs">output</code></summary>
 
+```
 [read client config] {Log:{V:4 LogColors:false ShowErrorTrace:true} Postgres:{Host:aistore-postgresql.t9k-system Database:aistore Port:5432 User:postgres Password:******} LakeFS:{ServiceName:aistore-lakefs Address: Bucket:t9k-aistore-new AccessID:****** SecretKey:****** UnderlyingAddress:http://100.64.4.104 UnderlyingAccessID:****** UnderlyingSecretKey:****** ExternalAddress:https://lakefs.nc201.t9kcloud.cn} Token:{JWKsURI:https://kc.kube.tensorstack.net/auth/realms/t9k-realm/protocol/openid-connect/certs UserKey:******} SysNamespace:t9k-system}
 [init logger] {V:4 LogColors:false ShowErrorTrace:true}
 [new jwk client] jwks: https://kc.kube.tensorstack.net/auth/realms/t9k-realm/protocol/openid-connect/certs
@@ -49,16 +50,17 @@ I0 12/26 03:02:22 client.go:128 aistore/LakeFS [global repository already exists
 查看 AI-Store 的配置：
 
 ```bash
-$ kubectl get cm -n t9k-system aistore-server-config -o yaml
+kubectl get cm -n t9k-system aistore-server-config -o yaml
 ```
 
 修改 AI-Store 的配置：
 
 ```bash
-$ kubectl edit cm -n t9k-system aistore-server-config
+kubectl edit cm -n t9k-system aistore-server-config
 ```
 
-配置示例：
+<details><summary><code class="hljs">配置示例：cm-aistore-server-config.yaml</code></summary>
+
 
 ```yaml
 apiVersion: v1
@@ -73,7 +75,7 @@ data:
         "port": "5432",
         "database": "aistore",
         "user": "postgres",
-        "password": "f2ddL6yMS4"
+        "password": "XXXXXX"
       },
       "lakefs":{
         "serviceName": "aistore-lakefs",
@@ -96,19 +98,21 @@ metadata:
   namespace: t9k-system
 ```
 
+</details>
+
 其中：
 
-* log 字段表示日志级别，一般从 0 到 5，数字越大打印的日志越详细。
-* postgres 字段表示 AIStore 连接底层 PostgreSQL 数据库时所需要的信息。
-* lakefs 字段表示 AIStore 连接 LakeFS 以及 LakeFS 底层的 S3 服务时需要的信息。
-* token 字段表示校验用户信息时需要的配置。
-* 配置中所有信息，都可以通过配置文件、参数和环境变量三种方式设置，其优先级为 参数 > 环境变量 > 配置文件。
+* `log` 字段表示日志级别，一般从 0 到 5，数字越大打印的日志越详细。
+* `postgres` 字段表示 AIStore 连接底层 PostgreSQL 数据库时所需要的信息。
+* `lakefs` 字段表示 AIStore 连接 LakeFS 以及 LakeFS 底层的 S3 服务时需要的信息。
+* `token` 字段表示校验用户信息时需要的配置。
+* 配置中所有信息，都可以通过配置文件、命令行参数和环境变量三种方式设置，其优先级为 命令行参数 > 环境变量 > 配置文件。
 
 一般只有 log 字段需要修改。
 
 在修改过配置后，需重启 AIStore 服务使配置生效：
 
 ```bash
-$ kubectl rollout restart -n t9k-system deploy/aistore-server
-$ kubectl logs -n t9k-system -l app=aistore-server -c aistore-server --tail=-1 -f
+kubectl rollout restart -n t9k-system deploy/aistore-server
+kubectl logs -n t9k-system -l app=aistore-server -c aistore-server --tail=100 -f
 ```
