@@ -10,7 +10,7 @@
 
 1. [安装基础 K8s](./k8s-index.md)；
 1. [安装 K8s 的一些扩展组件](./k8s-components/index.md)，例如 Istio, Knative 等；
-1. [安装特定硬件支持](./hardware.md)，例如 NVIDIA GPU 等；
+1. [安装特定硬件支持](../hardware/hardware.md)，例如 NVIDIA GPU 等；
 2. [安装 TensorStack 产品](./products/index.md)。
 
 ## 下一步

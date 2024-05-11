@@ -1,4 +1,4 @@
-# AI data
+# AI Data
 
 TensorStack AI 平台的 AI-Data 功能由客户端、服务层、数据存储层构成。
 
