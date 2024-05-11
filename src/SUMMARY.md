@@ -41,6 +41,8 @@
             * [MinIO](installation/online/storage-service/minio.md)
             * [NFS](installation/online/storage-service/nfs.md)
             * [Ceph](installation/online/storage-service/ceph.md)
+            * [Lustre](installation/online/storage-service/lustre.md)
+            * [GPFS](installation/online/storage-service/gpfs.md)
         * [正确性检查](installation/online/correctness-checking.md)
     * [离线安装](installation/offline/index.md)
         * [准备离线安装包](installation/offline/prepare-offline-packages/index.md)

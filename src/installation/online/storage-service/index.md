@@ -5,3 +5,5 @@
 - [MinIO](./minio.md) - 轻量级的对象存储服务，支持 S3 协议；
 - [NFS](./nfs.md) - NFS 网络文件系统服务 + K8s CSI 驱动程序；
 - [Ceph](./ceph.md) - Ceph 存储服务 + K8s CSI 驱动程序；
+- [Lustre](./lustre.md) - K8s CSI 驱动程序；
+- [GPFS - IBM Storage Scale](./gpfs.md) - K8s CSI 驱动程序；
