@@ -193,3 +193,30 @@ kubectl logs -n t9k-monitoring -l app=eventrouter --tail=2 |jq
 ```
 
 </details>
+
+## 配置
+
+ 查看配置：
+
+```bash
+kubectl get cm -n t9k-monitoring eventrouter -o yaml
+```
+
+<details><summary><code class="hljs">eventrouter.yaml</code></summary>
+
+```yaml
+apiVersion: v1
+data:
+  config.json: |-
+    {
+      "sink": "stdout"
+    }
+kind: ConfigMap
+metadata:
+  name: eventrouter
+  namespace: t9k-monitoring
+```
+
+> 虽然可配置，但 `sink` 必须是 `stdout`
+
+</details>
