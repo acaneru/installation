@@ -3,9 +3,8 @@
 ```
 TODO:  
   1. 更换 `lakefs.sample.t9kcloud.cn` 为更明确的名字，例如 `s3.sample.t9kcloud.cn`?
-  2. Ingress 表格部分应当提供对应的 host；
-  3. 为啥 landingpage ingress 需要手工创建？
-  4. pre-pull image 部分未说明：1）在哪里 pull image； 2）prepull 的目的；
+  2. 为啥 landingpage ingress 需要手工创建？
+  3. Use ansible to automate step "Pre-pull Image"
 ```
 
 ## 目的
@@ -135,13 +134,15 @@ done
 
 ### 证书 Secret
 
-创建以下 Secret 资源以存储各种证书：
+创建以下 Secret 资源以存储 Ingress 的 TLS 证书：
 
-| Name | Namespace | 说明 |
-| ----------------- | ------------------ | ------------------------------- |
-| `cert.landing-page` | istio-system       | 平台主入口的 ingress 使用（`home.sample.t9kcloud.cn`）|
-| `cert.keycloak`     | t9k-system         | 安全系统的 ingress 使用（`auth.sample.t9kcloud.cn`） |
-| `cert.lakefs`       | t9k-system         | AI 资产和实验管理服务的 S3 接口地址的 ingress 使用（`lakefs.sample.t9kcloud.cn`） |
+| Name | Namespace | Host | 说明 |
+| ----------------- | ------------------ | --------- | -------------------------- |
+| `cert.landing-page` | istio-system       | home.sample.t9kcloud.cn | 平台主入口 |
+| `cert.keycloak`     | t9k-system         | auth.sample.t9kcloud.cn | 安全系统入口 |
+| `cert.lakefs`       | t9k-system         | lakefs.sample.t9kcloud.cn | AI 资产和实验管理服务的 S3 接口地址 |
+
+> 注意：上表中的 `Host` 字段为示意，部署时应当使用实际的域名，而不是 `*.sample.t9kcloud.cn`。
 
 如果我们使用多域名证书，可以使用同一份 cert 文件创建这些 secret：
 
@@ -165,7 +166,7 @@ kubectl create secret tls cert.lakefs \
 说明：
 
 1. 如果使用单独的证书，需要在上面的命令中使用不同的文件分别创建 Secret。
-1. 目前模型推理服务的 Ingress (*.ksvc.sample.t9kcloud.cn) 使用 HTTP 协议，不需要配置 Cert/Secret
+2. 目前模型推理服务的 Ingress (*.ksvc.sample.t9kcloud.cn) 使用 HTTP 协议，不需要配置 Cert/Secret
 
 ### Ingress
 
@@ -230,15 +231,20 @@ EOF
 
 可选，预先下载 T9k 产品需要的所有镜像。
 
-从 github 上获取与产品对应的 <a target="_blank" rel="noopener noreferrer" href="https://github.com/t9k/ks-clusters/tree/master/tools/offline-t9k/imagelist">镜像列表</a>，拉取列表中的镜像：
+Pre-Pull 需要在所有加入了 K8s 集群的节点上进行。在节点上预先拉取镜像有以下好处：
+1. 加快部署速度，减少部署过程中等待 Pod 就绪的时间；
+2. 减少 Pod 因为其依赖项尚未就绪，导致 Pod 出错、重启的风险；
+3. 可以较快地判断已经部署的产品是否正常运行，并及时处理潜在的错误。
+
+从 github 上获取与产品对应的<a target="_blank" rel="noopener noreferrer" href="https://github.com/t9k/ks-clusters/tree/master/tools/offline-t9k/imagelist">镜像列表</a>，拉取列表中的镜像：
 
 ```bash
-for image in $(cat t9k-2024-02-01.list); do
+for image in $(cat t9k-2024-03-25.list); do
     docker pull $image
 done
 ```
 
-> 如果计划安装的产品尚未生成镜像列表，则需要根据文档 [生成 T9k 产品镜像列表](../../appendix/generate-t9k-product-image-list.md)。
+> 如果计划安装的产品尚未生成镜像列表，则需要参考文档 [生成 T9k 产品镜像列表](../appendix/generate-t9k-product-image-list.md)。
 
 ## 下一步
 

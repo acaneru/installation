@@ -2,11 +2,8 @@
 
 ```
 TODO:
-    1. 说明无法访问 tsz.io 时的安装方式；
-    2. 提供 charts 列表；
-    3. 提供推荐的 Chart 安装顺序；
-    4. 使用 helm status 检查 chart 安装示例
-    5. 增加 github 上 产品 release 链接
+    1. 增加 github 上 产品 release 链接
+    2. 减少 TensorStack 产品之间的依赖，并更新推荐的产品安装顺序
 ```
 
 ## 目的
@@ -15,11 +12,12 @@ TODO:
 
 ## 前置条件
 
-完成 [安装前准备](./pre-install.md)。
+* 完成 [安装前准备](./pre-install.md)。
+* 可以访问 Registry `tsz.io`，否则应当参考[离线安装](../../offline/index.md)文档
 
 ## 安装
 
-登录到 OCI Registry：
+登录 OCI Registry：
 
 ```bash
 # 要求 helm version >= v3.8.0
@@ -29,7 +27,9 @@ helm registry login tsz.io
 helm registry logout tsz.io
 ```
 
-使用 [安装前准备](./pre-install.md) 中准备的 `valuea.yaml` 安装，以 Chart `t9k-core` 为例：
+使用 [安装前准备](./pre-install.md) 中准备的 `values.yaml` 安装。
+
+这里以 Chart `t9k-core` 为例：
 
 ```bash
 # --version 指定的参数为 Helm Chart 的版本，如果省略则安装最新版本
@@ -40,13 +40,42 @@ helm install t9k-core \
    --version <version>
 ```
 
+
 **推荐的安装顺序**
 
+建议按照以下顺序进行产品模块的安装和检查，安装完列表中的所有产品后，再检查产品是否正常运行：
+
+```
+t9k-core
+t9k-security-console
+t9k-landing-page
+t9k-notebook
+t9k-jobs
+t9k-scheduler
+t9k-services
+t9k-tools
+t9k-csi-s3
+t9k-monitoring # 安装在 t9k-monitoring namespace 中
+t9k-cost
+t9k-build-console
+t9k-deploy-console
+t9k-workflow-manager
+t9k-cluster-admin
+```
+
+可选，安装 t9k AI Data 系列的产品模块：
+```
+t9k-aistore
+t9k-asset-hub
+t9k-experiment-management
+```
+
+> 注意：产品模块 "t9k-monitoring" 需要安装在 namespace `t9k-monitoring` 中；其他所有产品都安装在 namespace `t9k-system` 中。
 
 
 ## 基本检查
 
-等待并确认集群中所有的 Pod 都正常工作，根据网络情况，可能需要 5~60 分钟不等：
+等待并确认集群中所有的 Pod 都正常工作。等待的时间取决于是否预先拉取了镜像、网络情况等，可能需要 5~60 分钟不等：
 
 ```bash
 # 持续查看 K8s 集群中的所有 Pod 状态
@@ -56,7 +85,22 @@ kubectl get pod -A -w
 kubectl get pod -A -o wide | grep -Eiv "running|complete"
 ```
 
-查看所有的 helm chart releases：
+查看产品模块的安装信息（helm chart releas），以 t9k-core 为例：
+
+```bash
+helm status -n t9k-system t9k-core
+```
+
+```
+NAME: t9k-core
+LAST DEPLOYED: November 19 04:53:53 2023
+NAMESPACE: t9k-system
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+```
+
+查看所有的产品模块安装情况（helm chart releases）：
 
 ```bash
 helm list -A -d
