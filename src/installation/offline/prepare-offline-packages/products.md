@@ -3,7 +3,6 @@
 ```
 TODO:
     1. 增加验证部分；
-    2. "A120 - 域名证书管理" 放入本 repo
 ```
 
 本文准备的离线文件：
@@ -67,7 +66,7 @@ cat imagelist/t9k-2024-02-01.list
 
 ### 域名证书
 
-准备一份域名证书。参考 [A120 - 域名证书管理](https://docs.google.com/document/d/1QPBMi1jThcRd7SQcr95Ainm18_L9wnx_-OpEc1l2LEY/edit?usp=sharing)生成域名证书。然后复制到目录中：
+准备一份域名证书。参考[管理域名证书](../../appendix/manage-domain-certificate.md)生成域名证书。然后复制到目录中：
 
 ```bash
 mkdir certs
