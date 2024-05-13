@@ -58,7 +58,14 @@ dig home.sample.t9kcloud.cn +short
 
 ### 获取证书
 
+<aside class="note info">
+<div class="title">获取 TLS 证书</div>
+
 用于支持 HTTPS 的证书可以在服务商处购买，也可以使用免费证书服务（如 <https://freessl.cn/>， <https://letsencrypt.org/>，<https://zerossl.com/>）。
+
+[管理域名证书](../../appendix/manage-domain-certificate.md) 中提供了获取证书的更多详情。
+</aside>
+
 
 证书为 2 个文件，分别为 ：
 
