@@ -148,3 +148,41 @@ PEP Proxy 提供了命令行参数 --skip-jwt-bearer-tokens 来控制这一行�
 * 如果资源服务器需要客户端的 id token，可设置命令行参数 [--pass-authorization-header](#pass-authorization-header) 为 true，PEP Proxy 会将 id token 附加在请求的 Authorization Header（添加 Bearer 前缀）中转发给资源服务器。
 * 如果资源服务器需要客户端的 access token，可设置命令行参数 [--pass-access-token](#pass-access-token) 为 true，PEP Proxy 会将 access token 附加在请求的 X-Forwarded-Access-Token Header 中转发给资源服务器。
 * 如果资源服务器需要客户端的 RPT，可在 PEP 配置文件中设置 [forwardRPT](#forwardrpt) 为 true，PEP Proxy 会将 RPT 附加在请求的 Authorization Header（添加 Bearer 前缀）中转发给资源服务器。
+
+### PEP 配置中，路径的匹配顺序是怎样的？
+
+当一个请求到达 PEP Proxy 时，PEP Proxy 会根据 [paths](#paths) 数组中的顺序依次检测请求是否匹配，以首个匹配的为准。
+
+因此，在如下 PEP 配置中，请求 `POST /apis/v1/apps/instances` 会**错误地**匹配到 paths 数组的第一个元素：
+
+```yaml
+policyEnforcer:
+  paths:
+  - path: "/apis/v1/apps"
+    resourceName: "cluster"
+    methods:
+    - method: "POST"
+      scope: admin
+  - path: "/apis/v1/apps/instances"
+    resourceName: "project"
+    methods:
+    - method: "POST"
+      scope: use
+```
+
+应当将详细的路径放在 paths 数组的前面，将模糊的路径放在 paths 数组的后面：
+
+```yaml
+policyEnforcer:
+  paths:
+  - path: "/apis/v1/apps/instances"
+    resourceName: "project"
+    methods:
+    - method: "POST"
+      scope: use
+  - path: "/apis/v1/apps"
+    resourceName: "cluster"
+    methods:
+    - method: "POST"
+      scope: admin
+```
