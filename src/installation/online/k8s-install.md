@@ -1,10 +1,5 @@
 # 安装 K8s
 
-```
-TODO：
-    1. 描述如何设置 CRI, CNI, Ingress, LoadBalancer 等的选项。
-```
-
 ## 目的
 
 完成一个最基本的 K8s 集群安装。
@@ -17,9 +12,11 @@ TODO：
 
 本章描述如何设置 K8s 安装使用的版本, 容器运行时, CNI 插件, Ingress, LoadBalancer 等选项。你可以通过修改 inventory 中的变量来配置上述选项。这些变量位于 inventory 目录中 `inventory/group_vars/`。
 
-> 详细说明请参考 Kubespray 文档 [Configurable Parameters in Kubespray](https://github.com/kubernetes-sigs/kubespray/blob/master/docs/vars.md)。下面仅列出较为重要的一些设置。
+### 配置总览
 
-### k8s-cluster.yml
+> 详细说明请参考 Kubespray 文档 [Configurable Parameters in Kubespray](https://github.com/kubernetes-sigs/kubespray/blob/master/docs/ansible/vars.md)。下面仅列出较为重要的一些设置。
+
+#### k8s-cluster.yml
 
 * `kube_version`: 设置 K8s 版本。
 * `container_manager`: 设置容器运行时。
@@ -27,18 +24,105 @@ TODO：
 * `kube_proxy_mode`: 设置 Kube proxy 代理模式。
 * `kube_service_addresses`: 分配给 service 的 IP 地址范围。
 * `kube_pods_subnet`: 分配给 Pod 的 IP 地址范围。
-* `kube_vip_enabled`: 启用 kube-vip，详见 [kube-vip](https://github.com/kubernetes-sigs/kubespray/blob/master/docs/kube-vip.md)。
-* `loadbalancer_apiserver`: 设置 apiserver 的负载均衡器，详见 [HA endpoints for K8s](https://github.com/kubernetes-sigs/kubespray/blob/master/docs/ha-mode.md)。
+* `kube_vip_enabled`: 启用 kube-vip，详见 [kube-vip](https://github.com/kubernetes-sigs/kubespray/blob/master/docs/ingress/kube-vip.md)。
+* `loadbalancer_apiserver`: 设置 apiserver 的负载均衡器，详见 [HA endpoints for K8s](https://github.com/kubernetes-sigs/kubespray/blob/master/docs/operations/ha-mode.md)。
 
-### addons.yml
+#### addons.yml
 
 * `ingress_nginx_enabled`: 启用 Ingress NGINX 功能（在安装 K8s 集群后自动安装 Ingress NGINX 作为 ingress 控制器）。
-* `helm_enabled`: 在 K8s 控制节点按章 helm 命令行工具。
+* `helm_enabled`: 在 K8s 控制节点安装 helm 命令行工具。
 * `metrics_server_enabled`: 启用 Metrics Server 功能。
 
-### all.yml
+#### all.yml
 
 * `upstream_dns_servers`: 设置集群使用的上游 DNS 服务器，建议与当前环境中的 DNS 配置一致。
+
+### 设置 CRI
+
+TODO(skj)
+
+### 设置 CNI
+
+你需要为 K8s 集群选择一个合适的 [CNI（Container Network Interface）](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/)，Kubespray 目前支持 cilium、calico、kube-ovn、weave、flannel 等 CNI。下面以常用的 cilium 和 calico 为例展示如何配置。
+
+#### cilium
+
+为了安装 [Cilium](https://docs.cilium.io/en/stable/) 作为 CNI，在 `k8s-cluster.yml` 中设置如下参数即可：
+
+```yaml
+kube_network_plugin: cilium
+```
+
+如果需要启用 Cilium 的 [L2 Announcement 功能](https://docs.cilium.io/en/stable/network/l2-announcements/)，在 `k8s-cluster.yml` 中设置如下参数即可：
+
+```yaml
+cilium_l2announcements: true
+cilium_kube_proxy_replacement: strict
+cilium_config_extra_vars:
+  k8s-client-qps: 30
+  k8s-client-burst: 50
+```
+
+更多详细参数设置请参考 [Kubespray 文档](https://github.com/kubernetes-sigs/kubespray/blob/master/docs/CNI/cilium.md)。
+
+#### calico
+
+为了安装 [Calico](https://docs.tigera.io/calico/latest/about/) 作为 CNI，在 `k8s-cluster.yml` 中设置如下参数即可：
+
+```yaml
+kube_network_plugin: calico
+```
+
+更多详细参数设置请参考 [Kubespray 文档](https://github.com/kubernetes-sigs/kubespray/blob/master/docs/CNI/calico.md)。
+
+### 设置 Ingress
+
+如果你需要安装 Ingress 控制器，Kubespray 目前支持 [NGINX Ingress 控制器](https://kubernetes.github.io/ingress-nginx/)。
+
+在 `addons.yml` 中设置如下参数即可：
+
+```yaml
+ingress_nginx_enabled: true
+```
+
+
+### 设置 Load Balancer
+
+如果你需要为 K8s API Server 配置一个 Load Balancer，Kubespray 目前支持 [kube-vip](https://kube-vip.io/)。
+
+在 `k8s-cluster.yml` 中设置如下参数即可：
+
+```yaml
+# Kube-proxy proxyMode configuration.
+# Can be ipvs, iptables
+kube_proxy_mode: ipvs
+
+# configure arp_ignore and arp_announce to avoid answering ARP queries from kube-ipvs0 interface
+# must be set to true for MetalLB, kube-vip(ARP enabled) to work
+kube_proxy_strict_arp: true
+
+# reference: https://github.com/kubernetes-sigs/kubespray/blob/master/docs/kube-vip.md#kube-vip
+# Enable kube vip as HA for control-plane, requires a Virtual IP
+kube_vip_enabled: true
+kube_vip_controlplane_enabled: true
+kube_vip_address: <your-virtual-ip-address>
+loadbalancer_apiserver:
+  address: "{{ kube_vip_address }}"
+  port: 6443
+
+# use ARP mode :
+kube_vip_arp_enabled: true
+```
+
+上述各项参数的含义详见 [Kubespray 文档](https://github.com/kubernetes-sigs/kubespray/blob/master/docs/ingress/kube-vip.md)，其中：
+
+* 为了使 kube-vip 能够正常工作，当 `kube_proxy_mode` 为 `ipvs` 时，`kube_proxy_strict_arp` 必须为 `true`
+* `kube_vip_enabled` 为 `true` 表示启用 kube-vip
+* `kube_vip_controlplane_enabled` 为 `true` 表示启用 kube-vip 针对 K8s 控制平面的高可用功能，即分配一个虚拟 IP 地址作为各个 K8s API Server 实例的外部负载均衡器
+* `kube_vip_address` 表示一个可用的虚拟 IP 地址，kube-vip 将发送 ARP 广播，将发送给该虚拟 IP 地址的请求转发给一个 K8s API Server 实例
+* `loadbalancer_apiserver` 表示其他服务将通过该虚拟 IP 地址及 6443 端口来访问 K8s API Server
+* `kube_vip_arp_enabled` 为 `true` 表示启用 kube-vip 的 ARP 模式
+
 
 ## 安装 K8s
 
