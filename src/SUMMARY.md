@@ -12,6 +12,7 @@
         * [安装 K8s](installation/online/k8s-index.md)
           * [基本安装](installation/online/k8s-install.md) 
           * [CRI 配置](installation/online/cri.md)
+          * [设置 User Namespace](installation/online/k8s-userns.md)
           * [设置集群存储](installation/online/k8s-storage.md)
           * [集群维护](installation/online/k8-ops.md)
           * [常见问题](installation/online/k8s-install-faqs.md)

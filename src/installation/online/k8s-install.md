@@ -39,7 +39,9 @@
 
 ### 设置 CRI
 
-TODO(skj)
+使用不同的容器运行环境，参考 [CRI 配置](./cri.md)。
+
+如需使用 <a target="_blank" rel="noopener noreferrer" href="https://kubernetes.io/docs/concepts/workloads/pods/user-namespaces/">User Namespaces</a>，参考 [设置 User Namespace](./k8s-userns.md)。
 
 ### 设置 CNI
 
