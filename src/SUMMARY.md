@@ -68,6 +68,7 @@
         * [手动安装 MLNX_OFED 驱动](installation/appendix/manually-install-mlnx-ofed-driver.md)
         * [ansible vars](installation/appendix/ansible-vars.md)
         * [管理域名证书](installation/appendix/manage-domain-certificate.md)
+        * [CRI 命令行工具](installation/appendix/container-runtime-cli.md)
 * [用户及安全管理](user-and-security-management/index.md)
     * [用户管理](user-and-security-management/user-management.md)
     * [项目管理](user-and-security-management/project-management.md)
