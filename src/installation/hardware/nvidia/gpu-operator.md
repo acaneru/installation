@@ -1,30 +1,101 @@
 # 安装 NVIDIA GPU Operator
 
 ```
-TODO: 1. 支持更多 OS/Kernel 版本组合  
-      2. 使用 ansible 或者 GPU operator 安装 nvidia driver
-      3. Run `p2pBandwidthLatencyTest`
+TODO: 1. 支持更多 OS/Kernel 版本组合
 ```
 
 ## 前置条件
 
-节点应该满足以下条件：
+节点需要满足以下条件：
 
 1. 已经加入 K8s 集群
 1. 安装有 NVIDIA GPU 硬件
 1. 没有安装 NVIDIA Driver
 
-节点 OS 要求：
+实际测试过的安装环境：
 
-1. Ubuntu 20.04 server
+1. 节点 OS:
+    * Ubuntu 20.04 server
 1. Kernel version: 
     * 5.4.0-144-generic
     * 5.4.0-153-generic 
     * 5.4.0-155-generic 
 
-## 安装
+## ansible 脚本安装
 
-### nvidia driver
+### NVIDIA 驱动
+
+使用 ansible 简化 NVIDIA 驱动的安装。
+
+首先进入 inventory 所在的目录：
+
+```bash
+cd ~/ansible/$T9K_CLUSTER
+```
+
+运行以下命令安装 GPU 驱动：
+
+```bash
+ansible-playbook ../ks-clusters/t9k-playbooks/3-install-gpu-driver.yml \
+    -i inventory/inventory.ini \
+    --become -K \
+    -e nvidia_driver_skip_reboot=false \
+    --limit node01,node02
+```
+
+<aside class="note info">
+<div class="title">命令行参数说明</div>
+
+* `-e nvidia_driver_skip_reboot=false` 参数的作用是在安装驱动完成后，重启安装了 GPU 驱动的节点（这也是默认设置）。
+* `--limit node01,node02` 参数的作用是限制只在 node01 和 node02 节点上安装 GPU 驱动。
+
+</aside>
+
+这个 Playbook 执行的任务包括[安装 GPU 驱动](#安装)，[关闭 GSP](#关闭-gsp) 和重启节点。
+
+### GPU Operator
+
+使用 ansible 简化 GPU Operator 的安装。
+
+首先进入 inventory 所在的目录：
+
+```bash
+cd ~/ansible/$T9K_CLUSTER
+```
+
+查看预设的变量：
+
+```bash
+cat ../ks-clusters/t9k-playbooks/roles/gpu-operator/defaults/main.yml
+```
+
+<aside class="note info">
+<div class="title">自定义版本</div>
+
+请参考 <a target="_blank" rel="noopener noreferrer" href="https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/latest/release-notes.html">GPU Operator Release Notes</a> 来设置变量 `nvidia_gpu_operator_version`。你需要确保相应版本的 Helm Chart 存在于 `nvidia_gpu_operator_charts` 中，且相应版本的镜像存在于 `nvidia_gpu_operator_image_registry` 中。
+
+GPU Operator 会用到许多镜像，你可以通过命令行参数指定这些镜像的版本（后面有实际例子）。部分镜像名称中带有操作系统的后缀，常见的有 `ubi8` 和 `ubuntu20.04`。其中 ubi 是 <a target="_blank" rel="noopener noreferrer" href="https://www.redhat.com/en/blog/introducing-red-hat-universal-base-image">Red Hat Universal Base Image</a> 的缩写，ubi8 是 RHEL 8 的基础镜像。我们推荐使用与实际操作系统一致的镜像。
+
+</aside>
+
+通过命令行参数 "-e" 来指定需要修改的变量，运行以下命令安装 GPU Operator：
+
+```bash
+ansible-playbook ../ks-clusters/t9k-playbooks/3-install-gpu-operator.yml \
+    -i inventory/inventory.ini \
+    --become -K \
+    -e nvidia_gpu_operator_image_registry="t9kpublic" \
+    -e nvidia_gpu_operator_version="v24.3.0" \
+    -e nvidia_node_feature_discovery_tag="v0.15.4" \
+    -e device_plugin_version="v0.15.0" \
+    -e enable_install_gpu_driver=false
+```
+
+这个 Playbook 执行的任务包括 [helm template](#helm-template)，[安装 GPU Operator](#安装-1)，以及[配置 Prometheus](#配置-prometheus)。
+
+## 手动安装
+
+### NVIDIA 驱动
 
 #### 安装
 
@@ -49,7 +120,14 @@ sudo lshw -C display
        resources: irq:58 memory:ea000000-eaffffff memory:d0000000-dfffffff memory:e0000000-e1ffffff ioport:a000(size=128) memory:c0000-dffff
 ```
 
-安装 nvidia driver：
+<aside class="note">
+<div class="title">注意</div>
+
+如果计划安装 CUDA Toolkit，也可以使用 <a target="_blank" rel="noopener noreferrer" href="https://developer.nvidia.com/cuda-downloads">CUDA Toolkit 的安装包</a>同时完成 NVIDIA 驱动和 CUDA Toolkit 的安装。
+
+</aside>
+
+安装 NVIDIA 驱动：
 
 ```bash
 sudo apt update
@@ -75,7 +153,7 @@ sudo reboot
 
 开启 nvidia persistenced mode：
 
-> nvidia driver 安装后，会在集群内添加 system unit `nvidia-persistenced.service`，我们需要修改这个 unit 以启用  persistenced mode。
+> NVIDIA 驱动安装后，会在集群内添加 system unit `nvidia-persistenced.service`，我们需要修改这个 unit 以启用 persistenced mode。
 
 ```bash
 sudo systemctl status nvidia-persistenced.service
@@ -144,18 +222,235 @@ nvidia-smi -L
 ```
 
 ```console
-GPU 0: NVIDIA A40 (UUID: GPU-5219cc39-b9d9-48cd-b092-62e71dd15dd6)
-GPU 1: NVIDIA A40 (UUID: GPU-0045dae9-1bed-16e5-dc7c-56f2a9e7e186)
-GPU 2: NVIDIA A40 (UUID: GPU-132cba3f-bee7-ad56-e15b-bb0d8c855570)
-GPU 3: NVIDIA A40 (UUID: GPU-5997dde0-a4b6-4d9e-bce8-7eda71997146)
-GPU 4: NVIDIA A40 (UUID: GPU-1af15774-0a04-f2ec-d6a4-95e2d61ddc23)
-GPU 5: NVIDIA A40 (UUID: GPU-6c67e0a5-06fe-a081-2783-a27c338b31a8)
-GPU 6: NVIDIA A40 (UUID: GPU-5246cdd0-db79-cea0-eaf5-d067784e4648)
+GPU 0: NVIDIA A100-SXM4-80GB (UUID: GPU-2032b4e2-30cb-f9e6-6a8a-fb0204e5b966)
+GPU 1: NVIDIA A100-SXM4-80GB (UUID: GPU-656b12e4-119e-322d-3133-8a9c8e0cce83)
+GPU 2: NVIDIA A100-SXM4-80GB (UUID: GPU-2c855dbe-1b55-094c-52e0-7382cfa3ea1e)
+GPU 3: NVIDIA A100-SXM4-80GB (UUID: GPU-71761943-ea45-5827-0031-02c86c0c8b43)
+GPU 4: NVIDIA A100-SXM4-80GB (UUID: GPU-53ddb134-1b6e-9978-e593-c3c7ff844768)
+GPU 5: NVIDIA A100-SXM4-80GB (UUID: GPU-28146b32-c3b4-3184-ceb6-57690d90e386)
+GPU 6: NVIDIA A100-SXM4-80GB (UUID: GPU-37809c96-b96e-5889-203a-38c24bde66d0)
+GPU 7: NVIDIA A100-SXM4-80GB (UUID: GPU-95977b14-3e55-936e-b275-bb0f5bc60b39)
 ```
 
-运行测试程序：
+运行 <a target="_blank" rel="noopener noreferrer" href="https://github.com/NVIDIA/cuda-samples/tree/v12.2/Samples/5_Domain_Specific/p2pBandwidthLatencyTest">P2P Bandwidth Latency Test</a> 以进行进一步的测试。
 
-> TODO: Run p2pBandwidthLatencyTest.
+首先安装 <a target="_blank" rel="noopener noreferrer" href="https://developer.nvidia.com/cuda-downloads">CUDA Toolkit</a>。如果你已经安装了 NVIDIA 驱动，建议根据 `nvidia-smi` 的结果选择相同的 CUDA Toolkit 版本，例如 <a target="_blank" rel="noopener noreferrer" href="https://developer.nvidia.com/cuda-12-2-0-download-archive">https://developer.nvidia.com/cuda-12-2-0-download-archive</a>，并且在安装过程中不要再次安装 NVIDIA Driver。根据安装后的提示信息设置适当的环境变量。
+
+验证：
+
+```bash
+nvcc --version
+```
+
+```console
+nvcc: NVIDIA (R) Cuda compiler driver
+Copyright (c) 2005-2023 NVIDIA Corporation
+Built on Tue_Jun_13_19:16:58_PDT_2023
+Cuda compilation tools, release 12.2, V12.2.91
+Build cuda_12.2.r12.2/compiler.32965470_0
+```
+
+然后下载 <a target="_blank" rel="noopener noreferrer" href="https://github.com/NVIDIA/cuda-samples/tree/master">CUDA Samples</a>，并切换到与 CUDA 版本一致的 tag：
+
+```bash
+git clone https://github.com/NVIDIA/cuda-samples.git && cd cuda-samples
+git checkout tags/v12.2
+```
+
+安装必要的 Packages：
+
+```bash
+sudo apt update && sudo apt-get install -y \
+    freeglut3-dev \
+    build-essential \
+    libx11-dev \
+    libxmu-dev \
+    libxi-dev \
+    libgl1-mesa-glx \
+    libglu1-mesa \
+    libglu1-mesa-dev \
+    libglfw3-dev \
+    libgles2-mesa-dev
+```
+
+编译可执行文件：
+
+```bash
+cd Samples/5_Domain_Specific/p2pBandwidthLatencyTest
+make
+```
+
+运行测试：
+
+```bash
+./p2pBandwidthLatencyTest
+```
+
+输出结果的示例如下：
+
+```console
+[P2P (Peer-to-Peer) GPU Bandwidth Latency Test]
+Device: 0, NVIDIA A100-SXM4-80GB, pciBusID: 4f, pciDeviceID: 0, pciDomainID:0
+Device: 1, NVIDIA A100-SXM4-80GB, pciBusID: 52, pciDeviceID: 0, pciDomainID:0
+Device: 2, NVIDIA A100-SXM4-80GB, pciBusID: 56, pciDeviceID: 0, pciDomainID:0
+Device: 3, NVIDIA A100-SXM4-80GB, pciBusID: 57, pciDeviceID: 0, pciDomainID:0
+Device: 4, NVIDIA A100-SXM4-80GB, pciBusID: ce, pciDeviceID: 0, pciDomainID:0
+Device: 5, NVIDIA A100-SXM4-80GB, pciBusID: d1, pciDeviceID: 0, pciDomainID:0
+Device: 6, NVIDIA A100-SXM4-80GB, pciBusID: d5, pciDeviceID: 0, pciDomainID:0
+Device: 7, NVIDIA A100-SXM4-80GB, pciBusID: d6, pciDeviceID: 0, pciDomainID:0
+Device=0 CAN Access Peer Device=1
+Device=0 CAN Access Peer Device=2
+Device=0 CAN Access Peer Device=3
+Device=0 CAN Access Peer Device=4
+Device=0 CAN Access Peer Device=5
+Device=0 CAN Access Peer Device=6
+Device=0 CAN Access Peer Device=7
+Device=1 CAN Access Peer Device=0
+Device=1 CAN Access Peer Device=2
+Device=1 CAN Access Peer Device=3
+Device=1 CAN Access Peer Device=4
+Device=1 CAN Access Peer Device=5
+Device=1 CAN Access Peer Device=6
+Device=1 CAN Access Peer Device=7
+Device=2 CAN Access Peer Device=0
+Device=2 CAN Access Peer Device=1
+Device=2 CAN Access Peer Device=3
+Device=2 CAN Access Peer Device=4
+Device=2 CAN Access Peer Device=5
+Device=2 CAN Access Peer Device=6
+Device=2 CAN Access Peer Device=7
+Device=3 CAN Access Peer Device=0
+Device=3 CAN Access Peer Device=1
+Device=3 CAN Access Peer Device=2
+Device=3 CAN Access Peer Device=4
+Device=3 CAN Access Peer Device=5
+Device=3 CAN Access Peer Device=6
+Device=3 CAN Access Peer Device=7
+Device=4 CAN Access Peer Device=0
+Device=4 CAN Access Peer Device=1
+Device=4 CAN Access Peer Device=2
+Device=4 CAN Access Peer Device=3
+Device=4 CAN Access Peer Device=5
+Device=4 CAN Access Peer Device=6
+Device=4 CAN Access Peer Device=7
+Device=5 CAN Access Peer Device=0
+Device=5 CAN Access Peer Device=1
+Device=5 CAN Access Peer Device=2
+Device=5 CAN Access Peer Device=3
+Device=5 CAN Access Peer Device=4
+Device=5 CAN Access Peer Device=6
+Device=5 CAN Access Peer Device=7
+Device=6 CAN Access Peer Device=0
+Device=6 CAN Access Peer Device=1
+Device=6 CAN Access Peer Device=2
+Device=6 CAN Access Peer Device=3
+Device=6 CAN Access Peer Device=4
+Device=6 CAN Access Peer Device=5
+Device=6 CAN Access Peer Device=7
+Device=7 CAN Access Peer Device=0
+Device=7 CAN Access Peer Device=1
+Device=7 CAN Access Peer Device=2
+Device=7 CAN Access Peer Device=3
+Device=7 CAN Access Peer Device=4
+Device=7 CAN Access Peer Device=5
+Device=7 CAN Access Peer Device=6
+
+***NOTE: In case a device doesn't have P2P access to other one, it falls back to normal memcopy procedure.
+So you can see lesser Bandwidth (GB/s) and unstable Latency (us) in those cases.
+
+P2P Connectivity Matrix
+     D\D     0     1     2     3     4     5     6     7
+     0	     1     1     1     1     1     1     1     1
+     1	     1     1     1     1     1     1     1     1
+     2	     1     1     1     1     1     1     1     1
+     3	     1     1     1     1     1     1     1     1
+     4	     1     1     1     1     1     1     1     1
+     5	     1     1     1     1     1     1     1     1
+     6	     1     1     1     1     1     1     1     1
+     7	     1     1     1     1     1     1     1     1
+Unidirectional P2P=Disabled Bandwidth Matrix (GB/s)
+   D\D     0      1      2      3      4      5      6      7 
+     0 1540.93  17.55  18.02  18.12  19.68  21.03  21.01  21.00 
+     1  18.17 1539.41  18.01  18.15  19.70  21.02  21.03  21.02 
+     2  18.04  18.34 1548.56  18.24  20.26  21.02  20.96  21.00 
+     3  18.22  18.38  18.05 1540.93  19.65  19.73  20.96  20.97 
+     4  19.77  19.77  19.77  19.74 1386.42  18.14  18.14  18.14 
+     5  19.81  19.80  21.01  21.05  18.13 1568.78  18.06  18.12 
+     6  19.80  19.77  19.80  20.85  18.15  18.17 1575.10  18.17 
+     7  19.68  19.80  19.80  19.76  18.07  18.19  18.17 1579.88 
+Unidirectional P2P=Enabled Bandwidth (P2P Writes) Matrix (GB/s)
+   D\D     0      1      2      3      4      5      6      7 
+     0 1536.38  20.56  24.18  24.18  18.46  18.55  18.60  18.60 
+     1  24.18 1550.10  20.56  24.18  18.59  18.59  18.52  18.42 
+     2  24.18  24.18 1550.10  20.56  18.60  18.60  18.60  18.60 
+     3  24.18  24.18  24.18 1543.97  18.51  18.54  17.32  18.59 
+     4  18.57  18.60  18.58  18.60 1393.84  20.56  24.18  25.01 
+     5  18.60  18.58  18.59  18.60  24.53 1587.91  20.56  25.21 
+     6  18.59  18.60  18.60  18.60  25.22  25.22 1586.29  20.56 
+     7  18.54  18.48  18.34  18.55  24.18  24.18  25.15 1587.91 
+Bidirectional P2P=Disabled Bandwidth Matrix (GB/s)
+   D\D     0      1      2      3      4      5      6      7 
+     0 1560.16  19.96  20.23  20.07  29.62  29.64  29.64  29.68 
+     1  20.04 1563.28  20.20  20.26  29.74  29.64  29.66  29.67 
+     2  20.28  20.31 1602.56  20.25  28.36  28.36  29.60  29.66 
+     3  20.16  20.09  20.11 1564.06  28.32  28.34  28.33  28.34 
+     4  28.47  28.43  28.45  28.42 1414.03  20.08  20.05  20.05 
+     5  27.56  28.46  29.14  29.64  19.93 1601.74  20.11  20.02 
+     6  27.52  28.41  29.59  29.58  20.09  20.12 1605.86  20.04 
+     7  27.53  27.44  28.12  28.30  20.07  20.12  20.12 1606.68 
+Bidirectional P2P=Enabled Bandwidth Matrix (GB/s)
+   D\D     0      1      2      3      4      5      6      7 
+     0 1562.50  41.11  41.11  41.11  37.19  36.79  37.16  37.14 
+     1  41.10 1563.28  41.10  41.10  37.15  37.19  37.18  37.12 
+     2  41.11  41.10 1564.06  41.11  37.19  37.18  37.14  37.17 
+     3  41.10  41.11  41.11 1560.16  37.16  37.17  36.99  37.18 
+     4  37.19  37.18  37.19  37.18 1444.75  50.43  50.41  50.26 
+     5  37.17  37.15  37.19  37.19  50.40 1595.20  50.43  50.41 
+     6  37.16  37.19  37.17  37.19  50.42  50.40 1602.56  41.12 
+     7  37.17  37.17  37.18  37.00  50.12  50.42  50.42 1596.83 
+P2P=Disabled Latency Matrix (us)
+   GPU     0      1      2      3      4      5      6      7 
+     0   2.84  20.50  20.47  20.54  21.28  21.49  21.29  20.48 
+     1  20.37   2.48  20.54  20.54  21.44  12.71  13.13  21.43 
+     2  20.49  17.73   2.33  20.53  20.18  13.08  17.06  15.57 
+     3  19.78  20.31  20.47   2.37  20.04  14.41  21.45  21.38 
+     4  21.25  21.38  18.55  21.44   2.43  15.51  15.46  17.60 
+     5  21.15  12.89  17.77  16.36  18.93   2.29  12.54  19.32 
+     6  21.48  14.99  17.08  21.06  17.89  14.23   2.25  18.75 
+     7  21.48  21.01  19.98  21.47  20.09  14.09  17.62   2.51 
+
+   CPU     0      1      2      3      4      5      6      7 
+     0   2.38   5.89   5.65   5.55   5.96   5.93   5.89   5.73 
+     1   5.73   2.24   5.43   5.30   5.69   5.78   5.75   5.65 
+     2   5.41   5.32   2.24   5.28   5.64   5.66   5.69   5.58 
+     3   5.40   5.29   5.22   2.24   5.68   5.72   5.75   5.57 
+     4   5.66   5.49   5.48   5.43   2.36   5.86   5.97   5.89 
+     5   5.60   5.49   5.46   5.41   5.77   2.34   5.94   5.79 
+     6   5.59   5.50   5.48   5.44   5.82   5.89   2.33   5.84 
+     7   5.53   5.45   5.39   5.37   5.77   5.83   5.92   2.31 
+P2P=Enabled Latency (P2P Writes) Matrix (us)
+   GPU     0      1      2      3      4      5      6      7 
+     0   2.85   1.99   1.96   1.99   2.48   2.49   2.48   2.49 
+     1   1.74   2.51   1.69   1.67   2.25   2.25   2.23   2.25 
+     2   1.79   1.78   2.32   1.79   2.25   2.25   2.31   2.25 
+     3   1.78   1.79   1.84   2.38   2.25   2.24   2.24   2.25 
+     4   2.30   2.25   2.30   2.26   2.43   1.70   1.70   1.68 
+     5   2.26   2.26   2.25   2.25   1.70   2.29   1.70   1.70 
+     6   2.27   2.25   2.27   2.26   1.70   1.73   2.24   1.73 
+     7   2.27   2.27   2.25   2.30   1.72   1.76   1.72   2.49 
+
+   CPU     0      1      2      3      4      5      6      7 
+     0   2.26   1.59   1.63   1.60   1.62   1.60   1.63   1.56 
+     1   1.74   2.30   1.65   1.66   1.68   1.69   1.65   1.63 
+     2   1.76   1.68   2.34   1.67   1.69   1.64   1.59   1.59 
+     3   1.68   1.63   1.65   2.30   1.67   1.64   1.69   1.66 
+     4   1.88   1.76   1.79   1.77   2.39   1.75   1.76   1.77 
+     5   1.91   1.80   1.80   1.80   1.77   2.38   1.71   1.72 
+     6   1.84   1.75   1.76   1.83   1.81   1.79   2.40   1.75 
+     7   1.92   1.79   1.79   1.77   1.76   1.79   1.78   2.44 
+
+NOTE: The CUDA Samples are not meant for performance measurements. Results may vary when GPU Boost is enabled.
+```
 
 #### 其他
 
@@ -173,7 +468,7 @@ Desired=Unknown/Install/Remove/Purge/Hold
 hi  nvidia-driver-525-server 525.125.06-0ubuntu0.20.04.2 amd64        NVIDIA Server Driver metapackage
 ```
 
-### gpu-operator
+### GPU Operator
 
 #### helm template
 
@@ -194,7 +489,7 @@ helm template -n gpu-operator oci://tsz.io/t9kcharts/gpu-operator \
 
 #### 安装
 
-以上配置修改完成之后，就可以安装 gpu operator 了：
+以上配置修改完成之后，就可以安装 GPU Operator 了：
 
 ```bash
 kubectl create ns gpu-operator
@@ -230,7 +525,7 @@ nvidia-operator-validator
 t9k-node-feature-discovery-worker  
 ```
 
-查看 gpu operator 的配置：
+查看 GPU Operator 的配置：
 
 ```bash
 kubectl -n gpu-operator get clusterpolicy cluster-policy  
@@ -486,3 +781,5 @@ EnableGpuFirmwareLogs: 2
 ## 参考
 
 <https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/latest/getting-started.html>
+
+<https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/latest/release-notes.html>
