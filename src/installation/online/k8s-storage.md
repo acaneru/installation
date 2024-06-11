@@ -30,34 +30,37 @@ NFS 适合小规模或者测试场景，可通过 ansible 方便的安装，详�
     ```
 
 1. 安装 CSI driver
-    
-    TODO: DO NOT change the playbook; configure vars in inventory.
 
-    设置 Ceph CSI Driver 的变量（在` ks-clusters/t9k-playbooks/roles/ceph-csi/defaults/main.yml` 中）：
+    查看 Ceph CSI Driver 的变量（在 `../ks-clusters/t9k-playbooks/roles/ceph-csi/defaults/main.yml` 中）：
 
     ```yaml
     ceph:
-    manifests_dir: "{{ kube_config_dir }}/addons/ceph"
-    set_default_storage_class: true
-    namespace: cephfs-hdd
-    storage_class_name: cephfs-hdd
-    driver_name: cephfs-hdd.csi.ceph.com
-    cluster_id: <your-cluster-id>
-    fs_name: k8s_hdd
-    admin_id: k8s_hdd
-    admin_key: <your-admin-key>
-    metrics_port: 8681
-    monitors:
-    - "100.0.0.1:6789"
-    - "100.0.0.2:6789"
-    ...
+        manifests_dir: "{{ kube_config_dir }}/addons/ceph"
+        set_default_storage_class: true
+        namespace: cephfs-hdd
+        storage_class_name: cephfs-hdd
+        driver_name: cephfs-hdd.csi.ceph.com
+        cluster_id: <your-cluster-id>
+        fs_name: k8s_hdd
+        admin_id: k8s_hdd
+        admin_key: <your-admin-key>
+        metrics_port: 8681
+        monitors:
+        - "100.0.0.1:6789"
+        - "100.0.0.2:6789"
+        ...
     ```
 
     使用 ansible 安装 Ceph CSI Driver：
 
     ```bash
     ansible-playbook ../ks-clusters/t9k-playbooks/12-install-ceph-csi.yml \
-        -i inventory/inventory.ini
+        -i inventory/inventory.ini \
+        --become -K \
+        -e ceph.cluster_id=<your-cluster-id> \
+        -e ceph.admin_id="k8s_hdd" \
+        -e ceph.admin_key=<your-admin-key> \
+        -e '{"ceph": {"monitors": ["100.0.0.1:6789", "100.0.0.2:6789"]}}' 
     ```
 
 ## 使用 Lustre
