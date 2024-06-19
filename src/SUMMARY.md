@@ -69,6 +69,7 @@
         * [ansible vars](installation/appendix/ansible-vars.md)
         * [管理域名证书](installation/appendix/manage-domain-certificate.md)
         * [CRI 命令行工具](installation/appendix/container-runtime-cli.md)
+        * [集群管理安装配置](installation/appendix/cluster-admin-installation-configuration.md)
 * [集群管理 UI](cluster-admin-ui/index.md)
     * [总览](cluster-admin-ui/overview/index.md)
     * [节点]()
