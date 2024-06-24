@@ -67,6 +67,7 @@
         * [Helm Chart 修改](installation/appendix/modify-helm-chart.md)
         * [手动安装 MLNX_OFED 驱动](installation/appendix/manually-install-mlnx-ofed-driver.md)
         * [ansible vars](installation/appendix/ansible-vars.md)
+        * [ansible debugging](installation/appendix/ansible-debugging.md)
         * [管理域名证书](installation/appendix/manage-domain-certificate.md)
         * [CRI 命令行工具](installation/appendix/container-runtime-cli.md)
         * [集群管理安装配置](installation/appendix/cluster-admin-installation-configuration.md)
