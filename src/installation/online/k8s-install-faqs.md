@@ -223,7 +223,31 @@ Server:
 
 ### 未加入 K8s 集群
 
-Kubespray 添加节点的过程会安装 Docker，而移除节点的过程会卸载 Docker。我们可以修改 kubespray inventory 的配置来直接完成配置，具体见[ansible vars](../appendix/ansible-vars.md#group_varsalldockeryml)。
+Kubespray 添加节点的过程会安装 Docker，而移除节点的过程会卸载 Docker。我们可以修改 kubespray inventory 的配置来直接完成配置，具体见 [ansible vars](../appendix/ansible-vars.md#group_varsalldockeryml)。
+
+
+## 升级 linux kernel 后无法找到网卡
+
+通过以下命令可以升级 ubuntu 系统的 linux kernel：
+
+```bash
+sudo apt --fix-broken install linux-{image,headers}-5.15.0-107-generic
+sudo reboot
+```
+
+如果升级 kernel 后，节点无法 ssh 连接，物理连接后显示没有可用的网卡，根据[讨论](https://askubuntu.com/questions/1307447/network-not-working-updating-to-kernel-5-8-ubuntu-20-04)，原因是升级 kernel 时 `linux-modules-extra-*` 包缺失，安装对应版本的包并重启即可：
+
+```bash```
+$ dpkg -l | grep linux- | grep 5.15.0
+ii  linux-headers-5.15.0-107-generic      5.15.0-107.117~20.04.1            amd64        Linux kernel headers for version 5.15.0 on 64 bit x86 SMP
+ii  linux-hwe-5.15-headers-5.15.0-107     5.15.0-107.117~20.04.1            all          Header files related to Linux kernel version 5.15.0
+ii  linux-image-5.15.0-107-generic        5.15.0-107.117~20.04.1            amd64        Signed kernel image generic
+ii  linux-modules-5.15.0-107-generic      5.15.0-107.117~20.04.1            amd64        Linux kernel extra modules for version 5.15.0 on 64 bit x86 SMP
+
+$ sudo apt install linux-modules-extra-5.15.0-107-generic
+
+$ sudo reboot
+```
 
 ## 参考
 
