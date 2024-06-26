@@ -39,43 +39,13 @@
 
 ### 设置 CRI
 
-使用不同的容器运行环境，参考 [CRI 配置](./cri.md)。
+使用不同的容器运行时，请参考 [CRI 配置](./cri.md)。
 
 如需使用 <a target="_blank" rel="noopener noreferrer" href="https://kubernetes.io/docs/concepts/workloads/pods/user-namespaces/">User Namespaces</a>，参考 [设置 User Namespace](./k8s-userns.md)。
 
 ### 设置 CNI
 
-你需要为 K8s 集群选择一个合适的 [CNI（Container Network Interface）](https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/)，Kubespray 目前支持 cilium、calico、kube-ovn、weave、flannel 等 CNI。下面以常用的 cilium 和 calico 为例展示如何配置。
-
-#### cilium
-
-为了安装 [Cilium](https://docs.cilium.io/en/stable/) 作为 CNI，在 `k8s-cluster.yml` 中设置如下参数即可：
-
-```yaml
-kube_network_plugin: cilium
-```
-
-如果需要启用 Cilium 的 [L2 Announcement 功能](https://docs.cilium.io/en/stable/network/l2-announcements/)，在 `k8s-cluster.yml` 中设置如下参数即可：
-
-```yaml
-cilium_l2announcements: true
-cilium_kube_proxy_replacement: strict
-cilium_config_extra_vars:
-  k8s-client-qps: 30
-  k8s-client-burst: 50
-```
-
-更多详细参数设置请参考 [Kubespray 文档](https://github.com/kubernetes-sigs/kubespray/blob/master/docs/CNI/cilium.md)。
-
-#### calico
-
-为了安装 [Calico](https://docs.tigera.io/calico/latest/about/) 作为 CNI，在 `k8s-cluster.yml` 中设置如下参数即可：
-
-```yaml
-kube_network_plugin: calico
-```
-
-更多详细参数设置请参考 [Kubespray 文档](https://github.com/kubernetes-sigs/kubespray/blob/master/docs/CNI/calico.md)。
+使用不同的容器网络实现，请参考 [CNI 配置](./cni.md)。
 
 ### 设置 Ingress
 
@@ -86,7 +56,6 @@ kube_network_plugin: calico
 ```yaml
 ingress_nginx_enabled: true
 ```
-
 
 ### 设置 Load Balancer
 
