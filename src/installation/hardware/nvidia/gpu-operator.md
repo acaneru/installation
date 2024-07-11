@@ -4,22 +4,43 @@
 TODO: 1. 支持更多 OS/Kernel 版本组合
 ```
 
+## 目标
+
+在集群中安装 NVIDIA GPU Operator v24.3.0<sup><a href="#参考">[1]</a></sup>，以支持在集群内使用 NVIDIA GPU。
+
 ## 前置条件
 
 节点需要满足以下条件：
 
-1. 已经加入 K8s 集群
-1. 安装有 NVIDIA GPU 硬件
-1. 没有安装 NVIDIA Driver
+1. 已安装 K8s 集群
+2. 集群中含有安装了 NVIDIA GPU 硬件的节点
 
-实际测试过的安装环境：
+## 兼容性
 
-1. 节点 OS:
-    * Ubuntu 20.04 server
-1. Kernel version: 
-    * 5.4.0-144-generic
-    * 5.4.0-153-generic 
-    * 5.4.0-155-generic 
+### GPU Operator v24.3.0
+
+GPU Operator v24.3.0 兼容性<sup><a href="#参考">[2]</a></sup>如下所示：
+
+|Operating System|Kubernetes|Red Hat OpenShift|VMWare vSphere with Tanzu|Rancher Kubernetes Engine2|HPE Ezmeral Runtime Enterprise| Canonical MicroK8s |
+|--------------|--------------|--------------|--------------|--------------|--------------| -------------- |
+|Ubuntu 20.04 LTS|1.22—1.30| |7.0 U3c, 8.0 U2|1.22—1.30| | |
+|Ubuntu 22.04 LTS|1.22—1.30| |8.0 U2|1.22—1.30| |1.26|
+|Red Hat Core OS| |4.12—4.15| | | | |
+| Red Hat Enterprise Linux 8.4,8.6—8.9|1.22—1.30| | |1.22—1.30| | |
+|Red Hat Enterprise Linux 8.4, 8.5| | | | |5.5| |
+
+### 驱动兼容性
+
+GPU Operator v24.3.0 可以通过在节点上部署 GPU 驱动容器来安装 GPU 驱动， 这种方式安装的驱动版本<sup><a href="#参考">[3]</a></sup>有：
+1. [550.90.07](https://docs.nvidia.com/datacenter/tesla/tesla-release-notes-550-90-07/index.html) (推荐)
+2. [550.54.15](https://docs.nvidia.com/datacenter/tesla/tesla-release-notes-550-54-15/index.html) (默认)
+3. [535.183.01](https://docs.nvidia.com/datacenter/tesla/tesla-release-notes-535-183-01/index.html)
+4. [470.256.02](https://docs.nvidia.com/datacenter/tesla/tesla-release-notes-470-256-02/index.html)
+
+目前的 GPU 驱动容器兼容下列系统<sup><a href="#参考">[2]</a></sup>：
+* Ubuntu 22.04 LTS, 内核版本 5.15
+* Ubuntu 20.04 LTS, 内核版本 5.4 和 5.15
+如果 GPU 驱动容器无法兼容你的系统，请在节点上<a href="#可选-nvidia-驱动">手动安装 GPU 驱动</a>：
 
 ## ansible 脚本安装
 
@@ -95,7 +116,9 @@ ansible-playbook ../ks-clusters/t9k-playbooks/3-install-gpu-operator.yml \
 
 ## 手动安装
 
-### NVIDIA 驱动
+### [可选] NVIDIA 驱动
+
+你可以选择在节点上手动安装 NVIDIA 驱动，然后再安装 GPU Operator。在下面的演示中，安装的驱动版本是 `nvidia-driver-525-server`，你可以根据系统兼容性、GPU 硬件兼容性自行选择驱动版本。
 
 #### 安装
 
@@ -470,112 +493,90 @@ hi  nvidia-driver-525-server 525.125.06-0ubuntu0.20.04.2 amd64        NVIDIA Ser
 
 ### GPU Operator
 
-#### helm template
-
-运行 helm template 命令生成 template.yaml，并且：
-
-1. 替换 node-feature-discovery 镜像
-1. 禁用 driver
-
-```bash
-helm template -n gpu-operator oci://tsz.io/t9kcharts/gpu-operator \
-  --version v22.9.2 \
-  --include-crds \
-  --set "node-feature-discovery.image.repository=t9kpublic/node-feature-discovery","node-feature-discovery.image.tag=v0.10.1","driver.enabled=false" \
-  > template.yaml
-```
-
-其中 Helm Chart 来源见 [附录：GPU Operator 的 Helm Chart 修改](../../appendix/modify-helm-chart.md#gpu-operator)。
-
 #### 安装
 
-以上配置修改完成之后，就可以安装 GPU Operator 了：
+运行下列命令即可通过 Helm Chart 安装 GPU Operator
 
 ```bash
-kubectl create ns gpu-operator
-kubectl -n gpu-operator apply -f template.yaml
+helm repo add nvidia https://helm.ngc.nvidia.com/nvidia 
+helm repo update
+helm install --wait --generate-name \
+    --version v24.3.0 \
+    -n gpu-operator --create-namespace \
+    nvidia/gpu-operator
 ```
+
+<aside class="note">
+<div class="title">注意</div>
+
+GPU Operator 安装的组件使用的镜像无法从国内直接访问，如果你的集群节点无法访问外网，请参考<a href="#集群节点无法访问外网
+">附录->集群节点无法访问外网</a>，将这些镜像拷贝到国内容器镜像服务中，然后再安装 GPU Operator
+
+</aside>
 
 #### 验证
 
-GPU Operator 安装完成后，在 namespace `gpu-operator` 中查看 GPU Operator 安装的组件：
+GPU Operator 安装完成后，运行下列命令查看安装的组件：
+```bash
+$ kubectl -n gpu-operator get deploy
+NAME                                         READY   UP-TO-DATE   AVAILABLE   AGE
+gpu-operator                                 1/1     1            1           37d
+release-name-node-feature-discovery-gc       1/1     1            1           37d
+release-name-node-feature-discovery-master   1/1     1            1           37d
+$ kubectl -n gpu-operator get ds
+NAME                                         DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR                                                          AGE
+gpu-feature-discovery                        2         2         2       2            2           nvidia.com/gpu.deploy.gpu-feature-discovery=true                       37d
+nvidia-container-toolkit-daemonset           2         2         2       2            2           nvidia.com/gpu.deploy.container-toolkit=true                           37d
+nvidia-dcgm-exporter                         2         2         2       2            2           nvidia.com/gpu.deploy.dcgm-exporter=true                               37d
+nvidia-device-plugin-daemonset               2         2         2       2            2           nvidia.com/gpu.deploy.device-plugin=true                               37d
+nvidia-driver-daemonset                      0         0         0       0            0           nvidia.com/gpu.deploy.driver=true                                      37d
+nvidia-mig-manager                           1         1         1       1            1           nvidia.com/gpu.deploy.mig-manager=true                                 37d
+nvidia-operator-validator                    2         2         2       2            2           nvidia.com/gpu.deploy.operator-validator=true                          37d
+release-name-node-feature-discovery-worker   10        10        10      10           10          <none>                                                                 37d
+```
+
+查看 GPU Operator 的配置<sup><a href="#参考">[4]</a></sup>：
 
 ```bash
-kubectl -n gpu-operator get deploy
+$ kubectl -n gpu-operator get clusterpolicy cluster-policy  
+NAME             STATUS   AGE
+cluster-policy   ready    2024-05-21T07:00:15Z
 ```
 
-```
-NAME                                READY   UP-TO-DATE   AVAILABLE   AGE
-gpu-operator                        1/1     1            1           18d
-t9k-node-feature-discovery-master   1/1     1            1           18d
-```
+#### 组件
 
-```bash
-kubectl -n gpu-operator get ds
-```
+GPU Operator 会在集群内安装的多个组件<sup><a href="#参考">[3]</a></sup>，下面对一些重要的组件进行说明。
 
-```
-NAME
-gpu-feature-discovery               
-nvidia-container-toolkit-daemonset  
-nvidia-dcgm-exporter                
-nvidia-device-plugin-daemonset      
-nvidia-mig-manager                  
-nvidia-operator-validator           
-t9k-node-feature-discovery-worker  
-```
+##### 全局组件
 
-查看 GPU Operator 的配置：
-
-```bash
-kubectl -n gpu-operator get clusterpolicy cluster-policy  
-```
-
-```
-NAME             AGE
-cluster-policy   2d18h
-```
-
-#### 安装的组件信息
-
-##### 全局
-
-gpu-operator：
-
+Deployment gpu-operator：
 * GPU Operator 的运行主体，他会在集群中部署与 NVIDIA GPU 相关的组件。
 * 如何确认正常工作？Pod 运行正常，并且 NVIDIA GPU 相关的组件已经被部署在集群中。
 
-[node-feature-discovery](https://github.com/kubernetes-sigs/node-feature-discovery)（master & worker）：
-
-* 运行在所有节点上，检测集群节点的硬件信息、系统信息，并将这些信息记录在节点标签上，这些标签前缀是 `feature.node.kubernetes.io/`。GPU Operator 依赖 node feature discovery 添加的节点标签。
+node-feature-discovery（master & worker）：
+* GPU Operator 依赖的第三方组件。运行在所有节点上，检测集群节点的硬件信息、系统信息，并将这些信息记录在节点标签上，这些标签前缀是 feature.node.kubernetes.io/。GPU Operator 依赖 node feature discovery 添加的节点标签。
 * 如何确认正常工作？Pod 运行正常，并且可以在节点上查看到相关的节点标签。
-
 
 ##### NVIDIA GPU 节点
 
-下面这些组件只能运行在含有 NVIDIA GPU 的节点上
+下面的组件只能运行在含有 NVIDIA GPU 的节点上
 
 [gpu-feature-discovery](https://github.com/NVIDIA/gpu-feature-discovery)：
-
-* 根据节点上的 GPU 信息来生成节点标签，标签前缀是 `nvidia.com/`
+* 根据节点上的 GPU 信息来生成节点标签，标签前缀是 nvidia.com/
 * 如何确认正常工作？Pod 运行正常，并且可以在节点上查看到相关的节点标签。
 
-[nvidia-container-toolkit](https://github.com/NVIDIA/nvidia-container-toolkit): 
-
+[nvidia-container-toolkit](https://github.com/NVIDIA/nvidia-container-toolkit):  
 * 运行在含有 NVIDIA GPU 的节点上，在节点上安装 nvidia container toolkit
 * 如何确认正常工作？Pod 运行正常，并且可以在节点主机上查看到安装的 nvidia container toolkit
 
-nvidia-dcgm-exporter：
-
-* 在节点上安装 [dcgm-exporter](https://github.com/NVIDIA/dcgm-exporter)，exposes GPU metrics exporter for [Prometheus](https://prometheus.io/) leveraging [NVIDIA DCGM](https://developer.nvidia.com/dcgm).
+[nvidia-dcgm-exporter](https://github.com/NVIDIA/dcgm-exporter)：
+* 在节点上安装 dcgm-exporter，将 GPU 的监控数据以 [Prometheus](https://prometheus.io/) metrics 形式暴露出来。
 * 如何确认正常工作？Pod 运行正常，并且可以通过 Pod 上 dcgm exporter 服务查询 GPU metrics。
 
 [nvidia-device-plugin](https://github.com/NVIDIA/k8s-device-plugin)：
-
 * 将 NVIDIA GPU 注册为 K8s 扩展资源。
 * 如何确认正常工作？Pod 运行正常，可以在含有 GPU 的节点上查看到 NVIDIA GPU 扩展资源。
-
-```yaml
+```bash
 $ kubectl get node z02 -o json | jq .status.capacity
 {
   "cpu": "32",
@@ -588,16 +589,21 @@ $ kubectl get node z02 -o json | jq .status.capacity
   "tensorstack.dev/test": "100"
 }
 ```
-   
-nvidia-mig-manager
 
-* 运行在 GPU 支持 MIG 的节点上，The NVIDIA MIG manager is a Kubernetes component capable of repartitioning GPUs into different MIG configurations in an easy and intuitive way. Users simply add a label with their desired MIG configuration to a node, and the MIG manager takes all the steps necessary to make sure it gets applied. This includes shutting down all attached GPU clients, performing the MIG configuration itself, and then bringing those clients back online once the process is complete. Available configurations are stored in a configMap in the cluster, and the MIG manager uses the MIG partition editor to carry out the actual MIG configuration under the hood.
+nvidia-driver-daemonset
+* nvidia-driver-daemonset 只会运行在没有安装 GPU 驱动的节点上，作用是为节点安装 GPU 驱动容器。nvidia-driver-daemonset 中运行了下列两个组件：
+  * [k8s-driver-manager](https://github.com/NVIDIA/k8s-driver-manager)：为 GPU Driver Container 的安装做准备工作。
+  * [GPU Driver Container](https://github.com/NVIDIA/gpu-driver-container)：通过容器提供 NVIDIA GPU 驱动。
+* 如何确认正常工作？GPU 驱动容器可以正常运行在未安装 GPU 驱动的节点上。
+
+[nvidia-mig-manager](https://github.com/NVIDIA/mig-parted)
+* 只会运行在 GPU 支持 [MIG](https://docs.nvidia.com/datacenter/tesla/mig-user-guide/index.html) 模式的节点上，作用是支持以 MIG 形式共享 GPU。具体地，当节点启用 MIG GPU 共享模式时，nvidia-mig-manager 会根据配置将一个 MIG GPU 划分为多个 [MIG GPU 实例](https://docs.nvidia.com/datacenter/tesla/mig-user-guide/index.html#concepts:~:text=A%20GPU%20Instance,number%20of%20SMs.)。
 * 如何确认正常工作？Pod 运行正常
 
-nvidia-operator-validator   
-
-* The Validator for NVIDIA GPU Operator runs as a Daemonset and ensures that all components are working as expected on all GPU nodes. It runs through series of validations via InitContainers for each component and writes out status file as a result under /run/nvidia/validations. These status files allow each component to verify for their dependencies and start in correct order.
+[nvidia-operator-validator](https://github.com/NVIDIA/gpu-operator/tree/v24.3.0/validator)
+* 验证 GPU Operator 的多个组件是否正常工作。
 * 如何确认正常工作？Pod 运行正常，Pod 日志显示 all validations are successful。
+
 
 ## 安装后配置
 
@@ -739,7 +745,7 @@ spec:
 EOF
 ```
 
-## 注意事项
+## 附录
 
 ### Disable GSP
 
@@ -778,8 +784,125 @@ EnableGpuFirmware: 0
 EnableGpuFirmwareLogs: 2
 ```
 
+### 集群节点无法访问外网
+
+当你的集群节点无法下载外网的镜像时，你可以参考下面的示例，先将镜像拷贝到国内的容器镜像服务中，然后再安装 gpu operator。下面的示例使用的国内镜像仓库是 tsz.io，请将其替换为你的镜像仓库。
+
+将下列的镜像列表放入文件 `image.mirror.txt` 中，每一行 # 前面是 GPU Operator 使用的镜像名称，# 后面是你想要复制的容器镜像名称：
+```text
+registry.k8s.io/nfd/node-feature-discovery:v0.15.4#tsz.io/t9kmirror/node-feature-discovery:v0.15.4
+nvcr.io/nvidia/gpu-operator:v24.3.0#tsz.io/t9kmirror/gpu-operator:v24.3.0
+nvcr.io/nvidia/cuda:12.4.1-base-ubi8#tsz.io/t9kmirror/cuda:12.4.1-base-ubi8
+nvcr.io/nvidia/cloud-native/gpu-operator-validator:v24.3.0#tsz.io/t9kmirror/cloud-native/gpu-operator-validator:v24.3.0
+nvcr.io/nvidia/driver:550.54.15-ubuntu20.04#tsz.io/t9kmirror/driver:550.54.15-ubuntu20.04
+nvcr.io/nvidia/driver:550.54.15-ubuntu22.04#tsz.io/t9kmirror/driver:550.54.15-ubuntu22.04
+nvcr.io/nvidia/cloud-native/k8s-driver-manager:v0.6.8#tsz.io/t9kmirror/cloud-native/k8s-driver-manager:v0.6.8
+nvcr.io/nvidia/cloud-native/k8s-kata-manager:v0.2.0#tsz.io/t9kmirror/cloud-native/k8s-kata-manager:v0.2.0
+nvcr.io/nvidia/cloud-native/vgpu-device-manager:v0.2.6#tsz.io/t9kmirror/cloud-native/vgpu-device-manager:v0.2.6
+nvcr.io/nvidia/cloud-native/k8s-cc-manager:v0.1.1#tsz.io/t9kmirror/cloud-native/k8s-cc-manager:v0.1.1
+nvcr.io/nvidia/k8s/container-toolkit:v1.15.0-ubuntu20.04#tsz.io/t9kmirror/k8s/container-toolkit:v1.15.0-ubuntu20.04
+nvcr.io/nvidia/k8s-device-plugin:v0.15.0#tsz.io/t9kmirror/k8s-device-plugin:v0.15.0
+nvcr.io/nvidia/cloud-native/dcgm:3.3.5-1-ubuntu22.04#tsz.io/t9kmirror/cloud-native/dcgm:3.3.5-1-ubuntu22.04
+nvcr.io/nvidia/k8s/dcgm-exporter:3.3.5-3.4.1-ubuntu22.04#tsz.io/t9kmirror/k8s/dcgm-exporter:3.3.5-3.4.1-ubuntu22.04
+nvcr.io/nvidia/cloud-native/k8s-mig-manager:v0.7.0-ubuntu20.04#tsz.io/t9kmirror/cloud-native/k8s-mig-manager:v0.7.0-ubuntu20.04
+nvcr.io/nvidia/kubevirt-gpu-device-plugin:v1.2.7#tsz.io/t9kmirror/kubevirt-gpu-device-plugin:v1.2.7
+```
+
+然后运行下列脚本完成镜像拷贝
+```bash
+#!/bin/bash
+
+# Specify the file to read
+file="image.mirror.txt"
+
+# Check if the file exists
+if [[ -f "$file" ]]; then
+   # Read the file line by line
+   while IFS= read -r line
+   do
+       # Print each line
+       oldImage="${line%%#*}"
+       newImage="${line##*#}"
+       docker pull $oldImage
+       docker tag $oldImage $newImage
+       docker push $newImage
+   done < "$file"
+else
+   echo "$file not found."
+fi
+```
+
+最后运行下列命令安装 GPU Operator：
+```bash
+helm repo add nvidia https://helm.ngc.nvidia.com/nvidia 
+helm repo update
+helm install --wait --generate-name \
+    --version v24.3.0 \
+    -n gpu-operator --create-namespace \
+ --set "node-feature-discovery.image.repository=tsz.io/t9kmirror/node-feature-discovery","node-feature-discovery.image.tag=v0.15.4" \
+ --set "validator.repository=tsz.io/t9kmirror/cloud-native" \
+ --set "operator.repository=tsz.io/t9kmirror" \
+ --set "driver.repository=tsz.io/t9kmirror" \
+ --set "driver.manager.repository=tsz.io/t9kmirror/cloud-native" \
+ --set "toolkit.repository=tsz.io/t9kmirror/k8s" \
+ --set "devicePlugin.repository=tsz.io/t9kmirror","devicePlugin.version=v0.15.0" \
+ --set "dcgm.repository=tsz.io/t9kmirror/cloud-native" \
+ --set "dcgmExporter.repository=tsz.io/t9kmirror/k8s" \
+ --set "gfd.repository=tsz.io/t9kmirror" \
+ --set "migManager.repository=tsz.io/t9kmirror/cloud-native" \
+ --set "nodeStatusExporter.repository=tsz.io/t9kmirror/cloud-native" \
+ --set "gds.repository=tsz.io/t9kmirror/cloud-native" \
+ --set "vgpuManager.driverManager.repository=tsz.io/t9kmirror/cloud-native" \
+ --set "vgpuDeviceManager.repository=tsz.io/t9kmirror/cloud-native" \
+ --set "vfioManager.repository=tsz.io/t9kmirror" \
+ --set "vfioManager.driverManager.repository=tsz.io/t9kmirror/cloud-native" \
+ --set "kataManager.repository=tsz.io/t9kmirror/cloud-native" \
+ --set "sandboxDevicePlugin.repository=tsz.io/t9kmirror" \
+ --set "ccManager.repository=tsz.io/t9kmirror/cloud-native" \
+    nvidia/gpu-operator
+```
+
+### 安装 GPU Operator 其他版本
+
+如果你想安装其他版本的 GPU Operator，运行 helm install 命令时，添加命令行参数 --version 来指定你想要安装的版本。
+
+```bash
+helm install --wait --generate-name \
+    --version <version>\
+    -n gpu-operator --create-namespace \
+    nvidia/gpu-operator
+```
+
+### 升级 GPU Operator
+
+参考 NVIDIA GPU Operator [官方文档](https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/latest/upgrade.html#option-1-manually-upgrading-crds)
+
+注意：更新可能会导致正在使用 GPU 的工作负载出错。
+
+### 修改组件版本
+
+你可以通过 ClusterPolicy 来修改 GPU Operator 组件的版本，但请先确保组件版本与 GPU Operator 版本兼容。
+
+下面是修改 Device Plugin 版本的示例：
+首先运行下列命令查看当前的 Device Plugin 版本
+```bash
+$ k get clusterpolicy cluster-policy  -o yaml
+spec:
+  devicePlugin:
+    image: k8s-device-plugin
+    imagePullPolicy: IfNotPresent
+    repository: tsz.io/t9kmirror
+    version: v0.15.0
+```
+然后使用 `kubectl edit clusterpolicy cluster-policy` 来修改 `spec.devicePlugin.version` 字段。
+
+## 下一步
+
+如何管理 NVIDIA GPU： [配置 NVIDIA GPU](../../../resource-management/GPU/nvidia.md)
+
 ## 参考
 
-<https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/latest/getting-started.html>
-
-<https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/latest/release-notes.html>
+* [1] [NVIDIA GPU Operator/v24.3.0 Github](https://github.com/NVIDIA/gpu-operator/tree/v24.3.0)
+* [2] [GPU Operator 兼容平台](https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/latest/platform-support.html#supported-operating-systems-and-kubernetes-platforms)
+* [3] [GPU Operator Component Matrix](https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/latest/platform-support.html#gpu-operator-component-matrix)
+* [4] [ClusterPolicy 定义](https://github.com/NVIDIA/gpu-operator/blob/v24.3.0/api/v1/clusterpolicy_types.go#L1669)

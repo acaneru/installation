@@ -114,6 +114,8 @@
       * [T9k Scheduler](resource-management/t9k-scheduler.md)
          * [Queue](resource-management/queue.md)
          * [时长限制](resource-management/duration-keeper.md)
+    * [管理 GPU 资源]()
+      * [NVIDIA GPU](resource-management/GPU/nvidia.md)
     * [常见设置示例](resource-management/common-setting-example.md)
     * [附录](resource-management/appendix/index.md)
         * [Queue](resource-management/appendix/queue.md)
