@@ -1,0 +1,460 @@
+<!DOCTYPE HTML>
+<html lang="zh-cn" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>安装 Harbor Registry - TensorStack AI 计算平台 - 管理员手册</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../../../favicon.svg">
+        <link rel="shortcut icon" href="../../../favicon.png">
+        <link rel="stylesheet" href="../../../css/variables.css">
+        <link rel="stylesheet" href="../../../css/general.css">
+        <link rel="stylesheet" href="../../../css/chrome.css">
+        <link rel="stylesheet" href="../../../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../../../highlight.css">
+        <link rel="stylesheet" href="../../../tomorrow-night.css">
+        <link rel="stylesheet" href="../../../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../../../theme/sidebar.css">
+        <link rel="stylesheet" href="../../../theme/custom.css">
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../../../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../../../overview.html">概述</a></li><li class="spacer"></li><li class="chapter-item expanded "><a href="../../../installation/index.html"><strong aria-hidden="true">1.</strong> 安装</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../../installation/online/index.html"><strong aria-hidden="true">1.1.</strong> 在线安装</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../../installation/online/prepare-inventory.html"><strong aria-hidden="true">1.1.1.</strong> 设置 Inventory</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../../installation/online/inventory-advanced.html"><strong aria-hidden="true">1.1.1.1.</strong> 高级设置</a></li></ol></li><li class="chapter-item expanded "><a href="../../../installation/online/prepare-nodes.html"><strong aria-hidden="true">1.1.2.</strong> 准备节点</a></li><li class="chapter-item expanded "><a href="../../../installation/online/k8s-index.html"><strong aria-hidden="true">1.1.3.</strong> 安装 K8s</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../../installation/online/k8s-install.html"><strong aria-hidden="true">1.1.3.1.</strong> 基本安装</a></li><li class="chapter-item expanded "><a href="../../../installation/online/cri.html"><strong aria-hidden="true">1.1.3.2.</strong> CRI 配置</a></li><li class="chapter-item expanded "><a href="../../../installation/online/cni.html"><strong aria-hidden="true">1.1.3.3.</strong> CNI 配置</a></li><li class="chapter-item expanded "><a href="../../../installation/online/k8s-userns.html"><strong aria-hidden="true">1.1.3.4.</strong> 设置 User Namespace</a></li><li class="chapter-item expanded "><a href="../../../installation/online/k8s-storage.html"><strong aria-hidden="true">1.1.3.5.</strong> 设置集群存储</a></li><li class="chapter-item expanded "><a href="../../../installation/online/k8-ops.html"><strong aria-hidden="true">1.1.3.6.</strong> 集群维护</a></li><li class="chapter-item expanded "><a href="../../../installation/online/k8s-install-faqs.html"><strong aria-hidden="true">1.1.3.7.</strong> 常见问题</a></li><li class="chapter-item expanded "><a href="../../../installation/online/k8s-post-install.html"><strong aria-hidden="true">1.1.3.8.</strong> 其它安装后配置</a></li></ol></li><li class="chapter-item expanded "><a href="../../../installation/online/k8s-components/index.html"><strong aria-hidden="true">1.1.4.</strong> 安装 K8s 组件</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../../installation/online/k8s-components/istio.html"><strong aria-hidden="true">1.1.4.1.</strong> Istio</a></li><li class="chapter-item expanded "><a href="../../../installation/online/k8s-components/knative.html"><strong aria-hidden="true">1.1.4.2.</strong> Knative</a></li><li class="chapter-item expanded "><a href="../../../installation/online/k8s-components/metrics-server.html"><strong aria-hidden="true">1.1.4.3.</strong> Metrics Server</a></li><li class="chapter-item expanded "><a href="../../../installation/online/k8s-components/elastic-search.html"><strong aria-hidden="true">1.1.4.4.</strong> Elastic Search</a></li><li class="chapter-item expanded "><a href="../../../installation/online/k8s-components/monitoring.html"><strong aria-hidden="true">1.1.4.5.</strong> 监控相关</a></li><li class="chapter-item expanded "><a href="../../../installation/online/k8s-components/gatekeeper.html"><strong aria-hidden="true">1.1.4.6.</strong> Gatekeeper</a></li></ol></li><li class="chapter-item expanded "><a href="../../../installation/hardware/hardware.html"><strong aria-hidden="true">1.1.5.</strong> 硬件支持</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../../installation/hardware/nvidia/index.html"><strong aria-hidden="true">1.1.5.1.</strong> NVIDIA</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../../installation/hardware/nvidia/gpu-operator.html"><strong aria-hidden="true">1.1.5.1.1.</strong> GPU Operator</a></li><li class="chapter-item expanded "><a href="../../../installation/hardware/nvidia/network-operator.html"><strong aria-hidden="true">1.1.5.1.2.</strong> Network Operator</a></li></ol></li><li class="chapter-item expanded "><a href="../../../installation/hardware/amd/index.html"><strong aria-hidden="true">1.1.5.2.</strong> AMD</a></li><li class="chapter-item expanded "><a href="../../../installation/hardware/hygon/index.html"><strong aria-hidden="true">1.1.5.3.</strong> 海光 Hygon</a></li><li class="chapter-item expanded "><a href="../../../installation/hardware/huawei/index.html"><strong aria-hidden="true">1.1.5.4.</strong> 华为</a></li><li class="chapter-item expanded "><a href="../../../installation/hardware/iluvatar/index.html"><strong aria-hidden="true">1.1.5.5.</strong> 天数智芯 iluvatar</a></li><li class="chapter-item expanded "><a href="../../../installation/hardware/metax/index.html"><strong aria-hidden="true">1.1.5.6.</strong> 沐曦 MetaX</a></li><li class="chapter-item expanded "><a href="../../../installation/hardware/enflame/index.html"><strong aria-hidden="true">1.1.5.7.</strong> 燧原 enflame</a></li></ol></li><li class="chapter-item expanded "><a href="../../../installation/online/products/index.html"><strong aria-hidden="true">1.1.6.</strong> 安装 TensorStack AI</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../../installation/online/products/pre-install.html"><strong aria-hidden="true">1.1.6.1.</strong> 安装前准备</a></li><li class="chapter-item expanded "><a href="../../../installation/online/products/install.html"><strong aria-hidden="true">1.1.6.2.</strong> 安装产品</a></li><li class="chapter-item expanded "><a href="../../../installation/online/products/post-install.html"><strong aria-hidden="true">1.1.6.3.</strong> 安装后配置</a></li></ol></li><li class="chapter-item expanded "><a href="../../../installation/online/registry/harbor.html" class="active"><strong aria-hidden="true">1.1.7.</strong> 安装 Harbor Registry</a></li><li class="chapter-item expanded "><a href="../../../installation/online/storage-service/index.html"><strong aria-hidden="true">1.1.8.</strong> 安装存储服务</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../../installation/online/storage-service/minio.html"><strong aria-hidden="true">1.1.8.1.</strong> MinIO</a></li><li class="chapter-item expanded "><a href="../../../installation/online/storage-service/nfs.html"><strong aria-hidden="true">1.1.8.2.</strong> NFS</a></li><li class="chapter-item expanded "><a href="../../../installation/online/storage-service/ceph.html"><strong aria-hidden="true">1.1.8.3.</strong> Ceph</a></li><li class="chapter-item expanded "><a href="../../../installation/online/storage-service/lustre.html"><strong aria-hidden="true">1.1.8.4.</strong> Lustre</a></li><li class="chapter-item expanded "><a href="../../../installation/online/storage-service/gpfs.html"><strong aria-hidden="true">1.1.8.5.</strong> GPFS</a></li></ol></li><li class="chapter-item expanded "><a href="../../../installation/online/correctness-checking.html"><strong aria-hidden="true">1.1.9.</strong> 正确性检查</a></li></ol></li><li class="chapter-item expanded "><a href="../../../installation/offline/index.html"><strong aria-hidden="true">1.2.</strong> 离线安装</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../../installation/offline/prepare-offline-packages/index.html"><strong aria-hidden="true">1.2.1.</strong> 准备离线安装包</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../../installation/offline/prepare-offline-packages/kubespray.html"><strong aria-hidden="true">1.2.1.1.</strong> Kubespray</a></li><li class="chapter-item expanded "><a href="../../../installation/offline/prepare-offline-packages/k8s-components.html"><strong aria-hidden="true">1.2.1.2.</strong> K8s 组件</a></li><li class="chapter-item expanded "><a href="../../../installation/offline/prepare-offline-packages/products.html"><strong aria-hidden="true">1.2.1.3.</strong> 产品</a></li></ol></li><li class="chapter-item expanded "><a href="../../../installation/offline/install/index.html"><strong aria-hidden="true">1.2.2.</strong> 安装</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../../installation/offline/install/k8s.html"><strong aria-hidden="true">1.2.2.1.</strong> K8s</a></li><li class="chapter-item expanded "><a href="../../../installation/offline/install/k8s-components.html"><strong aria-hidden="true">1.2.2.2.</strong> K8s 组件</a></li><li class="chapter-item expanded "><a href="../../../installation/offline/install/products.html"><strong aria-hidden="true">1.2.2.3.</strong> 产品</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="../../../installation/update/index.html"><strong aria-hidden="true">1.3.</strong> 产品升级</a></li><li class="chapter-item expanded "><a href="../../../installation/appendix/index.html"><strong aria-hidden="true">1.4.</strong> 附录</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../../installation/appendix/install-docker.html"><strong aria-hidden="true">1.4.1.</strong> 在线安装 Docker</a></li><li class="chapter-item expanded "><a href="../../../installation/appendix/install-docker-compose.html"><strong aria-hidden="true">1.4.2.</strong> 在线安装 Docker Compose</a></li><li class="chapter-item expanded "><a href="../../../installation/appendix/configure-docker-insecure-registry.html"><strong aria-hidden="true">1.4.3.</strong> 配置 Docker Insecure Registry</a></li><li class="chapter-item expanded "><a href="../../../installation/appendix/install-s3cmd.html"><strong aria-hidden="true">1.4.4.</strong> 在线安装 s3cmd</a></li><li class="chapter-item expanded "><a href="../../../installation/appendix/k8s-install-notes.html"><strong aria-hidden="true">1.4.5.</strong> 安装 K8s 注释</a></li><li class="chapter-item expanded "><a href="../../../installation/appendix/generate-k8s-file-and-image-list.html"><strong aria-hidden="true">1.4.6.</strong> 生成 K8s 文件和镜像列表</a></li><li class="chapter-item expanded "><a href="../../../installation/appendix/generate-t9k-product-image-list.html"><strong aria-hidden="true">1.4.7.</strong> 生成 T9k 产品镜像列表</a></li><li class="chapter-item expanded "><a href="../../../installation/appendix/modify-helm-chart.html"><strong aria-hidden="true">1.4.8.</strong> Helm Chart 修改</a></li><li class="chapter-item expanded "><a href="../../../installation/appendix/manually-install-mlnx-ofed-driver.html"><strong aria-hidden="true">1.4.9.</strong> 手动安装 MLNX_OFED 驱动</a></li><li class="chapter-item expanded "><a href="../../../installation/appendix/ansible-vars.html"><strong aria-hidden="true">1.4.10.</strong> ansible vars</a></li><li class="chapter-item expanded "><a href="../../../installation/appendix/ansible-debugging.html"><strong aria-hidden="true">1.4.11.</strong> ansible debugging</a></li><li class="chapter-item expanded "><a href="../../../installation/appendix/manage-domain-certificate.html"><strong aria-hidden="true">1.4.12.</strong> 管理域名证书</a></li><li class="chapter-item expanded "><a href="../../../installation/appendix/container-runtime-cli.html"><strong aria-hidden="true">1.4.13.</strong> CRI 命令行工具</a></li><li class="chapter-item expanded "><a href="../../../installation/appendix/cluster-admin-installation-configuration.html"><strong aria-hidden="true">1.4.14.</strong> 集群管理安装配置</a></li></ol></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">TensorStack AI 计算平台 - 管理员手册</h1>
+
+                    <div class="right-buttons">
+                        <a href="../../../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+                        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="安装-harbor"><a class="header" href="#安装-harbor">安装 Harbor</a></h1>
+<p>本文介绍在一个 Ubuntu 系统中安装 Harbor，以提供本地的快速容器镜像服务。</p>
+<h2 id="前提条件"><a class="header" href="#前提条件">前提条件</a></h2>
+<p>Harbor 对于节点有以下要求，详见 <a target="_blank" rel="noopener noreferrer" href="https://goharbor.io/docs/2.0.0/install-config/installation-prereqs/">Harbor Installation Prerequisites</a>。</p>
+<p>硬件要求：</p>
+<div class="table-wrapper"><table><thead><tr><th>Resource</th><th>Minimum</th><th>Recommended</th></tr></thead><tbody>
+<tr><td>CPU</td><td>2 cores</td><td>4 cores</td></tr>
+<tr><td>Mem</td><td>4 GB</td><td>8 GB</td></tr>
+<tr><td>Disk</td><td>40 GB</td><td>160 GB</td></tr>
+</tbody></table>
+</div>
+<p>软件要求：</p>
+<div class="table-wrapper"><table><thead><tr><th>Software</th><th>Version</th></tr></thead><tbody>
+<tr><td>Docker engine</td><td>Version 17.06.0-ce+ or higher</td></tr>
+<tr><td>Docker Compose</td><td>Version 1.18.0 or higher</td></tr>
+<tr><td>OpenSSL</td><td>Latest is preferred</td></tr>
+</tbody></table>
+</div>
+<p>端口要求：</p>
+<div class="table-wrapper"><table><thead><tr><th>端口</th><th>协议</th></tr></thead><tbody>
+<tr><td>443</td><td>HTTPS</td></tr>
+<tr><td>4443</td><td>HTTPS</td></tr>
+<tr><td>80</td><td>HTTP</td></tr>
+</tbody></table>
+</div>
+<h2 id="快速安装"><a class="header" href="#快速安装">快速安装</a></h2>
+<p>本节用于在一个 Ubuntu 系统中快速配置 Docker 运行环境并安装 Harbor。该 host 仅用于运行 Harbor，不应有其他系统。</p>
+<p>获取 <a href="../../../assets/installation/online/harbor.sh">harbor.sh</a> 脚本，在安装路径中保存为 <code>harbor.sh</code> 并进行以下修改。</p>
+<aside class="note">
+<div class="title">注意</div>
+<ol>
+<li>该脚本来源于 <a href="https://goharbor.io/docs/2.0.0/install-config/quick-install-script/">https://goharbor.io/docs/2.0.0/install-config/quick-install-script/</a>，在其基础上进行了修改。</li>
+<li>不要在计划或已经加入 K8s 的节点中运行该脚本。该安装脚本中安装的 docker 版本、docker 配置与 kubespray 不兼容，在同一个节点上运行这两个脚本（无论先后）会导致错误。</li>
+<li>该脚本安装的 Harbor 不使用 https，但可以在后续修改其设置。</li>
+</ol>
+</aside>
+<p>调整脚本，设置其中这两个参数：</p>
+<pre><code class="language-bash">COMPOSEVERSION=&quot;v2.23.0&quot;
+HARBORVERSION=&quot;v2.7.3&quot;
+</code></pre>
+<p>运行以下命令，根据提示设置 IP 或者域名（FQDN）进行安装：</p>
+<pre><code class="language-bash">sudo chmod u+x harbor.sh
+sudo ./harbor.sh
+</code></pre>
+<p>运行结束后，根据提示信息运行 docker login 验证 Harbor 是否安装成功。后续请参考<a href="#%E9%85%8D%E7%BD%AE-harbor">配置 Harbor</a>，比如修改<a href="#%E7%AE%A1%E7%90%86%E5%91%98%E5%88%9D%E5%A7%8B%E5%AF%86%E7%A0%81">管理员密码</a>。</p>
+<h2 id="安装-harbor-1"><a class="header" href="#安装-harbor-1">安装 Harbor</a></h2>
+<p>如果无法进行“快速安装”（例如已经配置了 Docker），可参照本节，设置更多选项后进行高级安装。</p>
+<p>首先确认节点安装了 Docker 和 Docker Compose。如未安装，可参考<a href="../../appendix/install-docker.html">附录：安装 Docker</a> 和<a href="../../appendix/install-docker-compose.html">附录：安装 Docker Compose</a> 进行安装。</p>
+<p>参考：<a target="_blank" rel="noopener noreferrer" href="https://goharbor.io/docs/2.7.0/install-config/">Harbor Installation and Configuration</a></p>
+<h3 id="步骤"><a class="header" href="#步骤">步骤</a></h3>
+<ol>
+<li>
+<p>从 <a href="https://github.com/goharbor/harbor/releases">https://github.com/goharbor/harbor/releases</a> 获取 online-installer 或者 offline-installer。online-installer 会在安装过程中在线拉取镜像，而 offline-installer 中已经包含了需要的所有镜像，适用于离线安装。</p>
+<pre><code class="language-bash"># get offline installer; use proxy if needed: export https_proxy=&lt;your-proxy&gt;
+wget https://github.com/goharbor/harbor/releases/download/v2.7.3/harbor-offline-installer-v2.7.3.tgz
+</code></pre>
+</li>
+<li>
+<p>解压安装包：</p>
+<pre><code class="language-bash">  tar xzvf harbor-online-installer-v2.7.3.tgz
+</code></pre>
+</li>
+<li>
+<p>进入 harbor 目录，创建 harbor.yml：</p>
+<pre><code class="language-bash">cd harbor
+cp harbor.yml.tmpl harbor.yml
+</code></pre>
+<p>然后根据<a href="#%E9%85%8D%E7%BD%AE-harbor">配置 Harbor</a> 的说明，修改 harbor.yml。</p>
+</li>
+<li>
+<p>启动 Harbor：</p>
+<pre><code class="language-bash">sudo ./install.sh
+
+# 确认服务正常运行
+sudo docker-compose ps
+</code></pre>
+</li>
+</ol>
+<h3 id="harbor-客户端"><a class="header" href="#harbor-客户端">harbor 客户端</a></h3>
+<p>如果未配置 Harbor 通过 HTTPS 提供服务 ，则所有需要访问该 Registry 的节点应当允许 insecure 访问。</p>
+<p>假设客户端使用 Docker，可进行如下设置：</p>
+<pre><code class="language-bash">IPorFQDN=&quot;&lt;ip-or-domain&gt;&quot;
+
+# 运行前请确认 /etc/docker/daemon.json 文件不存在或为空
+# 否则只需要把 &quot;insecure-registries&quot; 设置增加到 /etc/docker/daemon.json 文件中
+sudo cat &gt; /etc/docker/daemon.json &lt;&lt;EOF
+{
+  &quot;insecure-registries&quot; : [&quot;$IPorFQDN:80&quot;,&quot;0.0.0.0/0&quot;]
+}
+EOF
+</code></pre>
+<p>然后重启服务：</p>
+<pre><code class="language-bash">sudo systemctl daemon-reload
+sudo systemctl restart docker
+</code></pre>
+<h2 id="配置-harbor"><a class="header" href="#配置-harbor">配置 Harbor</a></h2>
+<p>Harbor 安装包（例如：<code>harbor-online-installer-v2.7.3.tgz</code>）解压后，会在当前路径生成 harbor 目录：</p>
+<pre><code class="language-console">harbor
+├── common
+│   └── config/ # 其中包含的文件略
+├── common.sh
+├── docker-compose.yml
+├── harbor.yml
+├── harbor.yml.tmpl
+├── install.sh
+├── LICENSE
+└── prepare
+</code></pre>
+<p>执行 <code>install.sh</code> 将根据 <code>harbor.yml</code> 文件中的配置生成 <code>docker-compose.yml</code> 文件，并运行 <code>docker-compose up -d</code> 以启动/重启服务。</p>
+<p>因此，我们建议按照以下步骤修改 Harbor 的配置：</p>
+<ol>
+<li>修改 <code>harbor.yml</code> 文件</li>
+<li>运行 <code>install.sh</code> 以重新启动服务</li>
+</ol>
+<p>关于 <code>harbor.yml </code>文件的详细说明，请参阅相应版本的 Harbor 官方文档 <a target="_blank" rel="noopener noreferrer" href="https://goharbor.io/docs/2.7.0/install-config/configure-yml-file/">Configure the Harbor YML File</a>。本章节仅对 TensorStack 常用的配置进行说明。</p>
+<h3 id="管理员初始密码"><a class="header" href="#管理员初始密码">管理员初始密码</a></h3>
+<p>Harbor 的管理员用户为 <code>admin</code>，初始密码在 <code>harbor_admin_password</code> 字段中设置，默认值是 <code>Harbor12345</code>。</p>
+<p>可使用该用户登录 Harbor 网页，修改 <code>admin</code> 的密码。</p>
+<aside class="note">
+<div class="title">注意</div>
+<p>修改 <code>harbor.yml</code> 并再次运行 <code>install.sh</code> 不会重置管理员的密码。</p>
+</aside>
+<h3 id="使用-https-访问-harbor"><a class="header" href="#使用-https-访问-harbor">使用 HTTPS 访问 Harbor</a></h3>
+<p>harbor.yml 中的以下字段用于配置 HTTPS 服务：</p>
+<pre><code class="language-yaml">hostname: registry.sample.t9kcloud.cn
+https:
+  port: 443
+  certificate: &lt;/your/certificate/path&gt;
+  private_key: &lt;/your/private/key/path&gt;
+</code></pre>
+<h3 id="设置存储路径"><a class="header" href="#设置存储路径">设置存储路径</a></h3>
+<p>Harbor 具有以下存储需求：</p>
+<ol>
+<li>关系型数据库： Harbor 需要关系型数据库来存储元数据，如项目、用户、项目成员、镜像元数据、策略等</li>
+<li>数据存储：用于持久化存储镜像和 Helm Charts</li>
+<li>Redis：提供数据缓存功能</li>
+</ol>
+<p>使用以下字段设置存储路径：</p>
+<pre><code class="language-yaml">data_volume: /data/harbor
+</code></pre>
+<p>该路径下会被创建以下目录：</p>
+<ol>
+<li>database：关系型数据库</li>
+<li>job_logs：保存 job 日志</li>
+<li>redis：保存数据缓存</li>
+<li>registry：存储数据，即镜像和 Helm Chart</li>
+</ol>
+<h3 id="使用-s3-作为数据存储"><a class="header" href="#使用-s3-作为数据存储">使用 S3 作为数据存储</a></h3>
+<p>在 <code>harbor.yml</code> 中，<code>storage_service</code> 字段用于设置保存镜像和 Helm Chart 的外部存储服务。当 <code>storage_service</code> 未被设置时，数据存储路径为 <code>data_volume</code> 中的 <code>registry</code> 目录；设置 <code>storage_service</code> 并重启服务后，使用该存储服务进行存储。</p>
+<p>Harbor 支持多种存储后端，例如 azure, gcs, s3, swift 等，详情请参考：<a href="https://goharbor.io/docs/1.10/install-config/configure-yml-file/#backend">https://goharbor.io/docs/1.10/install-config/configure-yml-file/#backend</a></p>
+<p>如使用 S3 服务，设置以下字段：</p>
+<pre><code class="language-yaml">storage_service:
+  s3:
+    accesskey: &lt;access Key&gt;
+    secretkey: &lt;secret Key&gt;
+    region: &lt;region&gt;
+    regionendpoint: http://&lt;s3-url&gt;
+    bucket: &lt;bucket-name&gt;
+</code></pre>
+<p>其中 bucket 的 <code>region</code> 可以通过下面命令获取：</p>
+<pre><code class="language-bash">s3cmd info s3://my-bucket | grep Location
+</code></pre>
+<h2 id="常用操作"><a class="header" href="#常用操作">常用操作</a></h2>
+<p>Harbor 服务通过 docker-compose 运行，本章节说明 docker-compose 的常用操作。</p>
+<aside class="note">
+<div class="title">注意</div>
+<p>下列命令需要在 <a href="#%E9%85%8D%E7%BD%AE-harbor">harbor 目录</a>（即 docker-compose.yml 所在路径）下运行。</p>
+</aside>
+<p>查看运行中的容器及其状态：</p>
+<pre><code class="language-bash">sudo docker-compose ps
+
+# 注意第四列的 SERVICE
+# docker-compose 使用 SERVICE 而不是第一列的 NAME 来指代具体的容器
+
+# 查看 service core 的容器状态
+sudo docker-compose ps core
+</code></pre>
+<p>启动 docker-compose.yml 指定的容器：</p>
+<pre><code class="language-bash"># 启动所有容器
+sudo docker-compose up -d
+
+# 使用 SERVICE 名指定的容器
+sudo docker-compose up -d core
+</code></pre>
+<p>关闭并删除 docker-compse.yml 指定的容器：</p>
+<pre><code class="language-bash"># 关闭所有容器
+sudo docker-compose down
+
+# 关闭 SERVICE 名指定的容器
+sudo docker-compose down core
+</code></pre>
+<p>重启 docker-compose.yml 指定的容器：</p>
+<pre><code class="language-bash"># 重启所有容器
+sudo docker-compose restart
+
+# 重启 SERVICE 名指定的容器
+sudo docker-compose restart core
+</code></pre>
+<aside class="note">
+<div class="title">注意</div>
+<p>如果修改了 harbor.yml 配置或更新了证书，应当通过 install.sh 来重启使得修改生效：</p>
+</aside>
+<pre><code class="language-bash">sudo ./install.sh
+</code></pre>
+<p>查看容器的运行日志：</p>
+<pre><code class="language-bash"># 查看当前所有日志
+sudo docker-compose logs
+
+# 仅查看指定 SERVICE 的日志
+sudo docker-compose logs core
+
+# 查看指定时间段内的日志
+sudo docker-compose logs \
+  --since 2023-10-20T00:00:00Z \
+  --until 2023-10-20T12:00:00Z
+
+# 查看最新的 20 条日志
+sudo docker-compose logs --tail 20
+
+# 持续跟踪日志输出
+sudo docker-compose log -f
+</code></pre>
+<p>在容器中运行命令：</p>
+<pre><code class="language-bash"># 运行 SERVICE core 的 bash 以进行调试
+sudo docker-compose exec core bash
+</code></pre>
+<h2 id="参考"><a class="header" href="#参考">参考</a></h2>
+<p><a href="https://goharbor.io/docs/">https://goharbor.io/docs/</a></p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../../../installation/online/products/post-install.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../../../installation/online/storage-service/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../../../installation/online/products/post-install.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../../../installation/online/storage-service/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../../../elasticlunr.min.js"></script>
+        <script src="../../../mark.min.js"></script>
+        <script src="../../../searcher.js"></script>
+
+        <script src="../../../clipboard.min.js"></script>
+        <script src="../../../highlight.js"></script>
+        <script src="../../../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../../../theme/sidebar.js"></script>
+
+
+    </div>
+    </body>
+</html>

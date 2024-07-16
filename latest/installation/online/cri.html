@@ -1,0 +1,456 @@
+<!DOCTYPE HTML>
+<html lang="zh-cn" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>CRI 配置 - TensorStack AI 计算平台 - 管理员手册</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../../favicon.svg">
+        <link rel="shortcut icon" href="../../favicon.png">
+        <link rel="stylesheet" href="../../css/variables.css">
+        <link rel="stylesheet" href="../../css/general.css">
+        <link rel="stylesheet" href="../../css/chrome.css">
+        <link rel="stylesheet" href="../../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../../highlight.css">
+        <link rel="stylesheet" href="../../tomorrow-night.css">
+        <link rel="stylesheet" href="../../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../../theme/sidebar.css">
+        <link rel="stylesheet" href="../../theme/custom.css">
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../../overview.html">概述</a></li><li class="spacer"></li><li class="chapter-item expanded "><a href="../../installation/index.html"><strong aria-hidden="true">1.</strong> 安装</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../installation/online/index.html"><strong aria-hidden="true">1.1.</strong> 在线安装</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../installation/online/prepare-inventory.html"><strong aria-hidden="true">1.1.1.</strong> 设置 Inventory</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../installation/online/inventory-advanced.html"><strong aria-hidden="true">1.1.1.1.</strong> 高级设置</a></li></ol></li><li class="chapter-item expanded "><a href="../../installation/online/prepare-nodes.html"><strong aria-hidden="true">1.1.2.</strong> 准备节点</a></li><li class="chapter-item expanded "><a href="../../installation/online/k8s-index.html"><strong aria-hidden="true">1.1.3.</strong> 安装 K8s</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../installation/online/k8s-install.html"><strong aria-hidden="true">1.1.3.1.</strong> 基本安装</a></li><li class="chapter-item expanded "><a href="../../installation/online/cri.html" class="active"><strong aria-hidden="true">1.1.3.2.</strong> CRI 配置</a></li><li class="chapter-item expanded "><a href="../../installation/online/cni.html"><strong aria-hidden="true">1.1.3.3.</strong> CNI 配置</a></li><li class="chapter-item expanded "><a href="../../installation/online/k8s-userns.html"><strong aria-hidden="true">1.1.3.4.</strong> 设置 User Namespace</a></li><li class="chapter-item expanded "><a href="../../installation/online/k8s-storage.html"><strong aria-hidden="true">1.1.3.5.</strong> 设置集群存储</a></li><li class="chapter-item expanded "><a href="../../installation/online/k8-ops.html"><strong aria-hidden="true">1.1.3.6.</strong> 集群维护</a></li><li class="chapter-item expanded "><a href="../../installation/online/k8s-install-faqs.html"><strong aria-hidden="true">1.1.3.7.</strong> 常见问题</a></li><li class="chapter-item expanded "><a href="../../installation/online/k8s-post-install.html"><strong aria-hidden="true">1.1.3.8.</strong> 其它安装后配置</a></li></ol></li><li class="chapter-item expanded "><a href="../../installation/online/k8s-components/index.html"><strong aria-hidden="true">1.1.4.</strong> 安装 K8s 组件</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../installation/online/k8s-components/istio.html"><strong aria-hidden="true">1.1.4.1.</strong> Istio</a></li><li class="chapter-item expanded "><a href="../../installation/online/k8s-components/knative.html"><strong aria-hidden="true">1.1.4.2.</strong> Knative</a></li><li class="chapter-item expanded "><a href="../../installation/online/k8s-components/metrics-server.html"><strong aria-hidden="true">1.1.4.3.</strong> Metrics Server</a></li><li class="chapter-item expanded "><a href="../../installation/online/k8s-components/elastic-search.html"><strong aria-hidden="true">1.1.4.4.</strong> Elastic Search</a></li><li class="chapter-item expanded "><a href="../../installation/online/k8s-components/monitoring.html"><strong aria-hidden="true">1.1.4.5.</strong> 监控相关</a></li><li class="chapter-item expanded "><a href="../../installation/online/k8s-components/gatekeeper.html"><strong aria-hidden="true">1.1.4.6.</strong> Gatekeeper</a></li></ol></li><li class="chapter-item expanded "><a href="../../installation/hardware/hardware.html"><strong aria-hidden="true">1.1.5.</strong> 硬件支持</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../installation/hardware/nvidia/index.html"><strong aria-hidden="true">1.1.5.1.</strong> NVIDIA</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../installation/hardware/nvidia/gpu-operator.html"><strong aria-hidden="true">1.1.5.1.1.</strong> GPU Operator</a></li><li class="chapter-item expanded "><a href="../../installation/hardware/nvidia/network-operator.html"><strong aria-hidden="true">1.1.5.1.2.</strong> Network Operator</a></li></ol></li><li class="chapter-item expanded "><a href="../../installation/hardware/amd/index.html"><strong aria-hidden="true">1.1.5.2.</strong> AMD</a></li><li class="chapter-item expanded "><a href="../../installation/hardware/hygon/index.html"><strong aria-hidden="true">1.1.5.3.</strong> 海光 Hygon</a></li><li class="chapter-item expanded "><a href="../../installation/hardware/huawei/index.html"><strong aria-hidden="true">1.1.5.4.</strong> 华为</a></li><li class="chapter-item expanded "><a href="../../installation/hardware/iluvatar/index.html"><strong aria-hidden="true">1.1.5.5.</strong> 天数智芯 iluvatar</a></li><li class="chapter-item expanded "><a href="../../installation/hardware/metax/index.html"><strong aria-hidden="true">1.1.5.6.</strong> 沐曦 MetaX</a></li><li class="chapter-item expanded "><a href="../../installation/hardware/enflame/index.html"><strong aria-hidden="true">1.1.5.7.</strong> 燧原 enflame</a></li></ol></li><li class="chapter-item expanded "><a href="../../installation/online/products/index.html"><strong aria-hidden="true">1.1.6.</strong> 安装 TensorStack AI</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../installation/online/products/pre-install.html"><strong aria-hidden="true">1.1.6.1.</strong> 安装前准备</a></li><li class="chapter-item expanded "><a href="../../installation/online/products/install.html"><strong aria-hidden="true">1.1.6.2.</strong> 安装产品</a></li><li class="chapter-item expanded "><a href="../../installation/online/products/post-install.html"><strong aria-hidden="true">1.1.6.3.</strong> 安装后配置</a></li></ol></li><li class="chapter-item expanded "><a href="../../installation/online/registry/harbor.html"><strong aria-hidden="true">1.1.7.</strong> 安装 Harbor Registry</a></li><li class="chapter-item expanded "><a href="../../installation/online/storage-service/index.html"><strong aria-hidden="true">1.1.8.</strong> 安装存储服务</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../installation/online/storage-service/minio.html"><strong aria-hidden="true">1.1.8.1.</strong> MinIO</a></li><li class="chapter-item expanded "><a href="../../installation/online/storage-service/nfs.html"><strong aria-hidden="true">1.1.8.2.</strong> NFS</a></li><li class="chapter-item expanded "><a href="../../installation/online/storage-service/ceph.html"><strong aria-hidden="true">1.1.8.3.</strong> Ceph</a></li><li class="chapter-item expanded "><a href="../../installation/online/storage-service/lustre.html"><strong aria-hidden="true">1.1.8.4.</strong> Lustre</a></li><li class="chapter-item expanded "><a href="../../installation/online/storage-service/gpfs.html"><strong aria-hidden="true">1.1.8.5.</strong> GPFS</a></li></ol></li><li class="chapter-item expanded "><a href="../../installation/online/correctness-checking.html"><strong aria-hidden="true">1.1.9.</strong> 正确性检查</a></li></ol></li><li class="chapter-item expanded "><a href="../../installation/offline/index.html"><strong aria-hidden="true">1.2.</strong> 离线安装</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../installation/offline/prepare-offline-packages/index.html"><strong aria-hidden="true">1.2.1.</strong> 准备离线安装包</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../installation/offline/prepare-offline-packages/kubespray.html"><strong aria-hidden="true">1.2.1.1.</strong> Kubespray</a></li><li class="chapter-item expanded "><a href="../../installation/offline/prepare-offline-packages/k8s-components.html"><strong aria-hidden="true">1.2.1.2.</strong> K8s 组件</a></li><li class="chapter-item expanded "><a href="../../installation/offline/prepare-offline-packages/products.html"><strong aria-hidden="true">1.2.1.3.</strong> 产品</a></li></ol></li><li class="chapter-item expanded "><a href="../../installation/offline/install/index.html"><strong aria-hidden="true">1.2.2.</strong> 安装</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../installation/offline/install/k8s.html"><strong aria-hidden="true">1.2.2.1.</strong> K8s</a></li><li class="chapter-item expanded "><a href="../../installation/offline/install/k8s-components.html"><strong aria-hidden="true">1.2.2.2.</strong> K8s 组件</a></li><li class="chapter-item expanded "><a href="../../installation/offline/install/products.html"><strong aria-hidden="true">1.2.2.3.</strong> 产品</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="../../installation/update/index.html"><strong aria-hidden="true">1.3.</strong> 产品升级</a></li><li class="chapter-item expanded "><a href="../../installation/appendix/index.html"><strong aria-hidden="true">1.4.</strong> 附录</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../installation/appendix/install-docker.html"><strong aria-hidden="true">1.4.1.</strong> 在线安装 Docker</a></li><li class="chapter-item expanded "><a href="../../installation/appendix/install-docker-compose.html"><strong aria-hidden="true">1.4.2.</strong> 在线安装 Docker Compose</a></li><li class="chapter-item expanded "><a href="../../installation/appendix/configure-docker-insecure-registry.html"><strong aria-hidden="true">1.4.3.</strong> 配置 Docker Insecure Registry</a></li><li class="chapter-item expanded "><a href="../../installation/appendix/install-s3cmd.html"><strong aria-hidden="true">1.4.4.</strong> 在线安装 s3cmd</a></li><li class="chapter-item expanded "><a href="../../installation/appendix/k8s-install-notes.html"><strong aria-hidden="true">1.4.5.</strong> 安装 K8s 注释</a></li><li class="chapter-item expanded "><a href="../../installation/appendix/generate-k8s-file-and-image-list.html"><strong aria-hidden="true">1.4.6.</strong> 生成 K8s 文件和镜像列表</a></li><li class="chapter-item expanded "><a href="../../installation/appendix/generate-t9k-product-image-list.html"><strong aria-hidden="true">1.4.7.</strong> 生成 T9k 产品镜像列表</a></li><li class="chapter-item expanded "><a href="../../installation/appendix/modify-helm-chart.html"><strong aria-hidden="true">1.4.8.</strong> Helm Chart 修改</a></li><li class="chapter-item expanded "><a href="../../installation/appendix/manually-install-mlnx-ofed-driver.html"><strong aria-hidden="true">1.4.9.</strong> 手动安装 MLNX_OFED 驱动</a></li><li class="chapter-item expanded "><a href="../../installation/appendix/ansible-vars.html"><strong aria-hidden="true">1.4.10.</strong> ansible vars</a></li><li class="chapter-item expanded "><a href="../../installation/appendix/ansible-debugging.html"><strong aria-hidden="true">1.4.11.</strong> ansible debugging</a></li><li class="chapter-item expanded "><a href="../../installation/appendix/manage-domain-certificate.html"><strong aria-hidden="true">1.4.12.</strong> 管理域名证书</a></li><li class="chapter-item expanded "><a href="../../installation/appendix/container-runtime-cli.html"><strong aria-hidden="true">1.4.13.</strong> CRI 命令行工具</a></li><li class="chapter-item expanded "><a href="../../installation/appendix/cluster-admin-installation-configuration.html"><strong aria-hidden="true">1.4.14.</strong> 集群管理安装配置</a></li></ol></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">TensorStack AI 计算平台 - 管理员手册</h1>
+
+                    <div class="right-buttons">
+                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+                        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="cri-配置"><a class="header" href="#cri-配置">CRI 配置</a></h1>
+<p>本文说明如何配置 inventory，以便使用各种容器运行时来运行 K8s 集群。</p>
+<aside class="note">
+<div class="title">注意</div>
+<p>使用说明：</p>
+<ol>
+<li>在应用本文档中提供的配置时，请先在 inventory 中查找是否已经存在相应的变量设置。如果存在，进行确认或者修改；如果不存在，需要在 inventory 中添加相应的变量设置。</li>
+<li>inventory 的 <code>all/etcd.yml</code> 和 <code>k8s_cluster/k8s-cluster.yml</code> 文件中都包含了 <code>container_manager</code> 变量的设置。对于不加入 K8s 集群中的 etcd 节点，只有前者会生效；对于加入 K8s 集群中的节点，后者的设置优先级更高。通常我们建议同时修改这两个变量。</li>
+<li>Kubespray 提供了默认的下载设置，因此你可以在 inventory 中省略版本和下载地址相关的设置。</li>
+<li>如果你需要安装自定义版本的容器运行时及其组件，除了配置下载设置外，还需要确认本地 kubespray 的 <a href="https://github.com/kubernetes-sigs/kubespray/blob/master/roles/kubespray-defaults/defaults/main/checksums.yml">checksums.yml</a> 文件中已经包含了相应版本的 checksum。如果没有，你需要在 inventory 或者 <code>checksums.yml</code> 中添加相应的 checksum。</li>
+</ol>
+</aside>
+<h2 id="docker"><a class="header" href="#docker">Docker</a></h2>
+<p>Docker 不兼容 Kubernetes 创建的容器运行接口（Container Runtime Interface），不过 <a href="https://github.com/Mirantis/cri-dockerd">cri-dockerd</a> 项目填补了 Docker Engine 和 CRI 之间的空白。本章说明如何配置 cri-dockerd 和 Docker 作为 K8s 的容器运行时。</p>
+<p>设置 container manager 为 Docker:</p>
+<pre><code class="language-yaml">container_manager: docker
+</code></pre>
+<h3 id="下载设置"><a class="header" href="#下载设置">下载设置</a></h3>
+<p>设置 docker 及相关组件的版本：</p>
+<pre><code class="language-yaml">docker_version: '20.10'
+docker_containerd_version: 1.6.16
+cri_dockerd_version: 0.3.4
+</code></pre>
+<p>设置下载地址：</p>
+<pre><code class="language-yaml"># Ubuntu docker-ce repo
+docker_ubuntu_repo_base_url: &quot;https://download.docker.com/linux/ubuntu&quot;
+docker_ubuntu_repo_gpgkey: 'https://download.docker.com/linux/ubuntu/gpg'
+docker_ubuntu_repo_repokey: '9DC858229FC7DD38854AE2D88D81803C0EBFCD88'
+# cri-dockerd download url
+cri_dockerd_download_url: &quot;{{ files_repo }}/github.com/Mirantis/cri-dockerd/releases/download/v{{ cri_dockerd_version }}/cri-dockerd-{{ cri_dockerd_version }}.{{ image_arch }}.tgz&quot;
+</code></pre>
+<h3 id="可选设置"><a class="header" href="#可选设置">可选设置</a></h3>
+<p>设置 Docker 的存储驱动程序：</p>
+<pre><code class="language-yaml">docker_storage_options: -s overlay2
+</code></pre>
+<p>设置 Registry 镜像站：</p>
+<pre><code class="language-yaml">docker_registry_mirrors:
+  - https://dockerproxy.com/
+  - https://hub-mirror.c.163.com/
+  - https://mirror.baidubce.com/
+  - https://ccr.ccs.tencentyun.com/
+</code></pre>
+<p>设置 Docker 的默认 ulimit 值：</p>
+<pre><code class="language-yaml">docker_options: &quot;--default-ulimit=memlock=-1:-1 --default-ulimit=stack=67108864:67108864&quot;
+</code></pre>
+<p>设置 Docker 日志文件的大小和数量：</p>
+<pre><code class="language-yaml"># Rotate container stderr/stdout logs at 10m and keep last 5
+docker_log_opts: &quot;--log-opt max-size=10m --log-opt max-file=5&quot;
+</code></pre>
+<blockquote>
+<p>注意：Kubespray 默认设置了 <code>kubelet_logfiles_max_size: 10Mi</code>，我们建议将 <code>docker_log_opts</code> 中的 <code>max-size</code> 设置为相同的大小，以避免 <a href="https://github.com/Mirantis/cri-dockerd/issues/35">Failed ReopenContainerLog</a> 的问题。</p>
+</blockquote>
+<h2 id="containerd"><a class="header" href="#containerd">containerd</a></h2>
+<p>设置 container manager 为 containerd:</p>
+<pre><code class="language-yaml">container_manager: containerd
+</code></pre>
+<h3 id="底层容器运行时"><a class="header" href="#底层容器运行时">底层容器运行时</a></h3>
+<p>containerd 具有配置多个底层容器运行时的功能，可以与 Kubernetes 的 <a href="https://kubernetes.io/docs/concepts/containers/runtime-class/">RuntimeClass</a> 功能一起使用。</p>
+<p>containerd 使用 runc 作为默认的底层容器运行时，其配置如下：</p>
+<pre><code class="language-yaml">containerd_default_runtime: &quot;runc&quot;
+
+containerd_runc_runtime:
+  name: runc
+  type: &quot;io.containerd.runc.v2&quot;
+  engine: &quot;&quot;
+  root: &quot;&quot;
+  base_runtime_spec: cri-base.json
+  options:
+    systemdCgroup: &quot;{{ containerd_use_systemd_cgroup | ternary('true', 'false') }}&quot;
+    binaryName: &quot;{{ bin_dir }}/runc&quot;
+</code></pre>
+<blockquote>
+<p>注意：不推荐修改 <code>containerd_default_runtime</code>，因为 Kubespray 的相关支持不完善。</p>
+</blockquote>
+<p>你可以为 containerd 配置额外的底层容器运行时，例如 kata：</p>
+<pre><code class="language-yaml">kata_containers_enabled: true
+
+containerd_additional_runtimes:
+ - name: kata
+   type: &quot;io.containerd.kata.v2&quot;
+   engine: &quot;&quot;
+   root: &quot;&quot;
+</code></pre>
+<p>可用的额外容器运行时种类，及其下载设置请参阅：<a href="#%E9%99%84%E5%BD%95%E9%A2%9D%E5%A4%96%E5%AE%B9%E5%99%A8%E8%BF%90%E8%A1%8C%E6%97%B6%E8%AE%BE%E7%BD%AE">额外容器运行时设置</a>。</p>
+<p>如果你想了解更多关于 containerd 底层容器运行时的配置信息，请参考 containerd 的运行时文档 <a href="https://github.com/containerd/containerd/blob/main/docs/cri/config.md#runtime-classes">runtime classes in containerd</a>。</p>
+<h3 id="下载设置-1"><a class="header" href="#下载设置-1">下载设置</a></h3>
+<p>设置 containerd 及相关组件版本：</p>
+<pre><code class="language-yaml">containerd_version: 1.7.13
+runc_version: v1.1.12
+nerdctl_version: &quot;1.7.1&quot;
+</code></pre>
+<p>设置下载地址：</p>
+<pre><code class="language-yaml">containerd_download_url: &quot;{{ files_repo }}/github.com/containerd/containerd/releases/download/v{{ containerd_version }}/containerd-{{ containerd_version }}-linux-{{ image_arch }}.tar.gz&quot;
+nerdctl_download_url: &quot;{{ files_repo }}/github.com/containerd/nerdctl/releases/download/v{{ nerdctl_version }}/nerdctl-{{ nerdctl_version }}-{{ ansible_system | lower }}-{{ image_arch }}.tar.gz&quot;
+runc_download_url: &quot;{{ files_repo }}/github.com/opencontainers/runc/releases/download/{{ runc_version }}/runc.{{ image_arch }}&quot;
+</code></pre>
+<h3 id="可选设置-1"><a class="header" href="#可选设置-1">可选设置</a></h3>
+<p>设置 Registry 镜像站：</p>
+<pre><code class="language-yaml">containerd_registries_mirrors:
+ - prefix: docker.io
+   mirrors:
+    - host: https://dockerproxy.com
+      capabilities: [&quot;pull&quot;, &quot;resolve&quot;]
+      skip_verify: false
+    - host: https://hub-mirror.c.163.com
+      capabilities: [&quot;pull&quot;, &quot;resolve&quot;]
+      skip_verify: false
+    - host: https://mirror.baidubce.com
+      capabilities: [&quot;pull&quot;, &quot;resolve&quot;]
+      skip_verify: false
+    - host: https://ccr.ccs.tencentyun.com
+      capabilities: [&quot;pull&quot;, &quot;resolve&quot;]
+      skip_verify: false
+</code></pre>
+<h2 id="cri-o"><a class="header" href="#cri-o">CRI-O</a></h2>
+<p>CRI-O 是一个适用于 Kubernetes 的轻量级容器运行时。</p>
+<p>设置 container manager 为 CRI-O:</p>
+<pre><code class="language-yaml">container_manager: crio
+</code></pre>
+<p>根据 Kubespray 文档，还需要设置以下变量：</p>
+<pre><code class="language-yaml">download_container: false
+skip_downloads: false # 这一项与 Kubespray 的默认值相同，可以省略
+</code></pre>
+<h3 id="底层容器运行时-1"><a class="header" href="#底层容器运行时-1">底层容器运行时</a></h3>
+<p>CRI-O 具有配置多个底层容器运行时的功能，可以与 Kubernetes 的 <a href="https://kubernetes.io/docs/concepts/containers/runtime-class/">RuntimeClass</a> 功能一起使用。</p>
+<p>CRI-O 使用 runc 作为默认的底层容器运行时，其配置如下：</p>
+<pre><code class="language-yaml">crio_runtimes:
+  - name: runc
+    path: &quot;{{ bin_dir }}/runc&quot;
+    type: oci
+    root: /run/runc
+</code></pre>
+<blockquote>
+<p>注意：不推荐修改 CRI-O 的默认容器运行时，因为 Kubespray 的相关支持不完善。</p>
+</blockquote>
+<p>你可以为 CRI-O 配置额外的底层容器运行时，例如启用 crun：</p>
+<pre><code class="language-yaml">crun_enabled: true
+</code></pre>
+<p>你不需要考虑 CRI-O 的配置。Kubespray 会根据预设的以下变量，自动将 crun 加入到 CRI-O 的底层容器运行时配置中：</p>
+<pre><code class="language-yaml">crun_runtime:
+  name: crun
+  path: &quot;{{ bin_dir }}/crun&quot;
+  type: oci
+  root: /run/crun
+</code></pre>
+<p>可用的额外容器运行时种类，及其下载设置请参阅：<a href="#%E9%99%84%E5%BD%95%E9%A2%9D%E5%A4%96%E5%AE%B9%E5%99%A8%E8%BF%90%E8%A1%8C%E6%97%B6%E8%AE%BE%E7%BD%AE">额外容器运行时设置</a>。</p>
+<h3 id="下载设置-2"><a class="header" href="#下载设置-2">下载设置</a></h3>
+<p>设置 CRI-O 及相关组件版本：</p>
+<pre><code class="language-yaml">crio_supported_versions:
+  v1.28: v1.28.1
+  v1.27: v1.27.1
+  v1.26: v1.26.4
+crio_version: &quot;{{ crio_supported_versions[kube_major_version] }}&quot;
+runc_version: v1.1.12
+skopeo_version: &quot;v1.13.2&quot;
+</code></pre>
+<blockquote>
+<p>说明：变量 <code>kube_major_version</code> 是由变量 <code>kube_version</code> 派生出来的，具体来说，就是将 <code>kube_version</code> 的版本号最后一级去掉后的结果。</p>
+</blockquote>
+<p>设置下载地址：</p>
+<pre><code class="language-yaml">crio_download_base: &quot;download.opensuse.org/repositories/devel:kubic:libcontainers:stable&quot;
+crio_download_crio: &quot;http://{{ crio_download_base }}:/cri-o:/&quot;
+crio_download_url: &quot;https://storage.googleapis.com/cri-o/artifacts/cri-o.{{ image_arch }}.{{ crio_version }}.tar.gz&quot;
+skopeo_download_url: &quot;{{ files_repo }}/github.com/lework/skopeo-binary/releases/download/{{ skopeo_version }}/skopeo-linux-{{ image_arch }}&quot;
+runc_download_url: &quot;{{ files_repo }}/github.com/opencontainers/runc/releases/download/{{ runc_version }}/runc.{{ image_arch }}&quot;
+</code></pre>
+<h3 id="可选设置-2"><a class="header" href="#可选设置-2">可选设置</a></h3>
+<p>设置 Registry 镜像站：</p>
+<pre><code class="language-yaml">crio_registries:
+  - prefix: docker.io
+    insecure: false
+    blocked: false
+    location: docker.io
+    unqualified: false
+    mirrors:
+      - location: dockerproxy.com
+        insecure: false
+      - location: hub-mirror.c.163.com
+        insecure: false
+      - location: mirror.baidubce.com
+        insecure: false
+      - location: ccr.ccs.tencentyun.com
+        insecure: false
+</code></pre>
+<h2 id="示例"><a class="header" href="#示例">示例</a></h2>
+<p>这里列举了三个分别使用 Docker, containerd 和 CRI-O 作为容器运行时的 inventory：</p>
+<ul>
+<li><a href="https://github.com/t9k/ks-clusters/tree/master/inventory/sample-multi-1.28.6-docker">Docker 容器运行时</a></li>
+<li><a href="https://github.com/t9k/ks-clusters/tree/master/inventory/sample-multi-1.28.6-containerd">containerd 容器运行时</a></li>
+<li><a href="https://github.com/t9k/ks-clusters/tree/master/inventory/sample-multi-1.28.6-crio">CRI-O 容器运行时</a></li>
+</ul>
+<p>你可以做如下修改后，直接使用这些示例 inventory 安装相应的 K8s 集群：</p>
+<ul>
+<li><a href="./prepare-inventory.html#%E8%AE%BE%E7%BD%AE-inventory">修改 <code>inventory.ini</code></a></li>
+<li>根据实际网络环境设置 <code>group_vars/all/all.yml</code> 中的 <code>upstream_dns_servers</code> 变量</li>
+</ul>
+<h2 id="附录额外容器运行时设置"><a class="header" href="#附录额外容器运行时设置">附录：额外容器运行时设置</a></h2>
+<p>containerd 和 CRI-O 支持安装额外的底层容器运行时，本章说明这些底层容器运行时相关的变量配置。</p>
+<p>设置是否安装该容器运行时：</p>
+<pre><code class="language-yaml">kata_containers_enabled: false
+gvisor_enabled: false
+crun_enabled: false
+youki_enabled: false
+</code></pre>
+<p>容器运行时版本：</p>
+<pre><code class="language-yaml">crun_version: 1.8.5
+kata_containers_version: 3.1.3
+youki_version: 0.1.0
+gvisor_version: 20230807
+</code></pre>
+<p>容器运行时下载地址：</p>
+<pre><code class="language-yaml">crun_download_url: &quot;https://github.com/containers/crun/releases/download/{{ crun_version }}/crun-{{ crun_version }}-linux-{{ image_arch }}&quot;
+youki_download_url: &quot;https://github.com/containers/youki/releases/download/v{{ youki_version }}/youki_{{ youki_version | regex_replace('\\.', '_') }}_linux.tar.gz&quot;
+kata_containers_download_url: &quot;https://github.com/kata-containers/kata-containers/releases/download/{{ kata_containers_version }}/kata-static-{{ kata_containers_version }}-{{ ansible_architecture }}.tar.xz&quot;
+# gVisor only supports amd64 and uses x86_64 to in the download link
+gvisor_runsc_download_url: &quot;https://storage.googleapis.com/gvisor/releases/release/{{ gvisor_version }}/{{ ansible_architecture }}/runsc&quot;
+gvisor_containerd_shim_runsc_download_url: &quot;https://storage.googleapis.com/gvisor/releases/release/{{ gvisor_version }}/{{ ansible_architecture }}/containerd-shim-runsc-v1&quot;
+</code></pre>
+<h2 id="参考"><a class="header" href="#参考">参考</a></h2>
+<ul>
+<li><a href="https://github.com/kubernetes-sigs/kubespray/blob/master/docs/CRI/cri-o.md">https://github.com/kubernetes-sigs/kubespray/blob/master/docs/CRI/cri-o.md</a></li>
+<li><a href="https://github.com/kubernetes-sigs/kubespray/blob/master/docs/CRI/containerd.md">https://github.com/kubernetes-sigs/kubespray/blob/master/docs/CRI/containerd.md</a></li>
+<li><a href="https://github.com/kubernetes-sigs/kubespray/blob/master/docs/CRI/docker.md">https://github.com/kubernetes-sigs/kubespray/blob/master/docs/CRI/docker.md</a></li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../../installation/online/k8s-install.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../../installation/online/cni.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../../installation/online/k8s-install.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../../installation/online/cni.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../../elasticlunr.min.js"></script>
+        <script src="../../mark.min.js"></script>
+        <script src="../../searcher.js"></script>
+
+        <script src="../../clipboard.min.js"></script>
+        <script src="../../highlight.js"></script>
+        <script src="../../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../../theme/sidebar.js"></script>
+
+
+    </div>
+    </body>
+</html>
