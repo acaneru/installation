@@ -190,10 +190,23 @@
 <h2 id="准备环境"><a class="header" href="#准备环境">准备环境</a></h2>
 <p>首先，在 ansible 控制节点上设置环境，按照如下步骤执行：</p>
 <ol>
-<li>安装 ansible</li>
 <li>克隆相关的 git repos</li>
+<li>安装 ansible</li>
 <li>复制 inventory 模版</li>
 </ol>
+<h3 id="克隆-repos"><a class="header" href="#克隆-repos">克隆 repos</a></h3>
+<pre><code class="language-bash"># create directory and clone repos
+mkdir -p ~/ansible
+cd ~/ansible
+
+git clone  git@github.com:t9k/ks-clusters.git
+git clone git@github.com:t9k/kubespray.git
+</code></pre>
+<p>将 kubespray 切换到合适分支：</p>
+<pre><code class="language-bash"># 将 kubespray 切换到合适分支，例如 kubernetes-1.25.9
+cd kubespray
+git checkout -b kubernetes-&lt;version&gt; origin/kubernetes-&lt;version&gt;
+</code></pre>
 <h3 id="安装-ansible"><a class="header" href="#安装-ansible">安装 ansible</a></h3>
 <p>使用 conda 管理 python 环境：</p>
 <pre><code class="language-bash">conda create -n kubespray python=3.10
@@ -210,19 +223,6 @@ python -m pip install --no-index \
 </code></pre>
 <p>确认 ansible 安装成功：</p>
 <pre><code class="language-bash">ansible --version
-</code></pre>
-<h3 id="clone-repos"><a class="header" href="#clone-repos">Clone repos</a></h3>
-<pre><code class="language-bash"># create directory and clone repos
-mkdir -p ~/ansible
-cd ~/ansible
-
-git clone  git@github.com:t9k/ks-clusters.git
-git clone git@github.com:t9k/kubespray.git
-</code></pre>
-<p>将 kubespray 切换到合适分支：</p>
-<pre><code class="language-bash"># 将 kubespray 切换到合适分支，例如 kubernetes-1.25.9
-cd kubespray
-git checkout -b kubernetes-&lt;version&gt; origin/kubernetes-&lt;version&gt;
 </code></pre>
 <h3 id="复制-inventory-模版"><a class="header" href="#复制-inventory-模版">复制 inventory 模版</a></h3>
 <p>集群的所有配置等存放在环境变量 <code>T9K_CLUSTER</code> 指向的子目录中：</p>
