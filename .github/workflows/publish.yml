@@ -3,7 +3,7 @@ name: Generate a build and push to another branch
 on:
   push:
     branches:
-      - install
+      - master
 
 jobs:
   build:
@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: install
+          ref: master
       - name: Install mdBook
         run: |
           curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf -y | sh
