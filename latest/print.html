@@ -1470,16 +1470,20 @@ Server:
 sudo reboot
 </code></pre>
 <p>如果升级 kernel 后，节点无法 ssh 连接，物理连接后显示没有可用的网卡，根据<a href="https://askubuntu.com/questions/1307447/network-not-working-updating-to-kernel-5-8-ubuntu-20-04">讨论</a>，原因是升级 kernel 时 <code>linux-modules-extra-*</code> 包缺失，安装对应版本的包并重启即可：</p>
-<p><code>bash</code>
-<span class="katex"><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord mathnormal">d</span><span class="mord mathnormal">p</span><span class="mord mathnormal" style="margin-right:0.03148em;">k</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord">∣</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal">re</span><span class="mord mathnormal" style="margin-right:0.01968em;">pl</span><span class="mord mathnormal">in</span><span class="mord mathnormal">ux</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">∣</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal">re</span><span class="mord mathnormal">p</span><span class="mord">5.15.0</span><span class="mord mathnormal">ii</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">in</span><span class="mord mathnormal">ux</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7778em;vertical-align:-0.0833em;"></span><span class="mord mathnormal">h</span><span class="mord mathnormal">e</span><span class="mord mathnormal">a</span><span class="mord mathnormal">d</span><span class="mord mathnormal">ers</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord">5.15.0</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord">107</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.854em;vertical-align:-0.1944em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal">e</span><span class="mord mathnormal">n</span><span class="mord mathnormal" style="margin-right:0.02778em;">er</span><span class="mord mathnormal">i</span><span class="mord mathnormal">c</span><span class="mord">5.15.0</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord">107.117</span><span class="mspace nobreak"> </span><span class="mord">20.04.1</span><span class="mord mathnormal">am</span><span class="mord mathnormal">d</span><span class="mord">64</span><span class="mord mathnormal">L</span><span class="mord mathnormal">in</span><span class="mord mathnormal">ux</span><span class="mord mathnormal" style="margin-right:0.03148em;">k</span><span class="mord mathnormal" style="margin-right:0.02778em;">er</span><span class="mord mathnormal">n</span><span class="mord mathnormal">e</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">h</span><span class="mord mathnormal">e</span><span class="mord mathnormal">a</span><span class="mord mathnormal">d</span><span class="mord mathnormal">ers</span><span class="mord mathnormal" style="margin-right:0.10764em;">f</span><span class="mord mathnormal" style="margin-right:0.02778em;">or</span><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="mord mathnormal">ers</span><span class="mord mathnormal">i</span><span class="mord mathnormal">o</span><span class="mord mathnormal">n</span><span class="mord">5.15.0</span><span class="mord mathnormal">o</span><span class="mord mathnormal">n</span><span class="mord">64</span><span class="mord mathnormal">bi</span><span class="mord mathnormal">t</span><span class="mord mathnormal">x</span><span class="mord">86</span><span class="mord mathnormal" style="margin-right:0.13889em;">SMP</span><span class="mord mathnormal">ii</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">in</span><span class="mord mathnormal">ux</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7778em;vertical-align:-0.0833em;"></span><span class="mord mathnormal">h</span><span class="mord mathnormal" style="margin-right:0.02691em;">w</span><span class="mord mathnormal">e</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord">5.15</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7778em;vertical-align:-0.0833em;"></span><span class="mord mathnormal">h</span><span class="mord mathnormal">e</span><span class="mord mathnormal">a</span><span class="mord mathnormal">d</span><span class="mord mathnormal">ers</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord">5.15.0</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord">1075.15.0</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord">107.117</span><span class="mspace nobreak"> </span><span class="mord">20.04.1</span><span class="mord mathnormal">a</span><span class="mord mathnormal" style="margin-right:0.01968em;">ll</span><span class="mord mathnormal">He</span><span class="mord mathnormal">a</span><span class="mord mathnormal">d</span><span class="mord mathnormal" style="margin-right:0.02778em;">er</span><span class="mord mathnormal" style="margin-right:0.10764em;">f</span><span class="mord mathnormal">i</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">esre</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">a</span><span class="mord mathnormal">t</span><span class="mord mathnormal">e</span><span class="mord mathnormal">d</span><span class="mord mathnormal">t</span><span class="mord mathnormal">o</span><span class="mord mathnormal">L</span><span class="mord mathnormal">in</span><span class="mord mathnormal">ux</span><span class="mord mathnormal" style="margin-right:0.03148em;">k</span><span class="mord mathnormal" style="margin-right:0.02778em;">er</span><span class="mord mathnormal">n</span><span class="mord mathnormal">e</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="mord mathnormal">ers</span><span class="mord mathnormal">i</span><span class="mord mathnormal">o</span><span class="mord mathnormal">n</span><span class="mord">5.15.0</span><span class="mord mathnormal">ii</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">in</span><span class="mord mathnormal">ux</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.854em;vertical-align:-0.1944em;"></span><span class="mord mathnormal">ima</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal">e</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord">5.15.0</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord">107</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.854em;vertical-align:-0.1944em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal">e</span><span class="mord mathnormal">n</span><span class="mord mathnormal" style="margin-right:0.02778em;">er</span><span class="mord mathnormal">i</span><span class="mord mathnormal">c</span><span class="mord">5.15.0</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord">107.117</span><span class="mspace nobreak"> </span><span class="mord">20.04.1</span><span class="mord mathnormal">am</span><span class="mord mathnormal">d</span><span class="mord">64</span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mord mathnormal">i</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal">n</span><span class="mord mathnormal">e</span><span class="mord mathnormal">d</span><span class="mord mathnormal" style="margin-right:0.03148em;">k</span><span class="mord mathnormal" style="margin-right:0.02778em;">er</span><span class="mord mathnormal">n</span><span class="mord mathnormal">e</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">ima</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal">e</span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal">e</span><span class="mord mathnormal">n</span><span class="mord mathnormal" style="margin-right:0.02778em;">er</span><span class="mord mathnormal">i</span><span class="mord mathnormal">c</span><span class="mord mathnormal">ii</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">in</span><span class="mord mathnormal">ux</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7778em;vertical-align:-0.0833em;"></span><span class="mord mathnormal">m</span><span class="mord mathnormal">o</span><span class="mord mathnormal">d</span><span class="mord mathnormal">u</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">es</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord">5.15.0</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.7278em;vertical-align:-0.0833em;"></span><span class="mord">107</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.854em;vertical-align:-0.1944em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="mord mathnormal">e</span><span class="mord mathnormal">n</span><span class="mord mathnormal" style="margin-right:0.02778em;">er</span><span class="mord mathnormal">i</span><span class="mord mathnormal">c</span><span class="mord">5.15.0</span><span class="mspace" style="margin-right:0.2222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222em;"></span></span><span class="base"><span class="strut" style="height:0.8889em;vertical-align:-0.1944em;"></span><span class="mord">107.117</span><span class="mspace nobreak"> </span><span class="mord">20.04.1</span><span class="mord mathnormal">am</span><span class="mord mathnormal">d</span><span class="mord">64</span><span class="mord mathnormal">L</span><span class="mord mathnormal">in</span><span class="mord mathnormal">ux</span><span class="mord mathnormal" style="margin-right:0.03148em;">k</span><span class="mord mathnormal" style="margin-right:0.02778em;">er</span><span class="mord mathnormal">n</span><span class="mord mathnormal">e</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">e</span><span class="mord mathnormal">x</span><span class="mord mathnormal">t</span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="mord mathnormal">am</span><span class="mord mathnormal">o</span><span class="mord mathnormal">d</span><span class="mord mathnormal">u</span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mord mathnormal">es</span><span class="mord mathnormal" style="margin-right:0.10764em;">f</span><span class="mord mathnormal" style="margin-right:0.02778em;">or</span><span class="mord mathnormal" style="margin-right:0.03588em;">v</span><span class="mord mathnormal">ers</span><span class="mord mathnormal">i</span><span class="mord mathnormal">o</span><span class="mord mathnormal">n</span><span class="mord">5.15.0</span><span class="mord mathnormal">o</span><span class="mord mathnormal">n</span><span class="mord">64</span><span class="mord mathnormal">bi</span><span class="mord mathnormal">t</span><span class="mord mathnormal">x</span><span class="mord">86</span><span class="mord mathnormal" style="margin-right:0.13889em;">SMP</span></span></span></span> sudo apt install linux-modules-extra-5.15.0-107-generic</p>
-<p>$ sudo reboot</p>
-<pre><code>
-## 参考
-
-&lt;https://github.com/kubernetes-sigs/kubespray/blob/master/docs/large-deployments.md&gt;
-
-&lt;https://juejin.cn/post/7165806699461378085&gt;
+<pre><code class="language-bash">dpkg -l | grep linux- | grep 5.15.0
 </code></pre>
+<pre><code>ii  linux-headers-5.15.0-107-generic      5.15.0-107.117~20.04.1            amd64        Linux kernel headers for version 5.15.0 on 64 bit x86 SMP
+ii  linux-hwe-5.15-headers-5.15.0-107     5.15.0-107.117~20.04.1            all          Header files related to Linux kernel version 5.15.0
+ii  linux-image-5.15.0-107-generic        5.15.0-107.117~20.04.1            amd64        Signed kernel image generic
+ii  linux-modules-5.15.0-107-generic      5.15.0-107.117~20.04.1            amd64        Linux kernel extra modules for version 5.15.0 on 64 bit x86 SMP
+</code></pre>
+<pre><code class="language-bash">sudo apt install linux-modules-extra-5.15.0-107-generic
+
+sudo reboot
+</code></pre>
+<h2 id="参考-8"><a class="header" href="#参考-8">参考</a></h2>
+<p><a href="https://github.com/kubernetes-sigs/kubespray/blob/master/docs/large-deployments.md">https://github.com/kubernetes-sigs/kubespray/blob/master/docs/large-deployments.md</a></p>
+<p><a href="https://juejin.cn/post/7165806699461378085">https://juejin.cn/post/7165806699461378085</a></p>
 <div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
 <h1 id="安装后配置"><a class="header" href="#安装后配置">安装后配置</a></h1>
 <h2 id="加固集群安全"><a class="header" href="#加固集群安全">加固集群安全</a></h2>
@@ -1632,7 +1636,7 @@ istio-namespace-controller-election   0      225d
 istio-sidecar-injector                2      225d
 kube-root-ca.crt                      1      225d
 </code></pre>
-<h2 id="参考-8"><a class="header" href="#参考-8">参考</a></h2>
+<h2 id="参考-9"><a class="header" href="#参考-9">参考</a></h2>
 <p><a href="https://istio.io/latest/docs/reference/config/istio.operator.v1alpha1/">https://istio.io/latest/docs/reference/config/istio.operator.v1alpha1/</a></p>
 <div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
 <h1 id="knative"><a class="header" href="#knative">Knative</a></h1>
@@ -1729,7 +1733,7 @@ curl -H &quot;Host: helloworld.default.ksvc.sample.t9kcloud.cn&quot; &lt;ingress
 <p>输出：</p>
 <pre><code class="language-console">Hello World!
 </code></pre>
-<h2 id="参考-9"><a class="header" href="#参考-9">参考</a></h2>
+<h2 id="参考-10"><a class="header" href="#参考-10">参考</a></h2>
 <p><a href="https://knative.dev/docs/install/yaml-install/serving/install-serving-with-yaml/">https://knative.dev/docs/install/yaml-install/serving/install-serving-with-yaml/</a></p>
 <div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
 <h1 id="metrics-server"><a class="header" href="#metrics-server">Metrics Server</a></h1>
@@ -1757,7 +1761,7 @@ kubectl get APIService v1beta1.metrics.k8s.io
 node01    1113m        13%    14691Mi         46%       
 node02    1336m        11%    13375Mi         42%       
 </code></pre>
-<h2 id="参考-10"><a class="header" href="#参考-10">参考</a></h2>
+<h2 id="参考-11"><a class="header" href="#参考-11">参考</a></h2>
 <ul>
 <li><a href="https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/">https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/</a></li>
 <li><a href="https://github.com/kubernetes-sigs/metrics-server#kubernetes-metrics-server">https://github.com/kubernetes-sigs/metrics-server#kubernetes-metrics-server</a></li>
@@ -1885,7 +1889,7 @@ elasticsearch-data-2   1/1     Running   0          64d
 <div class="title">注意</div>
 <p>在 Post Install 流程中，我们还需要为 Elasticsearch 配置 Index。</p>
 </aside>
-<h2 id="参考-11"><a class="header" href="#参考-11">参考</a></h2>
+<h2 id="参考-12"><a class="header" href="#参考-12">参考</a></h2>
 <p><a href="https://github.com/elastic/elasticsearch">https://github.com/elastic/elasticsearch</a></p>
 <div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
 <h1 id="监控相关"><a class="header" href="#监控相关">监控相关</a></h1>
@@ -1984,7 +1988,7 @@ kubectl -n t9k-system logs -l app=gatekeeper,control-plane=audit-controller --ta
 # controller-manager, multiple pods
 kubectl -n t9k-system logs deploy/gatekeeper-controller-manager --tail=50
 </code></pre>
-<h2 id="参考-12"><a class="header" href="#参考-12">参考</a></h2>
+<h2 id="参考-13"><a class="header" href="#参考-13">参考</a></h2>
 <p><a href="https://github.com/open-policy-agent/gatekeeper">https://github.com/open-policy-agent/gatekeeper</a></p>
 <div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
 <h1 id="硬件支持"><a class="header" href="#硬件支持">硬件支持</a></h1>
@@ -2005,7 +2009,7 @@ kubectl -n t9k-system logs deploy/gatekeeper-controller-manager --tail=50
 <li><a href="hardware/nvidia/./gpu-operator.html">NVIDIA GPU Operator</a> -  GPU 驱动程序和 K8s 支持</li>
 <li><a href="hardware/nvidia/./network-operator.html">NVIDIA Network Operator</a> - IB 网卡驱动程序和 K8s 支持</li>
 </ul>
-<h2 id="参考-13"><a class="header" href="#参考-13">参考</a></h2>
+<h2 id="参考-14"><a class="header" href="#参考-14">参考</a></h2>
 <p><a href="https://docs.nvidia.com/datacenter/cloud-native/">https://docs.nvidia.com/datacenter/cloud-native/</a></p>
 <div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
 <h1 id="安装-nvidia-gpu-operator"><a class="header" href="#安装-nvidia-gpu-operator">安装 NVIDIA GPU Operator</a></h1>
@@ -2815,7 +2819,7 @@ spec:
 <p>然后使用 <code>kubectl edit clusterpolicy cluster-policy</code> 来修改 <code>spec.devicePlugin.version</code> 字段。</p>
 <h2 id="下一步-5"><a class="header" href="#下一步-5">下一步</a></h2>
 <p>如何管理 NVIDIA GPU： <a href="hardware/nvidia/../../../resource-management/GPU/nvidia.html">配置 NVIDIA GPU</a></p>
-<h2 id="参考-14"><a class="header" href="#参考-14">参考</a></h2>
+<h2 id="参考-15"><a class="header" href="#参考-15">参考</a></h2>
 <ul>
 <li>[1] <a href="https://github.com/NVIDIA/gpu-operator/tree/v24.3.0">NVIDIA GPU Operator/v24.3.0 Github</a></li>
 <li>[2] <a href="https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/latest/platform-support.html#supported-operating-systems-and-kubernetes-platforms">GPU Operator 兼容平台</a></li>
@@ -3359,25 +3363,25 @@ destroying current CUDA Ctx
 <pre><code>pod &quot;rdma-gpu-test-pod-1&quot; deleted
 pod &quot;rdma-gpu-test-pod-2&quot; deleted
 </code></pre>
-<h2 id="参考-15"><a class="header" href="#参考-15">参考</a></h2>
+<h2 id="参考-16"><a class="header" href="#参考-16">参考</a></h2>
 <p><a href="https://github.com/Mellanox/network-operator">https://github.com/Mellanox/network-operator</a></p>
 <p><a href="https://docs.nvidia.com/networking/display/cokan10/network+operator">https://docs.nvidia.com/networking/display/cokan10/network+operator</a></p>
 <div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
 <h1 id="amd"><a class="header" href="#amd">AMD</a></h1>
-<h2 id="参考-16"><a class="header" href="#参考-16">参考</a></h2>
+<h2 id="参考-17"><a class="header" href="#参考-17">参考</a></h2>
 <p><a href="https://github.com/ROCm/k8s-device-plugin">https://github.com/ROCm/k8s-device-plugin</a></p>
 <p><a href="https://www.amd.com/en/support/linux-drivers">https://www.amd.com/en/support/linux-drivers</a></p>
 <div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
 <h1 id="海光-dcu"><a class="header" href="#海光-dcu">海光 DCU</a></h1>
-<h2 id="参考-17"><a class="header" href="#参考-17">参考</a></h2>
+<h2 id="参考-18"><a class="header" href="#参考-18">参考</a></h2>
 <p><a href="https://cancon.hpccube.com:65024/5/main/Kubernetes%E6%8F%92%E4%BB%B6">https://cancon.hpccube.com:65024/5/main/Kubernetes插件</a></p>
 <div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
 <h1 id="华为"><a class="header" href="#华为">华为</a></h1>
-<h2 id="参考-18"><a class="header" href="#参考-18">参考</a></h2>
+<h2 id="参考-19"><a class="header" href="#参考-19">参考</a></h2>
 <p><a href="https://gitee.com/ascend/ascend-device-plugin">https://gitee.com/ascend/ascend-device-plugin</a></p>
 <div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
 <h1 id="天数智芯"><a class="header" href="#天数智芯">天数智芯</a></h1>
-<h2 id="参考-19"><a class="header" href="#参考-19">参考</a></h2>
+<h2 id="参考-20"><a class="header" href="#参考-20">参考</a></h2>
 <p><a href="https://www.iluvatar.com/docs/">https://www.iluvatar.com/docs/</a></p>
 <div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
 <h1 id="沐曦"><a class="header" href="#沐曦">沐曦</a></h1>
@@ -3431,7 +3435,7 @@ pod &quot;rdma-gpu-test-pod-2&quot; deleted
 </ul>
 <h2 id="安装部署"><a class="header" href="#安装部署">安装部署</a></h2>
 <p>参考<a href="https://support.enflame-tech.com/onlinedoc_dev_2.5.115/6-k8s/k8s/GCU-operator/content/source/enflame_gcu_operator_2_0_user_guide.html#gcu-operator" target="_blank">燧原官方文档</a>，使用 GCU Operator 安装部署燧原驱动和 TopsCloud 产品。</p>
-<h2 id="参考-20"><a class="header" href="#参考-20">参考</a></h2>
+<h2 id="参考-21"><a class="header" href="#参考-21">参考</a></h2>
 <p><a href="https://support.enflame-tech.com/onlinedoc_dev_2.5.115/6-k8s/index.html">TopsCloud 用户使用指南</a></p>
 <div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
 <h1 id="安装产品"><a class="header" href="#安装产品">安装产品</a></h1>
@@ -3652,7 +3656,7 @@ done
 </blockquote>
 <h2 id="下一步-6"><a class="header" href="#下一步-6">下一步</a></h2>
 <p>完成本文档的准备工作后，可进行实际的 <a href="online/products/./install.html">产品安装</a>。</p>
-<h2 id="参考-21"><a class="header" href="#参考-21">参考</a></h2>
+<h2 id="参考-22"><a class="header" href="#参考-22">参考</a></h2>
 <p><a href="https://freessl.cn/">https://freessl.cn/</a></p>
 <p><a href="https://letsencrypt.org/">https://letsencrypt.org/</a></p>
 <p><a href="https://zerossl.com/">https://zerossl.com/</a></p>
@@ -3757,7 +3761,7 @@ t9k-aistore                     t9k-system      3               2023-11-19 06:37
 </details>
 <h2 id="下一步-7"><a class="header" href="#下一步-7">下一步</a></h2>
 <p>进行 <a href="online/products/./post-install.html">安装后配置</a>。</p>
-<h2 id="参考-22"><a class="header" href="#参考-22">参考</a></h2>
+<h2 id="参考-23"><a class="header" href="#参考-23">参考</a></h2>
 <p><a href="https://helm.sh/docs/">https://helm.sh/docs/</a></p>
 <div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
 <h1 id="安装后配置-3"><a class="header" href="#安装后配置-3">安装后配置</a></h1>
@@ -3871,7 +3875,7 @@ kubectl get node -l node-role.kubernetes.io/ingress
 <p>详情：<a href="online/products/../../../monitoring-and-log-system/fluentd.html#%E4%BF%AE%E6%94%B9-fluentd-%E9%85%8D%E7%BD%AE">管理员手册 &gt; 配置 Fluentd</a></p>
 <h2 id="下一步-8"><a class="header" href="#下一步-8">下一步</a></h2>
 <p>运行 <a target="_blank" rel="noopener noreferrer" href="https://t9k.github.io/user-manuals/latest/get-started/index.html"> 用户手册 &gt; 快速入门的例子 </a>，检验产品的功能。</p>
-<h2 id="参考-23"><a class="header" href="#参考-23">参考</a></h2>
+<h2 id="参考-24"><a class="header" href="#参考-24">参考</a></h2>
 <p><a href="https://prometheus-operator.dev/docs/operator/api/#monitoring.coreos.com/v1alpha1.AlertmanagerConfig">https://prometheus-operator.dev/docs/operator/api/#monitoring.coreos.com/v1alpha1.AlertmanagerConfig</a></p>
 <div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
 <h1 id="安装-harbor"><a class="header" href="#安装-harbor">安装 Harbor</a></h1>
@@ -4100,7 +4104,7 @@ sudo docker-compose log -f
 <pre><code class="language-bash"># 运行 SERVICE core 的 bash 以进行调试
 sudo docker-compose exec core bash
 </code></pre>
-<h2 id="参考-24"><a class="header" href="#参考-24">参考</a></h2>
+<h2 id="参考-25"><a class="header" href="#参考-25">参考</a></h2>
 <p><a href="https://goharbor.io/docs/">https://goharbor.io/docs/</a></p>
 <div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
 <h1 id="安装存储服务"><a class="header" href="#安装存储服务">安装存储服务</a></h1>
@@ -4232,7 +4236,7 @@ sudo rm -rf /data/minio
 <p>删除 minio user （如果该 user 是 group minio-user 的唯一成员，group 也会被一起删除）：</p>
 <pre><code class="language-bash">sudo userdel minio-user
 </code></pre>
-<h2 id="参考-25"><a class="header" href="#参考-25">参考</a></h2>
+<h2 id="参考-26"><a class="header" href="#参考-26">参考</a></h2>
 <p><a href="https://en.wikipedia.org/wiki/Amazon_S3">https://en.wikipedia.org/wiki/Amazon_S3</a></p>
 <p><a href="https://min.io/docs/">https://min.io/docs/</a></p>
 <p><a href="https://min.io/docs/minio/linux/operations/install-deploy-manage/deploy-minio-single-node-single-drive.html">https://min.io/docs/minio/linux/operations/install-deploy-manage/deploy-minio-single-node-single-drive.html</a></p>
@@ -4389,20 +4393,20 @@ csi-nfs-node-xm94s   3/3     Running   261 (2d18h ago)   77d
 <pre><code class="language-console">NAME                PROVISIONER      RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
 nfs-csi (default)   nfs.csi.k8s.io   Delete          Immediate           false                  14d
 </code></pre>
-<h2 id="参考-26"><a class="header" href="#参考-26">参考</a></h2>
+<h2 id="参考-27"><a class="header" href="#参考-27">参考</a></h2>
 <p><a href="https://github.com/kubernetes-csi/csi-driver-nfs">https://github.com/kubernetes-csi/csi-driver-nfs</a></p>
 <div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
 <h1 id="ceph"><a class="header" href="#ceph">Ceph</a></h1>
 <p>请参阅： <a href="https://t9k.github.io/ceph-admin-docs/installation.html">https://t9k.github.io/ceph-admin-docs/installation.html</a>。</p>
 <div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
 <h1 id="lustre"><a class="header" href="#lustre">Lustre</a></h1>
-<h2 id="参考-27"><a class="header" href="#参考-27">参考</a></h2>
+<h2 id="参考-28"><a class="header" href="#参考-28">参考</a></h2>
 <p><a href="https://github.com/DDNStorage/exa-csi-driver">https://github.com/DDNStorage/exa-csi-driver</a></p>
 <p><a href="https://github.com/lustre/lustre-release">https://github.com/lustre/lustre-release</a></p>
 <p><a href="https://github.com/DDNStorage/LustrePerfMon">https://github.com/DDNStorage/LustrePerfMon</a></p>
 <div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
 <h1 id="gpfs"><a class="header" href="#gpfs">GPFS</a></h1>
-<h2 id="参考-28"><a class="header" href="#参考-28">参考</a></h2>
+<h2 id="参考-29"><a class="header" href="#参考-29">参考</a></h2>
 <p><a href="https://github.com/IBM/ibm-spectrum-scale-csi">https://github.com/IBM/ibm-spectrum-scale-csi</a></p>
 <p><a href="https://www.ibm.com/docs/it/scalecsi?topic=200-introduction-spectrum-scale-container-storage-interface-driver">https://www.ibm.com/docs/it/scalecsi?topic=200-introduction-spectrum-scale-container-storage-interface-driver</a></p>
 <div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
@@ -6325,7 +6329,7 @@ export HUAWEICLOUD_SECRET_KEY=&quot;&lt;your-secret-key&gt;&quot;
 <pre><code class="language-bash"># 命令要根据加密算法变化，ec 代表 ECDSA 算法
 openssl ec -txt -in &lt;private-key-file&gt;
 </code></pre>
-<h2 id="参考-29"><a class="header" href="#参考-29">参考</a></h2>
+<h2 id="参考-30"><a class="header" href="#参考-30">参考</a></h2>
 <p><a href="https://github.com/acmesh-official/acme.sh">https://github.com/acmesh-official/acme.sh</a></p>
 <div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
 <h1 id="cri-命令行工具"><a class="header" href="#cri-命令行工具">CRI 命令行工具</a></h1>
@@ -6466,7 +6470,7 @@ ctr task rm &lt;task&gt;
 <p>取消挂载：</p>
 <pre><code class="language-bash">ctr image unmount ./mount
 </code></pre>
-<h2 id="参考-30"><a class="header" href="#参考-30">参考</a></h2>
+<h2 id="参考-31"><a class="header" href="#参考-31">参考</a></h2>
 <p><a href="https://github.com/kubernetes/cri-api">https://github.com/kubernetes/cri-api</a></p>
 <p><a href="https://github.com/kubernetes-sigs/cri-tools/blob/master/docs/crictl.md">https://github.com/kubernetes-sigs/cri-tools/blob/master/docs/crictl.md</a></p>
 <p><a href="https://github.com/containerd/nerdctl">https://github.com/containerd/nerdctl</a></p>
