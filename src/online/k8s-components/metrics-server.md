@@ -39,8 +39,8 @@ kubectl top node
 
 ```
 NAME    CPU(cores)   CPU%   MEMORY(bytes)   MEMORY%   
-nc01    1113m        13%    14691Mi         46%       
-nc04    1336m        11%    13375Mi         42%       
+node01    1113m        13%    14691Mi         46%       
+node02    1336m        11%    13375Mi         42%       
 ```
 
 ## 参考

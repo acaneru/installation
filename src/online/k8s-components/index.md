@@ -11,7 +11,7 @@
 - [监控相关](./monitoring.md) - 一些设置
 - [Gatekeeper](./gatekeeper.md) - 准入控制
 - [NVIDIA GPU Operator](./nvidia-gpu-operator.md) - NV GPU 产品的支持
-- [Nvidia Network Operator](./nvidia-network-operator.md) - NV 网络产品的支持
+- [NVIDIA Network Operator](./nvidia-network-operator.md) - NV 网络产品的支持
 
 
 ## 下一步
