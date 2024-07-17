@@ -1,0 +1,467 @@
+<!DOCTYPE HTML>
+<html lang="zh-cn" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Helm Chart 修改 - TensorStack AI 计算平台 - 安装手册</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/sidebar.css">
+        <link rel="stylesheet" href="../theme/custom.css">
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../overview.html">概述</a></li><li class="spacer"></li><li class="chapter-item expanded "><a href="../online/index.html"><strong aria-hidden="true">1.</strong> 在线安装</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../online/prepare-inventory.html"><strong aria-hidden="true">1.1.</strong> 设置 Inventory</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../online/inventory-advanced.html"><strong aria-hidden="true">1.1.1.</strong> 高级设置</a></li></ol></li><li class="chapter-item expanded "><a href="../online/prepare-nodes.html"><strong aria-hidden="true">1.2.</strong> 准备节点</a></li><li class="chapter-item expanded "><a href="../online/k8s-index.html"><strong aria-hidden="true">1.3.</strong> 安装 K8s</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../online/k8s-install.html"><strong aria-hidden="true">1.3.1.</strong> 基本安装</a></li><li class="chapter-item expanded "><a href="../online/cri.html"><strong aria-hidden="true">1.3.2.</strong> CRI 配置</a></li><li class="chapter-item expanded "><a href="../online/cni.html"><strong aria-hidden="true">1.3.3.</strong> CNI 配置</a></li><li class="chapter-item expanded "><a href="../online/k8s-userns.html"><strong aria-hidden="true">1.3.4.</strong> 设置 User Namespace</a></li><li class="chapter-item expanded "><a href="../online/k8s-storage.html"><strong aria-hidden="true">1.3.5.</strong> 设置集群存储</a></li><li class="chapter-item expanded "><a href="../online/k8-ops.html"><strong aria-hidden="true">1.3.6.</strong> 集群维护</a></li><li class="chapter-item expanded "><a href="../online/k8s-install-faqs.html"><strong aria-hidden="true">1.3.7.</strong> 常见问题</a></li><li class="chapter-item expanded "><a href="../online/k8s-post-install.html"><strong aria-hidden="true">1.3.8.</strong> 其他安装后配置</a></li></ol></li><li class="chapter-item expanded "><a href="../online/k8s-components/index.html"><strong aria-hidden="true">1.4.</strong> 安装 K8s 组件</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../online/k8s-components/istio.html"><strong aria-hidden="true">1.4.1.</strong> Istio</a></li><li class="chapter-item expanded "><a href="../online/k8s-components/knative.html"><strong aria-hidden="true">1.4.2.</strong> Knative</a></li><li class="chapter-item expanded "><a href="../online/k8s-components/metrics-server.html"><strong aria-hidden="true">1.4.3.</strong> Metrics Server</a></li><li class="chapter-item expanded "><a href="../online/k8s-components/elastic-search.html"><strong aria-hidden="true">1.4.4.</strong> Elastic Search</a></li><li class="chapter-item expanded "><a href="../online/k8s-components/monitoring.html"><strong aria-hidden="true">1.4.5.</strong> 监控相关</a></li><li class="chapter-item expanded "><a href="../online/k8s-components/gatekeeper.html"><strong aria-hidden="true">1.4.6.</strong> Gatekeeper</a></li></ol></li><li class="chapter-item expanded "><a href="../hardware/hardware.html"><strong aria-hidden="true">1.5.</strong> 硬件支持</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../hardware/nvidia/index.html"><strong aria-hidden="true">1.5.1.</strong> NVIDIA</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../hardware/nvidia/gpu-operator.html"><strong aria-hidden="true">1.5.1.1.</strong> GPU Operator</a></li><li class="chapter-item expanded "><a href="../hardware/nvidia/network-operator.html"><strong aria-hidden="true">1.5.1.2.</strong> Network Operator</a></li></ol></li><li class="chapter-item expanded "><a href="../hardware/amd/index.html"><strong aria-hidden="true">1.5.2.</strong> AMD</a></li><li class="chapter-item expanded "><a href="../hardware/hygon/index.html"><strong aria-hidden="true">1.5.3.</strong> 海光 Hygon</a></li><li class="chapter-item expanded "><a href="../hardware/huawei/index.html"><strong aria-hidden="true">1.5.4.</strong> 华为</a></li><li class="chapter-item expanded "><a href="../hardware/iluvatar/index.html"><strong aria-hidden="true">1.5.5.</strong> 天数智芯 iluvatar</a></li><li class="chapter-item expanded "><a href="../hardware/metax/index.html"><strong aria-hidden="true">1.5.6.</strong> 沐曦 MetaX</a></li><li class="chapter-item expanded "><a href="../hardware/enflame/index.html"><strong aria-hidden="true">1.5.7.</strong> 燧原 Enflame</a></li></ol></li><li class="chapter-item expanded "><a href="../online/products/index.html"><strong aria-hidden="true">1.6.</strong> 安装 TensorStack AI</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../online/products/pre-install.html"><strong aria-hidden="true">1.6.1.</strong> 安装前准备</a></li><li class="chapter-item expanded "><a href="../online/products/install.html"><strong aria-hidden="true">1.6.2.</strong> 安装产品</a></li><li class="chapter-item expanded "><a href="../online/products/post-install.html"><strong aria-hidden="true">1.6.3.</strong> 安装后配置</a></li></ol></li><li class="chapter-item expanded "><a href="../online/registry/harbor.html"><strong aria-hidden="true">1.7.</strong> 安装 Harbor Registry</a></li><li class="chapter-item expanded "><a href="../online/storage-service/index.html"><strong aria-hidden="true">1.8.</strong> 安装存储服务</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../online/storage-service/minio.html"><strong aria-hidden="true">1.8.1.</strong> MinIO</a></li><li class="chapter-item expanded "><a href="../online/storage-service/nfs.html"><strong aria-hidden="true">1.8.2.</strong> NFS</a></li><li class="chapter-item expanded "><a href="../online/storage-service/ceph.html"><strong aria-hidden="true">1.8.3.</strong> Ceph</a></li><li class="chapter-item expanded "><a href="../online/storage-service/lustre.html"><strong aria-hidden="true">1.8.4.</strong> Lustre</a></li><li class="chapter-item expanded "><a href="../online/storage-service/gpfs.html"><strong aria-hidden="true">1.8.5.</strong> GPFS</a></li></ol></li><li class="chapter-item expanded "><a href="../online/correctness-checking.html"><strong aria-hidden="true">1.9.</strong> 正确性检查</a></li></ol></li><li class="chapter-item expanded "><a href="../offline/index.html"><strong aria-hidden="true">2.</strong> 离线安装</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../offline/prepare-offline-packages/index.html"><strong aria-hidden="true">2.1.</strong> 准备离线安装包</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../offline/prepare-offline-packages/kubespray.html"><strong aria-hidden="true">2.1.1.</strong> Kubespray</a></li><li class="chapter-item expanded "><a href="../offline/prepare-offline-packages/k8s-components.html"><strong aria-hidden="true">2.1.2.</strong> K8s 组件</a></li><li class="chapter-item expanded "><a href="../offline/prepare-offline-packages/products.html"><strong aria-hidden="true">2.1.3.</strong> 产品</a></li></ol></li><li class="chapter-item expanded "><a href="../offline/install/index.html"><strong aria-hidden="true">2.2.</strong> 安装</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../offline/install/k8s.html"><strong aria-hidden="true">2.2.1.</strong> K8s</a></li><li class="chapter-item expanded "><a href="../offline/install/k8s-components.html"><strong aria-hidden="true">2.2.2.</strong> K8s 组件</a></li><li class="chapter-item expanded "><a href="../offline/install/products.html"><strong aria-hidden="true">2.2.3.</strong> 产品</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="../update/index.html"><strong aria-hidden="true">3.</strong> 产品升级</a></li><li class="chapter-item expanded "><a href="../appendix/index.html"><strong aria-hidden="true">4.</strong> 附录</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../appendix/install-docker.html"><strong aria-hidden="true">4.1.</strong> 在线安装 Docker</a></li><li class="chapter-item expanded "><a href="../appendix/install-docker-compose.html"><strong aria-hidden="true">4.2.</strong> 在线安装 Docker Compose</a></li><li class="chapter-item expanded "><a href="../appendix/configure-docker-insecure-registry.html"><strong aria-hidden="true">4.3.</strong> 配置 Docker Insecure Registry</a></li><li class="chapter-item expanded "><a href="../appendix/install-s3cmd.html"><strong aria-hidden="true">4.4.</strong> 在线安装 s3cmd</a></li><li class="chapter-item expanded "><a href="../appendix/k8s-install-notes.html"><strong aria-hidden="true">4.5.</strong> 安装 K8s 注释</a></li><li class="chapter-item expanded "><a href="../appendix/generate-k8s-file-and-image-list.html"><strong aria-hidden="true">4.6.</strong> 生成 K8s 文件和镜像列表</a></li><li class="chapter-item expanded "><a href="../appendix/generate-t9k-product-image-list.html"><strong aria-hidden="true">4.7.</strong> 生成 T9k 产品镜像列表</a></li><li class="chapter-item expanded "><a href="../appendix/modify-helm-chart.html" class="active"><strong aria-hidden="true">4.8.</strong> Helm Chart 修改</a></li><li class="chapter-item expanded "><a href="../appendix/manually-install-mlnx-ofed-driver.html"><strong aria-hidden="true">4.9.</strong> 手动安装 MLNX_OFED 驱动</a></li><li class="chapter-item expanded "><a href="../appendix/ansible-vars.html"><strong aria-hidden="true">4.10.</strong> ansible vars</a></li><li class="chapter-item expanded "><a href="../appendix/ansible-debugging.html"><strong aria-hidden="true">4.11.</strong> ansible debugging</a></li><li class="chapter-item expanded "><a href="../appendix/manage-domain-certificate.html"><strong aria-hidden="true">4.12.</strong> 管理域名证书</a></li><li class="chapter-item expanded "><a href="../appendix/container-runtime-cli.html"><strong aria-hidden="true">4.13.</strong> CRI 命令行工具</a></li><li class="chapter-item expanded "><a href="../appendix/cluster-admin-installation-configuration.html"><strong aria-hidden="true">4.14.</strong> 集群管理安装配置</a></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">TensorStack AI 计算平台 - 安装手册</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+                        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="helm-chart-修改"><a class="header" href="#helm-chart-修改">Helm Chart 修改</a></h1>
+<h2 id="elastic-search"><a class="header" href="#elastic-search">Elastic Search</a></h2>
+<p>获取 elastic search 官方的 helm chart：</p>
+<pre><code class="language-bash">$ helm repo add elastic https://helm.elastic.co
+$ helm pull elastic/elasticsearch --version 7.13.4
+$ tar zxvf elasticsearch-7.13.4.tgz
+</code></pre>
+<p>进行以下修改：</p>
+<pre><code class="language-bash">$ git diff elasticsearch/templates/poddisruptionbudget.yaml
+  diff --git a/skj/elasticsearch/templates/poddisruptionbudget.yaml 
+b/skj/elasticsearch/templates/poddisruptionbudget.yaml
+  index df6c74e..7f887da 100644
+  --- a/skj/elasticsearch/templates/poddisruptionbudget.yaml
+  +++ b/skj/elasticsearch/templates/poddisruptionbudget.yaml
+  @@ -1,6 +1,6 @@
+   ---
+   {{- if .Values.maxUnavailable }}
+  -apiVersion: policy/v1beta1
+  +apiVersion: policy/v1
+   kind: PodDisruptionBudget
+   metadata:
+     name: &quot;{{ template &quot;elasticsearch.uname&quot; . }}-pdb&quot;
+
+
+$ git diff elasticsearch/values.yaml
+  diff --git a/skj/elasticsearch/values.yaml b/skj/elasticsearch/values.yaml
+  index 82b82b9..561a403 100644
+  --- a/skj/elasticsearch/values.yaml
+  +++ b/skj/elasticsearch/values.yaml
+  @@ -58,7 +58,7 @@ hostAliases: []
+   #  - &quot;foo.local&quot;
+   #  - &quot;bar.local&quot;
+   
+  -image: &quot;docker.elastic.co/elasticsearch/elasticsearch&quot;
+  +image: &quot;docker.io/t9kpublic/elasticsearch&quot;
+   imageTag: &quot;7.13.4&quot;
+   imagePullPolicy: &quot;IfNotPresent&quot;
+</code></pre>
+<p>打包上传：</p>
+<pre><code class="language-bash">$ rm elasticsearch-7.13.4.tgz
+$ helm package elasticsearch
+$ helm push ./elasticsearch-7.13.4.tgz oci://tsz.io/t9kcharts
+</code></pre>
+<h2 id="gpu-operator"><a class="header" href="#gpu-operator">GPU Operator</a></h2>
+<p>下载并解压 Helm Chart:</p>
+<pre><code class="language-bash"># 添加 nvidia helm repo
+helm repo add nvidia https://helm.ngc.nvidia.com/nvidia \
+   &amp;&amp; helm repo update
+$ helm pull --untar nvidia/gpu-operator --version v22.9.2
+$ ls gpu-operator
+gpu-operator
+</code></pre>
+<p>将其中的几个 repository 地址全部换成 t9kpublic，具体操作如下：</p>
+<pre><code class="language-bash">sed -i &quot;s|repository: nvcr.io/nvidia/cloud-native|repository: t9kpublic|g&quot; \
+    gpu-operator/values.yaml
+sed -i &quot;s|repository: nvcr.io/nvidia/k8s|repository: t9kpublic|g&quot; \
+    gpu-operator/values.yaml
+sed -i &quot;s|repository: nvcr.io/nvidia|repository: t9kpublic|g&quot; \
+    gpu-operator/values.yaml
+</code></pre>
+<p>完整的对比如下：</p>
+<pre><code class="language-bash">$ diff -u ./gpu-operator-22/values.yaml ./gpu-operator/values.yaml
+--- ./gpu-operator-22/values.yaml	2024-01-30 14:24:59.000000000 +0800
++++ ./gpu-operator/values.yaml	2024-01-30 14:25:43.000000000 +0800
+@@ -33,7 +33,7 @@
+     maxUnavailable: &quot;1&quot;
+ 
+ validator:
+-  repository: nvcr.io/nvidia/cloud-native
++  repository: t9kpublic
+   image: gpu-operator-validator
+   # If version is not specified, then default is to use chart.AppVersion
+   #version: &quot;&quot;
+@@ -48,7 +48,7 @@
+         value: &quot;true&quot;
+ 
+ operator:
+-  repository: nvcr.io/nvidia
++  repository: t9kpublic
+   image: gpu-operator
+   # If version is not specified, then default is to use chart.AppVersion
+   #version: &quot;&quot;
+@@ -65,7 +65,7 @@
+   upgradeCRD: false
+   initContainer:
+     image: cuda
+-    repository: nvcr.io/nvidia
++    repository: t9kpublic
+     version: 11.8.0-base-ubi8
+     imagePullPolicy: IfNotPresent
+   tolerations:
+@@ -105,7 +105,7 @@
+ 
+ driver:
+   enabled: true
+-  repository: nvcr.io/nvidia
++  repository: t9kpublic
+   image: driver
+   version: &quot;525.60.13&quot;
+   imagePullPolicy: IfNotPresent
+@@ -141,7 +141,7 @@
+       deleteEmptyDir: false
+   manager:
+     image: k8s-driver-manager
+-    repository: nvcr.io/nvidia/cloud-native
++    repository: t9kpublic
+     version: v0.6.0
+     imagePullPolicy: IfNotPresent
+     env:
+@@ -178,7 +178,7 @@
+ 
+ toolkit:
+   enabled: true
+-  repository: nvcr.io/nvidia/k8s
++  repository: t9kpublic
+   image: container-toolkit
+   version: v1.11.0-ubuntu20.04
+   imagePullPolicy: IfNotPresent
+@@ -189,7 +189,7 @@
+ 
+ devicePlugin:
+   enabled: true
+-  repository: nvcr.io/nvidia
++  repository: t9kpublic
+   image: k8s-device-plugin
+   version: v0.13.0-ubi8
+   imagePullPolicy: IfNotPresent
+@@ -243,7 +243,7 @@
+ dcgm:
+   # disabled by default to use embedded nv-hostengine by exporter
+   enabled: false
+-  repository: nvcr.io/nvidia/cloud-native
++  repository: t9kpublic
+   image: dcgm
+   version: 3.1.3-1-ubuntu20.04
+   imagePullPolicy: IfNotPresent
+@@ -254,7 +254,7 @@
+ 
+ dcgmExporter:
+   enabled: true
+-  repository: nvcr.io/nvidia/k8s
++  repository: t9kpublic
+   image: dcgm-exporter
+   version: 3.1.3-3.1.2-ubuntu20.04
+   imagePullPolicy: IfNotPresent
+@@ -274,7 +274,7 @@
+ 
+ gfd:
+   enabled: true
+-  repository: nvcr.io/nvidia
++  repository: t9kpublic
+   image: gpu-feature-discovery
+   version: v0.7.0-ubi8
+   imagePullPolicy: IfNotPresent
+@@ -288,7 +288,7 @@
+ 
+ migManager:
+   enabled: true
+-  repository: nvcr.io/nvidia/cloud-native
++  repository: t9kpublic
+   image: k8s-mig-manager
+   version: v0.5.0-ubuntu20.04
+   imagePullPolicy: IfNotPresent
+@@ -304,7 +304,7 @@
+ 
+ nodeStatusExporter:
+   enabled: false
+-  repository: nvcr.io/nvidia/cloud-native
++  repository: t9kpublic
+   image: gpu-operator-validator
+   # If version is not specified, then default is to use chart.AppVersion
+   #version: &quot;&quot;
+@@ -314,7 +314,7 @@
+ 
+ gds:
+   enabled: false
+-  repository: nvcr.io/nvidia/cloud-native
++  repository: t9kpublic
+   image: nvidia-fs
+   version: &quot;2.14.13&quot;
+   imagePullPolicy: IfNotPresent
+@@ -333,7 +333,7 @@
+   resources: {}
+   driverManager:
+     image: k8s-driver-manager
+-    repository: nvcr.io/nvidia/cloud-native
++    repository: t9kpublic
+     version: v0.6.0
+     imagePullPolicy: IfNotPresent
+     env:
+@@ -344,7 +344,7 @@
+ 
+ vgpuDeviceManager:
+   enabled: true
+-  repository: nvcr.io/nvidia/cloud-native
++  repository: t9kpublic
+   image: vgpu-device-manager
+   version: &quot;v0.2.0&quot;
+   imagePullPolicy: IfNotPresent
+@@ -356,7 +356,7 @@
+ 
+ vfioManager:
+   enabled: true
+-  repository: nvcr.io/nvidia
++  repository: t9kpublic
+   image: cuda
+   version: 11.7.1-base-ubi8
+   imagePullPolicy: IfNotPresent
+@@ -365,7 +365,7 @@
+   resources: {}
+   driverManager:
+     image: k8s-driver-manager
+-    repository: nvcr.io/nvidia/cloud-native
++    repository: t9kpublic
+     version: v0.6.0
+     imagePullPolicy: IfNotPresent
+     env:
+@@ -376,7 +376,7 @@
+ 
+ sandboxDevicePlugin:
+   enabled: true
+-  repository: nvcr.io/nvidia
++  repository: t9kpublic
+   image: kubevirt-gpu-device-plugin
+   version: v1.2.1
+   imagePullPolicy: IfNotPresent
+</code></pre>
+<p>重新打包，然后上传：</p>
+<pre><code class="language-bash">$ rm -f gpu-operator-v22.9.2.tgz
+$ helm package gpu-operator
+$ helm push gpu-operator-v22.9.2.tgz oci://tsz.io/t9kcharts
+</code></pre>
+<p>验证：</p>
+<pre><code class="language-bash">$ helm show chart oci://tsz.io/t9kcharts/gpu-operator --version v22.9.2
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../appendix/generate-t9k-product-image-list.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../appendix/manually-install-mlnx-ofed-driver.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../appendix/generate-t9k-product-image-list.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../appendix/manually-install-mlnx-ofed-driver.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../theme/sidebar.js"></script>
+
+
+    </div>
+    </body>
+</html>

@@ -1,0 +1,771 @@
+<!DOCTYPE HTML>
+<html lang="zh-cn" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Network Operator - TensorStack AI 计算平台 - 安装手册</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../../favicon.svg">
+        <link rel="shortcut icon" href="../../favicon.png">
+        <link rel="stylesheet" href="../../css/variables.css">
+        <link rel="stylesheet" href="../../css/general.css">
+        <link rel="stylesheet" href="../../css/chrome.css">
+        <link rel="stylesheet" href="../../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../../highlight.css">
+        <link rel="stylesheet" href="../../tomorrow-night.css">
+        <link rel="stylesheet" href="../../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../../theme/sidebar.css">
+        <link rel="stylesheet" href="../../theme/custom.css">
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../../overview.html">概述</a></li><li class="spacer"></li><li class="chapter-item expanded "><a href="../../online/index.html"><strong aria-hidden="true">1.</strong> 在线安装</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../online/prepare-inventory.html"><strong aria-hidden="true">1.1.</strong> 设置 Inventory</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../online/inventory-advanced.html"><strong aria-hidden="true">1.1.1.</strong> 高级设置</a></li></ol></li><li class="chapter-item expanded "><a href="../../online/prepare-nodes.html"><strong aria-hidden="true">1.2.</strong> 准备节点</a></li><li class="chapter-item expanded "><a href="../../online/k8s-index.html"><strong aria-hidden="true">1.3.</strong> 安装 K8s</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../online/k8s-install.html"><strong aria-hidden="true">1.3.1.</strong> 基本安装</a></li><li class="chapter-item expanded "><a href="../../online/cri.html"><strong aria-hidden="true">1.3.2.</strong> CRI 配置</a></li><li class="chapter-item expanded "><a href="../../online/cni.html"><strong aria-hidden="true">1.3.3.</strong> CNI 配置</a></li><li class="chapter-item expanded "><a href="../../online/k8s-userns.html"><strong aria-hidden="true">1.3.4.</strong> 设置 User Namespace</a></li><li class="chapter-item expanded "><a href="../../online/k8s-storage.html"><strong aria-hidden="true">1.3.5.</strong> 设置集群存储</a></li><li class="chapter-item expanded "><a href="../../online/k8-ops.html"><strong aria-hidden="true">1.3.6.</strong> 集群维护</a></li><li class="chapter-item expanded "><a href="../../online/k8s-install-faqs.html"><strong aria-hidden="true">1.3.7.</strong> 常见问题</a></li><li class="chapter-item expanded "><a href="../../online/k8s-post-install.html"><strong aria-hidden="true">1.3.8.</strong> 其他安装后配置</a></li></ol></li><li class="chapter-item expanded "><a href="../../online/k8s-components/index.html"><strong aria-hidden="true">1.4.</strong> 安装 K8s 组件</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../online/k8s-components/istio.html"><strong aria-hidden="true">1.4.1.</strong> Istio</a></li><li class="chapter-item expanded "><a href="../../online/k8s-components/knative.html"><strong aria-hidden="true">1.4.2.</strong> Knative</a></li><li class="chapter-item expanded "><a href="../../online/k8s-components/metrics-server.html"><strong aria-hidden="true">1.4.3.</strong> Metrics Server</a></li><li class="chapter-item expanded "><a href="../../online/k8s-components/elastic-search.html"><strong aria-hidden="true">1.4.4.</strong> Elastic Search</a></li><li class="chapter-item expanded "><a href="../../online/k8s-components/monitoring.html"><strong aria-hidden="true">1.4.5.</strong> 监控相关</a></li><li class="chapter-item expanded "><a href="../../online/k8s-components/gatekeeper.html"><strong aria-hidden="true">1.4.6.</strong> Gatekeeper</a></li></ol></li><li class="chapter-item expanded "><a href="../../hardware/hardware.html"><strong aria-hidden="true">1.5.</strong> 硬件支持</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../hardware/nvidia/index.html"><strong aria-hidden="true">1.5.1.</strong> NVIDIA</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../hardware/nvidia/gpu-operator.html"><strong aria-hidden="true">1.5.1.1.</strong> GPU Operator</a></li><li class="chapter-item expanded "><a href="../../hardware/nvidia/network-operator.html" class="active"><strong aria-hidden="true">1.5.1.2.</strong> Network Operator</a></li></ol></li><li class="chapter-item expanded "><a href="../../hardware/amd/index.html"><strong aria-hidden="true">1.5.2.</strong> AMD</a></li><li class="chapter-item expanded "><a href="../../hardware/hygon/index.html"><strong aria-hidden="true">1.5.3.</strong> 海光 Hygon</a></li><li class="chapter-item expanded "><a href="../../hardware/huawei/index.html"><strong aria-hidden="true">1.5.4.</strong> 华为</a></li><li class="chapter-item expanded "><a href="../../hardware/iluvatar/index.html"><strong aria-hidden="true">1.5.5.</strong> 天数智芯 iluvatar</a></li><li class="chapter-item expanded "><a href="../../hardware/metax/index.html"><strong aria-hidden="true">1.5.6.</strong> 沐曦 MetaX</a></li><li class="chapter-item expanded "><a href="../../hardware/enflame/index.html"><strong aria-hidden="true">1.5.7.</strong> 燧原 Enflame</a></li></ol></li><li class="chapter-item expanded "><a href="../../online/products/index.html"><strong aria-hidden="true">1.6.</strong> 安装 TensorStack AI</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../online/products/pre-install.html"><strong aria-hidden="true">1.6.1.</strong> 安装前准备</a></li><li class="chapter-item expanded "><a href="../../online/products/install.html"><strong aria-hidden="true">1.6.2.</strong> 安装产品</a></li><li class="chapter-item expanded "><a href="../../online/products/post-install.html"><strong aria-hidden="true">1.6.3.</strong> 安装后配置</a></li></ol></li><li class="chapter-item expanded "><a href="../../online/registry/harbor.html"><strong aria-hidden="true">1.7.</strong> 安装 Harbor Registry</a></li><li class="chapter-item expanded "><a href="../../online/storage-service/index.html"><strong aria-hidden="true">1.8.</strong> 安装存储服务</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../online/storage-service/minio.html"><strong aria-hidden="true">1.8.1.</strong> MinIO</a></li><li class="chapter-item expanded "><a href="../../online/storage-service/nfs.html"><strong aria-hidden="true">1.8.2.</strong> NFS</a></li><li class="chapter-item expanded "><a href="../../online/storage-service/ceph.html"><strong aria-hidden="true">1.8.3.</strong> Ceph</a></li><li class="chapter-item expanded "><a href="../../online/storage-service/lustre.html"><strong aria-hidden="true">1.8.4.</strong> Lustre</a></li><li class="chapter-item expanded "><a href="../../online/storage-service/gpfs.html"><strong aria-hidden="true">1.8.5.</strong> GPFS</a></li></ol></li><li class="chapter-item expanded "><a href="../../online/correctness-checking.html"><strong aria-hidden="true">1.9.</strong> 正确性检查</a></li></ol></li><li class="chapter-item expanded "><a href="../../offline/index.html"><strong aria-hidden="true">2.</strong> 离线安装</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../offline/prepare-offline-packages/index.html"><strong aria-hidden="true">2.1.</strong> 准备离线安装包</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../offline/prepare-offline-packages/kubespray.html"><strong aria-hidden="true">2.1.1.</strong> Kubespray</a></li><li class="chapter-item expanded "><a href="../../offline/prepare-offline-packages/k8s-components.html"><strong aria-hidden="true">2.1.2.</strong> K8s 组件</a></li><li class="chapter-item expanded "><a href="../../offline/prepare-offline-packages/products.html"><strong aria-hidden="true">2.1.3.</strong> 产品</a></li></ol></li><li class="chapter-item expanded "><a href="../../offline/install/index.html"><strong aria-hidden="true">2.2.</strong> 安装</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../offline/install/k8s.html"><strong aria-hidden="true">2.2.1.</strong> K8s</a></li><li class="chapter-item expanded "><a href="../../offline/install/k8s-components.html"><strong aria-hidden="true">2.2.2.</strong> K8s 组件</a></li><li class="chapter-item expanded "><a href="../../offline/install/products.html"><strong aria-hidden="true">2.2.3.</strong> 产品</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="../../update/index.html"><strong aria-hidden="true">3.</strong> 产品升级</a></li><li class="chapter-item expanded "><a href="../../appendix/index.html"><strong aria-hidden="true">4.</strong> 附录</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../appendix/install-docker.html"><strong aria-hidden="true">4.1.</strong> 在线安装 Docker</a></li><li class="chapter-item expanded "><a href="../../appendix/install-docker-compose.html"><strong aria-hidden="true">4.2.</strong> 在线安装 Docker Compose</a></li><li class="chapter-item expanded "><a href="../../appendix/configure-docker-insecure-registry.html"><strong aria-hidden="true">4.3.</strong> 配置 Docker Insecure Registry</a></li><li class="chapter-item expanded "><a href="../../appendix/install-s3cmd.html"><strong aria-hidden="true">4.4.</strong> 在线安装 s3cmd</a></li><li class="chapter-item expanded "><a href="../../appendix/k8s-install-notes.html"><strong aria-hidden="true">4.5.</strong> 安装 K8s 注释</a></li><li class="chapter-item expanded "><a href="../../appendix/generate-k8s-file-and-image-list.html"><strong aria-hidden="true">4.6.</strong> 生成 K8s 文件和镜像列表</a></li><li class="chapter-item expanded "><a href="../../appendix/generate-t9k-product-image-list.html"><strong aria-hidden="true">4.7.</strong> 生成 T9k 产品镜像列表</a></li><li class="chapter-item expanded "><a href="../../appendix/modify-helm-chart.html"><strong aria-hidden="true">4.8.</strong> Helm Chart 修改</a></li><li class="chapter-item expanded "><a href="../../appendix/manually-install-mlnx-ofed-driver.html"><strong aria-hidden="true">4.9.</strong> 手动安装 MLNX_OFED 驱动</a></li><li class="chapter-item expanded "><a href="../../appendix/ansible-vars.html"><strong aria-hidden="true">4.10.</strong> ansible vars</a></li><li class="chapter-item expanded "><a href="../../appendix/ansible-debugging.html"><strong aria-hidden="true">4.11.</strong> ansible debugging</a></li><li class="chapter-item expanded "><a href="../../appendix/manage-domain-certificate.html"><strong aria-hidden="true">4.12.</strong> 管理域名证书</a></li><li class="chapter-item expanded "><a href="../../appendix/container-runtime-cli.html"><strong aria-hidden="true">4.13.</strong> CRI 命令行工具</a></li><li class="chapter-item expanded "><a href="../../appendix/cluster-admin-installation-configuration.html"><strong aria-hidden="true">4.14.</strong> 集群管理安装配置</a></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">TensorStack AI 计算平台 - 安装手册</h1>
+
+                    <div class="right-buttons">
+                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+                        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="安装-network-operator"><a class="header" href="#安装-network-operator">安装 Network Operator</a></h1>
+<pre><code>TODO:
+    1. GPU operator 的 version 当提供灵活性。
+</code></pre>
+<h2 id="前提条件"><a class="header" href="#前提条件">前提条件</a></h2>
+<p>硬件：</p>
+<ol>
+<li>节点上安装了支持 RDMA 的硬件设备，并正确连接了网线。</li>
+<li>节点上的 GPU 支持 GPUDirect 功能。</li>
+</ol>
+<p>软件：</p>
+<ol>
+<li>节点加载了 kernel module <code>nvidia_peermem</code>。</li>
+<li>节点已经加入到 K8s 集群中。</li>
+<li>安装了 <a href="./gpu-operator.html">GPU Operator v22.9.2</a>。</li>
+<li>安装了 Node Feature Discovery v0.10.1（安装 GPU Operator 时启用了该功能）。</li>
+</ol>
+<h3 id="验证"><a class="header" href="#验证">验证</a></h3>
+<p>下面提供部分前提条件的验证方式。</p>
+<p>节点上安装了支持 RDMA 的硬件设备，这里以 InfiniBand 为例：</p>
+<pre><code class="language-bash">lspci -nn | grep -i infini
+</code></pre>
+<pre><code>98:00.0 Infiniband controller [0207]: Mellanox Technologies MT28908 Family [ConnectX-6] [15b3:101b]
+</code></pre>
+<p>需要注意这里的 <code>[15b3:101b]</code>，他们分别代表设备供应商代码和设备 ID。</p>
+<p>节点正确连接了 IB 网线，例如：</p>
+<pre><code class="language-bash">ip a | grep -i ib
+</code></pre>
+<pre><code>5: ibs102: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 2044 qdisc mq state UP group default qlen 256
+    link/infiniband 00:00:0d:86:fe:80:00:00:00:00:00:00:e8:eb:d3:03:00:a6:19:aa brd 00:ff:ff:ff:ff:12:40:1b:ff:ff:00:00:00:00:00:00:ff:ff:ff:ff
+    inet 10.20.65.13/24 brd 10.20.65.255 scope global ibs102
+</code></pre>
+<p>这里的状态可以是 UP 或者 DOWN，但不能有 NO-CARRIER。</p>
+<p>节点启用了 kernel module <code>nvidia_peermem</code>：</p>
+<pre><code class="language-bash">lsmod | grep nvidia_peermem
+</code></pre>
+<p>参考输出：</p>
+<pre><code>nvidia_peermem         16384  0
+ib_core               348160  9 rdma_cm,ib_ipoib,nvidia_peermem,iw_cm,ib_umad,rdma_ucm,ib_uverbs,mlx5_ib,ib_cm
+nvidia              56344576  492 nvidia_uvm,nvidia_peermem,nvidia_modeset
+</code></pre>
+<p>如果未启动，可手动启用：</p>
+<pre><code>sudo modprobe nvidia_peermem
+</code></pre>
+<p>通过供应商代码 (15b3) 查看含有 Mellanox Infinity Band NIC 的节点：</p>
+<pre><code class="language-bash">kubectl get nodes  -l feature.node.kubernetes.io/pci-15b3.present
+</code></pre>
+<pre><code>NAME    STATUS    ROLES                          AGE    VERSION
+a101    Ready     compute                        16d    v1.24.10
+a102    Ready     compute                        16d    v1.24.10
+a31     Ready     compute                        45d    v1.24.10
+a41     Ready     compute,ingress                92d    v1.24.10
+a42     Ready     compute                        177d   v1.24.10
+a43     Ready     compute                        177d   v1.24.10
+a44     Ready     compute                        16d    v1.24.10
+a45     Ready     compute                        7d3h   v1.24.10
+login   Ready     control-plane,ingress,master   178d   v1.24.10
+</code></pre>
+<p>查看含有 NVIDIA GPU (供应商代码 10de) 的节点：</p>
+<pre><code class="language-bash">kubectl get nodes  -l feature.node.kubernetes.io/pci-10de.present
+</code></pre>
+<pre><code>NAME    STATUS    ROLES             AGE    VERSION
+a101    Ready     compute           16d    v1.24.10
+a102    Ready     compute           16d    v1.24.10
+a31     Ready     compute           45d    v1.24.10
+a41     Ready     compute,ingress   92d    v1.24.10
+a42     Ready     compute           177d   v1.24.10
+a43     Ready     compute           177d   v1.24.10
+a44     Ready     compute           16d    v1.24.10
+a45     Ready     compute           7d3h   v1.24.10
+</code></pre>
+<p>确认节点上安装了 GPU Operator v22.9.2，并确认 NFD （GPU Operator 部署的）可以正常运行：</p>
+<pre><code class="language-bash">kubectl -n gpu-operator get ds
+</code></pre>
+<pre><code>NAME                                         DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR                                      AGE
+gpu-feature-discovery                        10        10        10      10           10          nvidia.com/gpu.deploy.gpu-feature-discovery=true   173d
+nvidia-container-toolkit-daemonset           10        10        10      10           10          nvidia.com/gpu.deploy.container-toolkit=true       173d
+nvidia-dcgm-exporter                         10        10        10      10           10          nvidia.com/gpu.deploy.dcgm-exporter=true           173d
+nvidia-device-plugin-daemonset               10        10        10      10           10          nvidia.com/gpu.deploy.device-plugin=true           173d
+nvidia-mig-manager                           5         5         5       5            5           nvidia.com/gpu.deploy.mig-manager=true             173d
+nvidia-operator-validator                    10        10        10      10           10          nvidia.com/gpu.deploy.operator-validator=true      173d
+release-name-node-feature-discovery-worker   11        11        11      11           11          &lt;none&gt;                                             173d
+</code></pre>
+<pre><code class="language-bash">k -n gpu-operator get ds nvidia-operator-validator  -o yaml | grep image:
+</code></pre>
+<pre><code>                f:image: {}
+                f:image: {}
+                f:image: {}
+                f:image: {}
+                f:image: {}
+        image: nvcr.io/nvidia/cloud-native/gpu-operator-validator:v22.9.2
+        image: nvcr.io/nvidia/cloud-native/gpu-operator-validator:v22.9.2
+        image: nvcr.io/nvidia/cloud-native/gpu-operator-validator:v22.9.2
+        image: nvcr.io/nvidia/cloud-native/gpu-operator-validator:v22.9.2
+        image: nvcr.io/nvidia/cloud-native/gpu-operator-validator:v22.9.2
+</code></pre>
+<h2 id="安装"><a class="header" href="#安装">安装</a></h2>
+<h3 id="mlnx_ofed-驱动"><a class="header" href="#mlnx_ofed-驱动">MLNX_OFED 驱动</a></h3>
+<pre><code class="language-bash"># 进入为此次安装准备的 inventory 目录
+cd ~/ansible/$T9K_CLUSTER
+</code></pre>
+<p>根据以下格式设置 group <code>ib_node</code>，将需要安装 IB 驱动的节点都添加到这个 group 中。</p>
+<pre><code class="language-YAML">## install ib driver on ib_node
+[ib_node]
+a31 ansible_host=x.x.x.x
+a41 ansible_host=x.x.x.x
+a42 ansible_host=x.x.x.x
+</code></pre>
+<p>运行脚本安装驱动：</p>
+<pre><code class="language-bash">ansible-playbook ../ks-clusters/t9k-playbooks/4-install-ib-driver.yml \
+  -i inventory/inventory.ini \
+  --become \
+  -e &quot;@~/ansible/$T9K_CLUSTER/vault.yml&quot; \
+  --vault-password-file=~/ansible/.vault-password.txt
+</code></pre>
+<aside class="note warning">
+<div class="title">注意</div>
+<p>本脚本暂不支持离线安装，可以参考 <a href="../../appendix/manually-install-mlnx-ofed-driver.html">附录：手动安装 MLNX_OFED 驱动</a> 来手动安装 MLNX_OFED 驱动。</p>
+</aside>
+<p>安装后，查看 OFED driver 信息的命令：</p>
+<pre><code class="language-bash">ofed_info -s
+</code></pre>
+<pre><code>MLNX_OFED_LINUX-5.9-0.5.6.0:
+</code></pre>
+<p>查看节点上的设备信息：</p>
+<pre><code class="language-bash">ls /dev/infiniband
+</code></pre>
+<pre><code>issm0  rdma_cm  umad0  uverbs0
+</code></pre>
+<h3 id="network-operator"><a class="header" href="#network-operator">Network Operator</a></h3>
+<p>运行脚本在 K8s 集群中创建 Network Operator， 选择一种方式：</p>
+<pre><code class="language-bash"># 1. 通常的在线安装方式
+ansible-playbook ks-clusters/t9k-playbooks/4-install-network-operator.yml \
+  -i inventory/inventory.ini \
+  --become \
+  -e &quot;@~/ansible/$T9K_CLUSTER/vault.yml&quot; \
+  --vault-password-file=~/ansible/.vault-password.txt \
+  -e rdma_shared_device_name=rdma_shared_device_a \
+  -e rdma_shared_device_vendor=15b3 \
+  -e rdma_shared_device_id=101b,101d \
+  -e network_operator_version=&quot;23.10.0&quot;
+
+# 2. 不使用 ansible vault，而是交互式输入 become password
+ansible-playbook ks-clusters/t9k-playbooks/4-install-network-operator.yml \
+  -i inventory/inventory.ini \
+  --become --ask-become-pass
+  -e rdma_shared_device_name=rdma_shared_device_a \
+  -e rdma_shared_device_vendor=15b3 \
+  -e rdma_shared_device_id=101b \
+  -e network_operator_version=&quot;23.10.0&quot;
+
+# 3. 离线安装时，需要根据实际情况
+# 设置 network_operator_charts 参数和 network_operator_image_registry 参数
+ansible-playbook ks-clusters/t9k-playbooks/4-install-network-operator.yml \
+  -i inventory/inventory.ini \
+  --become \
+  -e &quot;@~/ansible/$T9K_CLUSTER/vault.yml&quot; \
+  --vault-password-file=~/ansible/.vault-password.txt \
+  -e network_operator_charts=../ks-clusters/tools/offline-additionals/charts/network-operator-23.10.0.tgz \
+  -e network_operator_image_registry=192.168.101.159:5000/t9kpublic
+
+</code></pre>
+<aside class="note info">
+<div class="title">参数说明</div>
+<p>命令行中设置的 vars：</p>
+<ul>
+<li><code>rdma_shared_device_name</code>: Network Operator 在集群中注册的扩展资源的名称，通常不需要修改。</li>
+<li><code>rdma_shared_device_vendor</code>: 设备供应商代码，可以通过 <code>lspci -nn | grep -i infini</code> 命令获得。</li>
+<li><code>rdma_shared_device_id</code>: 设备 ID，可以通过 <code>lspci -nn | grep -i infini</code> 命令获得。如果集群中的节点中有不同的设备 ID，需要将所有的设备 ID 都添加到设置中（逗号分隔），例如：<code>rdma_shared_device_id=101b,101c,101d</code></li>
+<li><code>network_operator_version</code>: 安装的 Network Operator 版本。</li>
+<li><code>network_operator_charts</code>: 安装 Network Operator 时使用的 Helm Chart 来源。在离线安装时必须设置。</li>
+<li><code>network_operator_image_registry</code>: 安装 Network Operator 时使用的镜像仓库。在离线安装时必须设置。</li>
+</ul>
+</aside>
+<p>安装完成后，通过下述命令查看安装的产品组件：</p>
+<pre><code class="language-bash">kubectl -n network-operator get pods -o wide
+</code></pre>
+<p>通过下述命令查看 Network Operator 配置：</p>
+<pre><code class="language-bash">kubectl get  NicClusterPolicy  nic-cluster-policy -o yaml
+</code></pre>
+<h2 id="验证-1"><a class="header" href="#验证-1">验证</a></h2>
+<h3 id="rdma"><a class="header" href="#rdma">RDMA</a></h3>
+<p>运行下列命令来创建两个 Pod rdma-test-pod-1 和 rdma-test-pod-2，通过 nodeSelector 来保证他们运行在两个不同的含有 IB NIC 的节点上（需要将 a31 和 a42 替换为你的集群节点）：</p>
+<pre><code class="language-bash">kubectl create -f - &lt;&lt; EOF
+apiVersion: v1
+kind: Pod
+metadata:
+  name: rdma-test-pod-1
+spec:
+  nodeSelector:
+    # Note: Replace hostname or remove selector altogether
+    kubernetes.io/hostname: a31
+  restartPolicy: OnFailure
+  containers:
+  - image: mellanox/rping-test
+    name: rdma-test-ctr
+    securityContext:
+      capabilities:
+        add: [ &quot;IPC_LOCK&quot; ]
+    resources:
+      limits:
+        rdma/rdma_shared_device_a: 1
+    command:
+    - sh
+    - -c
+    - |
+      sleep infinity
+EOF
+</code></pre>
+<pre><code class="language-bash">kubectl create -f - &lt;&lt; EOF
+apiVersion: v1
+kind: Pod
+metadata:
+  name: rdma-test-pod-2
+spec:
+  nodeSelector:
+    # Note: Replace hostname or remove selector altogether
+    kubernetes.io/hostname: a42
+  restartPolicy: OnFailure
+  containers:
+  - image: mellanox/rping-test
+    name: rdma-test-ctr
+    securityContext:
+      capabilities:
+        add: [ &quot;IPC_LOCK&quot; ]
+    resources:
+      limits:
+        rdma/rdma_shared_device_a: 1
+    command:
+    - sh
+    - -c
+    - |
+      sleep infinity
+EOF
+</code></pre>
+<p>创建完成后，查看 Pod 状态，等 Pod Ready 后进入下一步：</p>
+<pre><code class="language-bash">kubectl get pod -o wide | grep rdma-test
+</code></pre>
+<pre><code>rdma-test-pod-1       1/1     Running     0          69s     10.233.84.218   a31    &lt;none&gt;           &lt;none&gt;
+rdma-test-pod-2       1/1     Running     0          31s     10.233.118.5    a42    &lt;none&gt;           &lt;none&gt;
+</code></pre>
+<p>进入 pod rdma-test-pod-1 和 rdma-test-pod-2 中查看 infiniband 设备文件：</p>
+<pre><code class="language-bash">kubectl exec -ti pod/rdma-test-pod-1  -- bash
+</code></pre>
+<pre><code>[root@rdma-test-pod-1 /]# ls -al /sys/class/infiniband
+total 0
+drwxr-xr-x  2 root root 0 Aug  9 11:00 .
+drwxr-xr-x 84 root root 0 Aug  9 11:00 ..
+lrwxrwxrwx  1 root root 0 Aug  9 11:00 mlx5_0 -&gt; ../../devices/pci0000:16/0000:16:02.0/0000:17:00.0/0000:18:04.0/0000:1d:00.0/infiniband/mlx5_0
+</code></pre>
+<pre><code class="language-bash">kubectl exec -ti pod/rdma-test-pod-2  -- bash
+</code></pre>
+<pre><code>[root@rdma-test-pod-2 /]# ls -al /sys/class/infiniband
+total 0
+drwxr-xr-x  2 root root 0 Aug  9 11:02 .
+drwxr-xr-x 83 root root 0 Aug  9 11:02 ..
+lrwxrwxrwx  1 root root 0 Aug  9 11:02 mlx5_0 -&gt; ../../devices/pci0000:16/0000:16:02.0/0000:17:00.0/0000:18:04.0/0000:1d:00.0/infiniband/mlx5_0
+</code></pre>
+<p>在 Pod rdma-test-pod-1 和 rdma-test-pod-2 中进行 RDMA 测试。</p>
+<p>在 Pod rdma-test-pod-1 中运行 test server：</p>
+<pre><code class="language-bash">kubectl exec -ti pod/rdma-test-pod-1  -- bash
+</code></pre>
+<pre><code>[root@rdma-test-pod-1 /]# ip a show eth0
+3: eth0@if5331: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1450 qdisc noqueue state UP group default
+    link/ether c6:be:41:50:d5:65 brd ff:ff:ff:ff:ff:ff link-netnsid 0
+    inet 10.233.84.218/32 scope global eth0
+       valid_lft forever preferred_lft forever
+[root@rdma-test-pod-1 /]# ib_write_bw -a -F --report_gbits
+************************************
+* Waiting for client to connect... *
+************************************
+---------------------------------------------------------------------------------------
+                    RDMA_Write BW Test
+ Dual-port       : OFF		Device         : mlx5_0
+ Number of qps   : 1		Transport type : IB
+ Connection type : RC		Using SRQ      : OFF
+ CQ Moderation   : 100
+ Mtu             : 4096[B]
+ Link type       : IB
+ Max inline data : 0[B]
+ rdma_cm QPs	 : OFF
+ Data ex. method : Ethernet
+---------------------------------------------------------------------------------------
+ local address: LID 0x04 QPN 0x01df PSN 0x8627f0 RKey 0x1802e2 VAddr 0x007f6c3c08f000
+ remote address: LID 0x03 QPN 0x0027 PSN 0x28ccf6 RKey 0x1805e5 VAddr 0x007fe46b172000
+---------------------------------------------------------------------------------------
+ #bytes     #iterations    BW peak[Gb/sec]    BW average[Gb/sec]   MsgRate[Mpps]
+ 8388608    5000             98.38              98.38  		   0.001466
+</code></pre>
+<p>在 Pod rdma-test-pod-2 中运行 test client：</p>
+<pre><code class="language-bash">kubectl exec -ti pod/rdma-test-pod-2  -- bash
+</code></pre>
+<pre><code>[root@rdma-test-pod-2 /]# ib_write_bw -a -F --report_gbits 10.233.84.218
+---------------------------------------------------------------------------------------
+                    RDMA_Write BW Test
+ Dual-port       : OFF		Device         : mlx5_0
+ Number of qps   : 1		Transport type : IB
+ Connection type : RC		Using SRQ      : OFF
+ TX depth        : 128
+ CQ Moderation   : 100
+ Mtu             : 4096[B]
+ Link type       : IB
+ Max inline data : 0[B]
+ rdma_cm QPs	 : OFF
+ Data ex. method : Ethernet
+---------------------------------------------------------------------------------------
+ local address: LID 0x03 QPN 0x0027 PSN 0x28ccf6 RKey 0x1805e5 VAddr 0x007fe46b172000
+ remote address: LID 0x04 QPN 0x01df PSN 0x8627f0 RKey 0x1802e2 VAddr 0x007f6c3c08f000
+---------------------------------------------------------------------------------------
+ #bytes     #iterations    BW peak[Gb/sec]    BW average[Gb/sec]   MsgRate[Mpps]
+ 2          5000           0.060665            0.059098            3.693631
+ 4          5000             0.11               0.11   		   3.449869
+ 8          5000             0.19               0.19   		   2.891324
+ 16         5000             0.50               0.50   		   3.878476
+ 32         5000             0.94               0.83   		   3.259774
+ 64         5000             1.86               1.83   		   3.565836
+ 128        5000             4.04               3.98   		   3.883562
+ 256        5000             8.04               7.51   		   3.668285
+ 512        5000             16.01              15.78  		   3.851526
+ 1024       5000             31.60              30.90  		   3.772522
+ 2048       5000             54.11              53.34  		   3.255410
+ 4096       5000             87.54              86.35  		   2.635233
+ 8192       5000             98.19              98.01  		   1.495541
+ 16384      5000             98.29              98.20  		   0.749223
+ 32768      5000             98.28              98.24  		   0.374774
+ 65536      5000             98.33              98.32  		   0.187536
+ 131072     5000             98.36              98.36  		   0.093805
+ 262144     5000             98.35              98.35  		   0.046895
+ 524288     5000             98.37              98.37  		   0.023453
+ 1048576    5000             98.38              98.38  		   0.011728
+ 2097152    5000             98.35              98.35  		   0.005862
+ 4194304    5000             98.38              98.38  		   0.002932
+ 8388608    5000             98.38              98.38  		   0.001466
+---------------------------------------------------------------------------------------
+</code></pre>
+<p>最后删除上述用于测试的 Pods：</p>
+<pre><code class="language-bash">kubectl delete pod rdma-test-pod-1 rdma-test-pod-2
+</code></pre>
+<pre><code>pod &quot;rdma-test-pod-1&quot; deleted
+pod &quot;rdma-test-pod-2&quot; deleted
+</code></pre>
+<h3 id="测试-gpudirect-rdma"><a class="header" href="#测试-gpudirect-rdma">测试 GPUDirect RDMA</a></h3>
+<p>运行下列命令来创建两个 Pod rdma-gpu-test-pod-1 和 rdma-gpu-test-pod-2，通过 nodeSelector 来保证他们运行在两个不同的且含有 IB NIC、NVIDIA GPU(GPU 需支持 RDMA) 的节点上（需要将 a101 和 a102 替换为你的集群节点）：</p>
+<pre><code class="language-bash">$ kubectl create -f - &lt;&lt; EOF
+apiVersion: v1
+kind: Pod
+metadata:
+  name: rdma-gpu-test-pod-1
+spec:
+  nodeSelector:
+    # Note: Replace hostname or remove selector altogether
+    kubernetes.io/hostname: a101
+  restartPolicy: OnFailure
+  containers:
+  - image: mellanox/cuda-perftest
+    name: rdma-gpu-test-ctr
+    securityContext:
+      capabilities:
+        add: [ &quot;IPC_LOCK&quot; ]
+    resources:
+      limits:
+        nvidia.com/gpu: 1
+        rdma/rdma_shared_device_a: 1
+EOF
+</code></pre>
+<pre><code class="language-bash">$ kubectl create -f - &lt;&lt; EOF
+apiVersion: v1
+kind: Pod
+metadata:
+  name: rdma-gpu-test-pod-2
+spec:
+  nodeSelector:
+    # Note: Replace hostname or remove selector altogether
+    kubernetes.io/hostname: a102
+  restartPolicy: OnFailure
+  containers:
+  - image: mellanox/cuda-perftest
+    name: rdma-gpu-test-ctr
+    securityContext:
+      capabilities:
+        add: [ &quot;IPC_LOCK&quot; ]
+    resources:
+      limits:
+        nvidia.com/gpu: 1
+        rdma/rdma_shared_device_a: 1
+EOF
+</code></pre>
+<p>创建完成后，查看 Pod 状态，等 Pod Ready 后进入下一步：</p>
+<pre><code class="language-bash">kubectl get pod -o wide | grep rdma-gpu
+</code></pre>
+<pre><code>rdma-gpu-test-pod-1   1/1     Running     0          15s     10.233.120.114   a101    &lt;none&gt;           &lt;none&gt;
+rdma-gpu-test-pod-2   1/1     Running     0          12s     10.233.71.205    a102    &lt;none&gt;           &lt;none&gt;
+</code></pre>
+<p>进入 pod rdma-gpu-test-pod-1 和 rdma-gpu-test-pod-2 中查看 infiniband 设备文件、GPU 设备文件：</p>
+<pre><code class="language-bash">kubectl exec -ti rdma-gpu-test-pod-1 -- bash
+</code></pre>
+<pre><code>root@rdma-gpu-test-pod-1:~# ls -al /sys/class/infiniband
+total 0
+drwxr-xr-x  2 root root 0 Aug  9 11:18 .
+drwxr-xr-x 75 root root 0 Aug  9 11:18 ..
+lrwxrwxrwx  1 root root 0 Aug  9 11:18 mlx5_0 -&gt; ../../devices/pci0000:4a/0000:4a:02.0/0000:4b:00.0/0000:4c:04.0/0000:50:00.0/0000:51:10.0/0000:53:00.0/infiniband/mlx5_0
+root@rdma-gpu-test-pod-1:~# ls /dev | grep nvidia
+nvidia-modeset
+nvidia-uvm
+nvidia-uvm-tools
+nvidia3
+nvidiactl
+</code></pre>
+<pre><code class="language-bash">kubectl exec -ti rdma-gpu-test-pod-2 -- bash
+</code></pre>
+<pre><code>root@rdma-gpu-test-pod-2:~# ls -al /sys/class/infiniband
+total 0
+drwxr-xr-x  2 root root 0 Aug  9 11:21 .
+drwxr-xr-x 76 root root 0 Aug  9 11:21 ..
+lrwxrwxrwx  1 root root 0 Aug  9 11:21 mlx5_0 -&gt; ../../devices/pci0000:4a/0000:4a:02.0/0000:4b:00.0/0000:4c:04.0/0000:50:00.0/0000:51:10.0/0000:53:00.0/infiniband/mlx5_0
+root@rdma-gpu-test-pod-2:~# ls /dev | grep nvidia
+nvidia-modeset
+nvidia-uvm
+nvidia-uvm-tools
+nvidia6
+nvidiactl
+</code></pre>
+<p>在 Pod rdma-gpu-test-pod-1 和 rdma-gpu-test-pod-2 中进行 GPUDirect RDMA 测试。</p>
+<p>在 Pod rdma-gpu-test-pod-1 中运行 test server：</p>
+<pre><code class="language-bash">kubectl exec -ti rdma-gpu-test-pod-1 -- bash
+</code></pre>
+<pre><code>root@rdma-gpu-test-pod-1:~# ip a show eth0
+3: eth0@if29: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1450 qdisc noqueue state UP group default
+    link/ether 6a:99:3a:2e:82:c7 brd ff:ff:ff:ff:ff:ff link-netnsid 0
+    inet 10.233.120.114/32 scope global eth0
+       valid_lft forever preferred_lft forever
+root@rdma-gpu-test-pod-1:~# ib_write_bw -a -F --report_gbits -q 2 --use_cuda 0
+************************************
+* Waiting for client to connect... *
+************************************
+initializing CUDA
+Listing all CUDA devices in system:
+CUDA device 0: PCIe address is 57:00
+Picking device No. 0
+[pid = 69, dev = 0] device name = [NVIDIA A100-SXM4-80GB]
+creating CUDA Ctx
+making it the current CUDA Ctx
+cuMemAlloc() of a 33554432 bytes GPU buffer
+allocated GPU buffer address at 00007f2418000000 pointer=0x7f2418000000
+---------------------------------------------------------------------------------------
+                    RDMA_Write BW Test
+ Dual-port       : OFF		Device         : mlx5_0
+ Number of qps   : 2		Transport type : IB
+ Connection type : RC		Using SRQ      : OFF
+ PCIe relax order: ON
+ ibv_wr* API     : ON
+ CQ Moderation   : 100
+ Mtu             : 4096[B]
+ Link type       : IB
+ Max inline data : 0[B]
+ rdma_cm QPs	 : OFF
+ Data ex. method : Ethernet
+---------------------------------------------------------------------------------------
+ local address: LID 0x08 QPN 0x00dc PSN 0xf0a0c8 RKey 0x1fdfd1 VAddr 0x007f2419000000
+ local address: LID 0x08 QPN 0x00dd PSN 0x860249 RKey 0x1fdfd1 VAddr 0x007f2419800000
+ remote address: LID 0x02 QPN 0x064b PSN 0x21791 RKey 0x1fdfff VAddr 0x007fb29d000000
+ remote address: LID 0x02 QPN 0x064c PSN 0x83b8a7 RKey 0x1fdfff VAddr 0x007fb29d800000
+---------------------------------------------------------------------------------------
+ #bytes     #iterations    BW peak[Gb/sec]    BW average[Gb/sec]   MsgRate[Mpps]
+ 8388608    10000            81.02              80.96  		   0.001206
+---------------------------------------------------------------------------------------
+deallocating RX GPU buffer 00007f2418000000
+destroying current CUDA Ctx
+</code></pre>
+<p>在 Pod rdma-gpu-test-pod-2 中运行 test client：</p>
+<pre><code class="language-bash">kubectl exec -ti rdma-gpu-test-pod-2 -- bash
+</code></pre>
+<pre><code>root@rdma-gpu-test-pod-2:~# ib_write_bw -a -F --report_gbits -q 2 --use_cuda 0 10.233.120.114
+initializing CUDA
+Listing all CUDA devices in system:
+CUDA device 0: PCIe address is D5:00
+Picking device No. 0
+[pid = 38, dev = 0] device name = [NVIDIA A100-SXM4-80GB]
+creating CUDA Ctx
+making it the current CUDA Ctx
+cuMemAlloc() of a 33554432 bytes GPU buffer
+allocated GPU buffer address at 00007fb29c000000 pointer=0x7fb29c000000
+---------------------------------------------------------------------------------------
+                    RDMA_Write BW Test
+ Dual-port       : OFF		Device         : mlx5_0
+ Number of qps   : 2		Transport type : IB
+ Connection type : RC		Using SRQ      : OFF
+ PCIe relax order: ON
+ ibv_wr* API     : ON
+ TX depth        : 128
+ CQ Moderation   : 100
+ Mtu             : 4096[B]
+ Link type       : IB
+ Max inline data : 0[B]
+ rdma_cm QPs	 : OFF
+ Data ex. method : Ethernet
+---------------------------------------------------------------------------------------
+ local address: LID 0x02 QPN 0x064b PSN 0x21791 RKey 0x1fdfff VAddr 0x007fb29d000000
+ local address: LID 0x02 QPN 0x064c PSN 0x83b8a7 RKey 0x1fdfff VAddr 0x007fb29d800000
+ remote address: LID 0x08 QPN 0x00dc PSN 0xf0a0c8 RKey 0x1fdfd1 VAddr 0x007f2419000000
+ remote address: LID 0x08 QPN 0x00dd PSN 0x860249 RKey 0x1fdfd1 VAddr 0x007f2419800000
+---------------------------------------------------------------------------------------
+ #bytes     #iterations    BW peak[Gb/sec]    BW average[Gb/sec]   MsgRate[Mpps]
+ 2          10000           0.061867            0.060962            3.810117
+ 4          10000            0.13               0.13   		   3.953929
+ 8          10000            0.26               0.26   		   4.034568
+ 16         10000            0.52               0.52   		   4.029406
+ 32         10000            1.03               1.02   		   4.003723
+ 64         10000            2.07               2.06   		   4.015258
+ 128        10000            4.04               3.86   		   3.774170
+ 256        10000            8.17               8.03   		   3.921990
+ 512        10000            15.94              15.20  		   3.712094
+ 1024       10000            32.68              32.54  		   3.972166
+ 2048       10000            78.28              67.50  		   4.119992
+ 4096       10000            80.53              74.83  		   2.283757
+ 8192       10000            80.23              71.90  		   1.097180
+ 16384      10000            81.66              81.00  		   0.617974
+ 32768      10000            81.76              81.01  		   0.309037
+ 65536      10000            81.79              81.24  		   0.154945
+ 131072     10000            81.66              81.06  		   0.077303
+ 262144     10000            81.79              80.96  		   0.038603
+ 524288     10000            81.74              80.98  		   0.019308
+ 1048576    10000            81.13              80.94  		   0.009649
+ 2097152    10000            81.11              80.96  		   0.004825
+ 4194304    10000            81.01              80.97  		   0.002413
+ 8388608    10000            81.02              80.96  		   0.001206
+---------------------------------------------------------------------------------------
+deallocating RX GPU buffer 00007fb29c000000
+destroying current CUDA Ctx
+</code></pre>
+<p>最后删除上述用于测试的 Pods：</p>
+<pre><code class="language-bash">kubectl delete pod rdma-gpu-test-pod-1 rdma-gpu-test-pod-2
+</code></pre>
+<pre><code>pod &quot;rdma-gpu-test-pod-1&quot; deleted
+pod &quot;rdma-gpu-test-pod-2&quot; deleted
+</code></pre>
+<h2 id="参考"><a class="header" href="#参考">参考</a></h2>
+<p><a href="https://github.com/Mellanox/network-operator">https://github.com/Mellanox/network-operator</a></p>
+<p><a href="https://docs.nvidia.com/networking/display/cokan10/network+operator">https://docs.nvidia.com/networking/display/cokan10/network+operator</a></p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../../hardware/nvidia/gpu-operator.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../../hardware/amd/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../../hardware/nvidia/gpu-operator.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../../hardware/amd/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../../elasticlunr.min.js"></script>
+        <script src="../../mark.min.js"></script>
+        <script src="../../searcher.js"></script>
+
+        <script src="../../clipboard.min.js"></script>
+        <script src="../../highlight.js"></script>
+        <script src="../../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../../theme/sidebar.js"></script>
+
+
+    </div>
+    </body>
+</html>

@@ -1,0 +1,454 @@
+<!DOCTYPE HTML>
+<html lang="zh-cn" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>K8s - TensorStack AI 计算平台 - 安装手册</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../../favicon.svg">
+        <link rel="shortcut icon" href="../../favicon.png">
+        <link rel="stylesheet" href="../../css/variables.css">
+        <link rel="stylesheet" href="../../css/general.css">
+        <link rel="stylesheet" href="../../css/chrome.css">
+        <link rel="stylesheet" href="../../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../../highlight.css">
+        <link rel="stylesheet" href="../../tomorrow-night.css">
+        <link rel="stylesheet" href="../../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../../theme/sidebar.css">
+        <link rel="stylesheet" href="../../theme/custom.css">
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../../overview.html">概述</a></li><li class="spacer"></li><li class="chapter-item expanded "><a href="../../online/index.html"><strong aria-hidden="true">1.</strong> 在线安装</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../online/prepare-inventory.html"><strong aria-hidden="true">1.1.</strong> 设置 Inventory</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../online/inventory-advanced.html"><strong aria-hidden="true">1.1.1.</strong> 高级设置</a></li></ol></li><li class="chapter-item expanded "><a href="../../online/prepare-nodes.html"><strong aria-hidden="true">1.2.</strong> 准备节点</a></li><li class="chapter-item expanded "><a href="../../online/k8s-index.html"><strong aria-hidden="true">1.3.</strong> 安装 K8s</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../online/k8s-install.html"><strong aria-hidden="true">1.3.1.</strong> 基本安装</a></li><li class="chapter-item expanded "><a href="../../online/cri.html"><strong aria-hidden="true">1.3.2.</strong> CRI 配置</a></li><li class="chapter-item expanded "><a href="../../online/cni.html"><strong aria-hidden="true">1.3.3.</strong> CNI 配置</a></li><li class="chapter-item expanded "><a href="../../online/k8s-userns.html"><strong aria-hidden="true">1.3.4.</strong> 设置 User Namespace</a></li><li class="chapter-item expanded "><a href="../../online/k8s-storage.html"><strong aria-hidden="true">1.3.5.</strong> 设置集群存储</a></li><li class="chapter-item expanded "><a href="../../online/k8-ops.html"><strong aria-hidden="true">1.3.6.</strong> 集群维护</a></li><li class="chapter-item expanded "><a href="../../online/k8s-install-faqs.html"><strong aria-hidden="true">1.3.7.</strong> 常见问题</a></li><li class="chapter-item expanded "><a href="../../online/k8s-post-install.html"><strong aria-hidden="true">1.3.8.</strong> 其他安装后配置</a></li></ol></li><li class="chapter-item expanded "><a href="../../online/k8s-components/index.html"><strong aria-hidden="true">1.4.</strong> 安装 K8s 组件</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../online/k8s-components/istio.html"><strong aria-hidden="true">1.4.1.</strong> Istio</a></li><li class="chapter-item expanded "><a href="../../online/k8s-components/knative.html"><strong aria-hidden="true">1.4.2.</strong> Knative</a></li><li class="chapter-item expanded "><a href="../../online/k8s-components/metrics-server.html"><strong aria-hidden="true">1.4.3.</strong> Metrics Server</a></li><li class="chapter-item expanded "><a href="../../online/k8s-components/elastic-search.html"><strong aria-hidden="true">1.4.4.</strong> Elastic Search</a></li><li class="chapter-item expanded "><a href="../../online/k8s-components/monitoring.html"><strong aria-hidden="true">1.4.5.</strong> 监控相关</a></li><li class="chapter-item expanded "><a href="../../online/k8s-components/gatekeeper.html"><strong aria-hidden="true">1.4.6.</strong> Gatekeeper</a></li></ol></li><li class="chapter-item expanded "><a href="../../hardware/hardware.html"><strong aria-hidden="true">1.5.</strong> 硬件支持</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../hardware/nvidia/index.html"><strong aria-hidden="true">1.5.1.</strong> NVIDIA</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../hardware/nvidia/gpu-operator.html"><strong aria-hidden="true">1.5.1.1.</strong> GPU Operator</a></li><li class="chapter-item expanded "><a href="../../hardware/nvidia/network-operator.html"><strong aria-hidden="true">1.5.1.2.</strong> Network Operator</a></li></ol></li><li class="chapter-item expanded "><a href="../../hardware/amd/index.html"><strong aria-hidden="true">1.5.2.</strong> AMD</a></li><li class="chapter-item expanded "><a href="../../hardware/hygon/index.html"><strong aria-hidden="true">1.5.3.</strong> 海光 Hygon</a></li><li class="chapter-item expanded "><a href="../../hardware/huawei/index.html"><strong aria-hidden="true">1.5.4.</strong> 华为</a></li><li class="chapter-item expanded "><a href="../../hardware/iluvatar/index.html"><strong aria-hidden="true">1.5.5.</strong> 天数智芯 iluvatar</a></li><li class="chapter-item expanded "><a href="../../hardware/metax/index.html"><strong aria-hidden="true">1.5.6.</strong> 沐曦 MetaX</a></li><li class="chapter-item expanded "><a href="../../hardware/enflame/index.html"><strong aria-hidden="true">1.5.7.</strong> 燧原 Enflame</a></li></ol></li><li class="chapter-item expanded "><a href="../../online/products/index.html"><strong aria-hidden="true">1.6.</strong> 安装 TensorStack AI</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../online/products/pre-install.html"><strong aria-hidden="true">1.6.1.</strong> 安装前准备</a></li><li class="chapter-item expanded "><a href="../../online/products/install.html"><strong aria-hidden="true">1.6.2.</strong> 安装产品</a></li><li class="chapter-item expanded "><a href="../../online/products/post-install.html"><strong aria-hidden="true">1.6.3.</strong> 安装后配置</a></li></ol></li><li class="chapter-item expanded "><a href="../../online/registry/harbor.html"><strong aria-hidden="true">1.7.</strong> 安装 Harbor Registry</a></li><li class="chapter-item expanded "><a href="../../online/storage-service/index.html"><strong aria-hidden="true">1.8.</strong> 安装存储服务</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../online/storage-service/minio.html"><strong aria-hidden="true">1.8.1.</strong> MinIO</a></li><li class="chapter-item expanded "><a href="../../online/storage-service/nfs.html"><strong aria-hidden="true">1.8.2.</strong> NFS</a></li><li class="chapter-item expanded "><a href="../../online/storage-service/ceph.html"><strong aria-hidden="true">1.8.3.</strong> Ceph</a></li><li class="chapter-item expanded "><a href="../../online/storage-service/lustre.html"><strong aria-hidden="true">1.8.4.</strong> Lustre</a></li><li class="chapter-item expanded "><a href="../../online/storage-service/gpfs.html"><strong aria-hidden="true">1.8.5.</strong> GPFS</a></li></ol></li><li class="chapter-item expanded "><a href="../../online/correctness-checking.html"><strong aria-hidden="true">1.9.</strong> 正确性检查</a></li></ol></li><li class="chapter-item expanded "><a href="../../offline/index.html"><strong aria-hidden="true">2.</strong> 离线安装</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../offline/prepare-offline-packages/index.html"><strong aria-hidden="true">2.1.</strong> 准备离线安装包</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../offline/prepare-offline-packages/kubespray.html"><strong aria-hidden="true">2.1.1.</strong> Kubespray</a></li><li class="chapter-item expanded "><a href="../../offline/prepare-offline-packages/k8s-components.html"><strong aria-hidden="true">2.1.2.</strong> K8s 组件</a></li><li class="chapter-item expanded "><a href="../../offline/prepare-offline-packages/products.html"><strong aria-hidden="true">2.1.3.</strong> 产品</a></li></ol></li><li class="chapter-item expanded "><a href="../../offline/install/index.html"><strong aria-hidden="true">2.2.</strong> 安装</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../offline/install/k8s.html" class="active"><strong aria-hidden="true">2.2.1.</strong> K8s</a></li><li class="chapter-item expanded "><a href="../../offline/install/k8s-components.html"><strong aria-hidden="true">2.2.2.</strong> K8s 组件</a></li><li class="chapter-item expanded "><a href="../../offline/install/products.html"><strong aria-hidden="true">2.2.3.</strong> 产品</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="../../update/index.html"><strong aria-hidden="true">3.</strong> 产品升级</a></li><li class="chapter-item expanded "><a href="../../appendix/index.html"><strong aria-hidden="true">4.</strong> 附录</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../appendix/install-docker.html"><strong aria-hidden="true">4.1.</strong> 在线安装 Docker</a></li><li class="chapter-item expanded "><a href="../../appendix/install-docker-compose.html"><strong aria-hidden="true">4.2.</strong> 在线安装 Docker Compose</a></li><li class="chapter-item expanded "><a href="../../appendix/configure-docker-insecure-registry.html"><strong aria-hidden="true">4.3.</strong> 配置 Docker Insecure Registry</a></li><li class="chapter-item expanded "><a href="../../appendix/install-s3cmd.html"><strong aria-hidden="true">4.4.</strong> 在线安装 s3cmd</a></li><li class="chapter-item expanded "><a href="../../appendix/k8s-install-notes.html"><strong aria-hidden="true">4.5.</strong> 安装 K8s 注释</a></li><li class="chapter-item expanded "><a href="../../appendix/generate-k8s-file-and-image-list.html"><strong aria-hidden="true">4.6.</strong> 生成 K8s 文件和镜像列表</a></li><li class="chapter-item expanded "><a href="../../appendix/generate-t9k-product-image-list.html"><strong aria-hidden="true">4.7.</strong> 生成 T9k 产品镜像列表</a></li><li class="chapter-item expanded "><a href="../../appendix/modify-helm-chart.html"><strong aria-hidden="true">4.8.</strong> Helm Chart 修改</a></li><li class="chapter-item expanded "><a href="../../appendix/manually-install-mlnx-ofed-driver.html"><strong aria-hidden="true">4.9.</strong> 手动安装 MLNX_OFED 驱动</a></li><li class="chapter-item expanded "><a href="../../appendix/ansible-vars.html"><strong aria-hidden="true">4.10.</strong> ansible vars</a></li><li class="chapter-item expanded "><a href="../../appendix/ansible-debugging.html"><strong aria-hidden="true">4.11.</strong> ansible debugging</a></li><li class="chapter-item expanded "><a href="../../appendix/manage-domain-certificate.html"><strong aria-hidden="true">4.12.</strong> 管理域名证书</a></li><li class="chapter-item expanded "><a href="../../appendix/container-runtime-cli.html"><strong aria-hidden="true">4.13.</strong> CRI 命令行工具</a></li><li class="chapter-item expanded "><a href="../../appendix/cluster-admin-installation-configuration.html"><strong aria-hidden="true">4.14.</strong> 集群管理安装配置</a></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">TensorStack AI 计算平台 - 安装手册</h1>
+
+                    <div class="right-buttons">
+                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+                        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
+<h1 id="k8s"><a class="header" href="#k8s">K8s</a></h1>
+<pre><code>TODO:
+    1. &quot;运行 NGINX 和上传镜像&quot; 中需明确如何启动本地 Registry
+    2. “手动设置” 部分，为支持很多节点集群，改为使用 ansible
+</code></pre>
+<h2 id="检查离线安装包"><a class="header" href="#检查离线安装包">检查离线安装包</a></h2>
+<p><code>ks-clusters/tools/offline-k8s</code> 中准备的离线文件一览：</p>
+<div class="table-wrapper"><table><thead><tr><th>内容</th><th>存放路径</th></tr></thead><tbody>
+<tr><td>1. apt packages</td><td>apt-packages/</td></tr>
+<tr><td>2. pypi 包</td><td>python-packages/</td></tr>
+<tr><td>3. 容器镜像（nginx, registry）</td><td>server-images/</td></tr>
+<tr><td>4. 容器镜像（其他）</td><td>container-images/</td></tr>
+<tr><td>5. 一些可执行文件</td><td>offline-files/</td></tr>
+</tbody></table>
+</div>
+<h2 id="运行-nginx-和上传镜像"><a class="header" href="#运行-nginx-和上传镜像">运行 NGINX 和上传镜像</a></h2>
+<p>1）如果 “控制节点” 未安装 docker，请先使用 dpkg 命令安装 Docker（具体安装包的内容请查看已有的内容）：</p>
+<pre><code class="language-bash">cd ~/ansible/ks-clusters/tools/offline-k8s/apt-packages/debs/local/pkgs
+
+# 查看其中 apt 包的版本
+ls
+# 根据看到的版本进行安装
+sudo dpkg -i containerd.io_1.6.25-1_amd64.deb
+sudo dpkg -i docker-ce-cli_5%3a24.0.7-1~ubuntu.20.04~focal_amd64.deb
+sudo dpkg -i docker-ce_5%3a24.0.7-1~ubuntu.20.04~focal_amd64.deb
+</code></pre>
+<p>启用 docker：</p>
+<pre><code class="language-bash">sudo systemctl enable --now docker
+</code></pre>
+<p>验证：</p>
+<pre><code class="language-bash">sudo docker info
+</code></pre>
+<p>2）进入 offline-k8s 目录：</p>
+<pre><code class="language-bash">cd ~/ansible/ks-clusters/tools/offline-k8s
+</code></pre>
+<p>3）装载 NGINX 和 Registry 镜像：</p>
+<pre><code class="language-bash">sudo docker load \
+  -i ./server-images/docker.io-t9kpublic-nginx-offline-2023-09.tar
+
+sudo docker load \
+  -i ./server-images/docker.io-t9kpublic-registry-offline-2023-09.tar
+</code></pre>
+<p>4）运行一个 nginx（默认 8080 端口），来 serve 保存的文件（offline-files）和 apt 包：</p>
+<pre><code class="language-bash">./serve-offline-files.sh
+</code></pre>
+<p>5）如果离线环境中已经存在镜像仓库服务，我们用 <code>&lt;registry&gt;</code> 指代该镜像仓库服务的域名或 IP 地址以及服务端口，<code>&lt;any-prefix&gt;</code> 是任意名称前缀。您需要配置控制节点和镜像仓库，来满足以下条件：</p>
+<ol>
+<li>控制节点和 K8s 集群中的节点可以访问该镜像仓库</li>
+<li>控制节点有权限向镜像仓库的地址 <code>&lt;registry&gt;/&lt;any-prefix&gt;/t9kpublic</code> 上传镜像
+<ol>
+<li>如果条件允许，推荐省略 <code>/&lt;any-prefix&gt;</code>，直接使用 <code>&lt;registry&gt;/t9kpublic</code></li>
+</ol>
+</li>
+<li>K8s 集群中的节点有权限拉取第 2 步上传的镜像</li>
+</ol>
+<p>验证上述需求：</p>
+<pre><code class="language-bash"># 在控制节点测试上传镜像
+sudo docker tag t9kpublic/registry:offline-2023-09 \
+  &lt;registry&gt;/&lt;any-prefix&gt;/t9kpublic/registry:offline-2023-09
+sudo docker push &lt;registry&gt;/&lt;any-prefix&gt;/t9kpublic/registry:offline-2023-09
+
+# 在 K8s 节点中测试下载镜像
+sudo docker pull &lt;registry&gt;/&lt;any-prefix&gt;/t9kpublic/registry:offline-2023-09
+</code></pre>
+<p>在控制节点中运行命令，上传（注册, <code>--option register</code>）镜像到镜像仓库服务中：</p>
+<pre><code class="language-bash">./manage-offline-container-images.sh \
+  --option register --registry &lt;registry&gt;/&lt;any-prefix&gt;
+</code></pre>
+<p>在使用已有的镜像仓库服务时，下文所有的镜像仓库地址 <code>&lt;control-node-ip&gt;:5000</code> 都需要替换为 <code>&lt;registry&gt;/&lt;any-prefix&gt;</code>。</p>
+<p>6）如果离线环境中没有可用的镜像仓库服务，则运行一个容器 Registry（默认 5000 端口）服务，并将 container-images/ 中的镜像上传到该 Registry 中：</p>
+<pre><code class="language-bash">$ ./manage-offline-container-images.sh --option register
+</code></pre>
+<p>补充说明：</p>
+<ol>
+<li>当名称为“registry”的容器已经存在时，运行该脚本不会创建新的 Registry，而是向 localhost:5000 上传镜像。</li>
+<li>如果要向其他地址上传镜像，可以用命令行参数 <code>--registry</code> 来指定，示例见第 5）步。</li>
+</ol>
+<h2 id="验证-nginx-和-registry-服务"><a class="header" href="#验证-nginx-和-registry-服务">验证 NGINX 和 Registry 服务</a></h2>
+<p>在 “控制节点” 进行测试，验证 NGINX 和 Registry 的可用性。</p>
+<h3 id="验证-apt-服务"><a class="header" href="#验证-apt-服务">验证 apt 服务</a></h3>
+<p>获取 apt 包的信息：</p>
+<pre><code class="language-bash">curl http://&lt;hostname&gt;:8080/debs/local/Packages
+</code></pre>
+<h3 id="验证文件下载服务"><a class="header" href="#验证文件下载服务">验证文件下载服务</a></h3>
+<p>通过查看文件夹和文件名称，来确认节点上 cri-tools 的版本信息：</p>
+<pre><code class="language-bash">ls offline-files/github.com/kubernetes-sigs/cri-tools/releases/download
+</code></pre>
+<p>根据上文获得的版本信息（例如 <code>v1.25.0/crictl-v1.25.0-linux-amd64.tar.gz</code>），下载 crictl 的压缩包：</p>
+<pre><code class="language-bash">curl http://&lt;hostname&gt;:8080/github.com/kubernetes-sigs/cri-tools/releases/download/v1.25.0/crictl-v1.25.0-linux-amd64.tar.gz \
+    -o ./crictl-v1.25.0-linux-amd64.tar.gz
+</code></pre>
+<h3 id="验证-registry-服务"><a class="header" href="#验证-registry-服务">验证 Registry 服务</a></h3>
+<p>查看镜像版本：</p>
+<pre><code class="language-bash">ls container-images | grep etcd
+</code></pre>
+<p>下载镜像：</p>
+<pre><code class="language-bash">sudo docker pull &lt;hostname&gt;:5000/t9kpublic/etcd:v3.5.6
+</code></pre>
+<aside class="note">
+<div class="title">注意</div>
+<p>如果遇到错误信息 <code>server gave HTTP response to HTTPS client</code>，可以参考 <a href="../../appendix/configure-docker-insecure-registry.html">附录：配置 Docker Insecure Registry</a> 解决。</p>
+</aside>
+<h2 id="配置-kubespray-运行环境"><a class="header" href="#配置-kubespray-运行环境">配置 kubespray 运行环境</a></h2>
+<p>1）如果控制节点未安装 python 和 pip，请先进行安装。首先确认是否已经安装了 python：</p>
+<pre><code class="language-bash">python3 --version
+</code></pre>
+<p>配置 apt 设置：</p>
+<pre><code class="language-bash">sudo cat &gt; /etc/apt/sources.list.d/offline.list &lt;&lt; EOF
+deb [trusted=yes] http://&lt;control-node-ip&gt;:8080/debs/local/ ./
+EOF
+
+sudo mv /etc/apt/sources.list ~/
+</code></pre>
+<p>安装：</p>
+<pre><code class="language-bash">sudo apt update &amp;&amp; sudo apt install python3 python3-venv python3-pip
+</code></pre>
+<p>[可选] 恢复 apt 配置：</p>
+<pre><code class="language-bash">sudo rm -rf /etc/apt/sources.list.d/offline.list
+sudo mv ~/sources.list /etc/apt/ 
+sudo apt update
+</code></pre>
+<p>2）将 kubespray 切换到合适分支：</p>
+<pre><code class="language-bash"># 将 kubespray 切换到合适分支，例如 origin/kubernetes-offline-1.25.9
+cd ~/ansible/kubespray
+git checkout -b kubernetes-offline-&lt;version&gt; \
+    origin/kubernetes-offline-&lt;version&gt;
+cd ..
+</code></pre>
+<p>3）然后参考 <a href="../../online/prepare-inventory.html">准备 inventory</a>，完成安装 ansible 和准备 inventory。</p>
+<p>如果离线环境中没有 conda，则使用下面命令安装 ansible 运行环境：</p>
+<pre><code class="language-bash">python3 -m venv kubespray-venv
+source kubespray-venv/bin/activate
+
+python3 -m pip install --no-index \
+  --find-links=python-packages -r kubespray/requirements.txt
+</code></pre>
+<p>验证：</p>
+<pre><code class="language-bash">ansible --version
+</code></pre>
+<h2 id="手动设置"><a class="header" href="#手动设置">手动设置</a></h2>
+<p>在每个计划安装 K8s 的 “目标节点”中，做以下 apt source 设置。其中 <control-node-ip> 为“控制节点”的 IP 地址：</p>
+<pre><code class="language-bash">sudo cat &gt; /etc/apt/sources.list.d/offline.list &lt;&lt; EOF
+deb [trusted=yes] http://&lt;control-node-ip&gt;:8080/debs/local/ ./
+EOF
+
+sudo mv /etc/apt/sources.list ~/
+</code></pre>
+<h3 id="安装-docker"><a class="header" href="#安装-docker">安装 Docker</a></h3>
+<p>为节点安装 docker：</p>
+<pre><code class="language-bash">sudo apt update
+sudo apt install docker-ce docker-ce-cli containerd.io
+sudo systemctl enable --now docker
+</code></pre>
+<p>配置 docker：</p>
+<pre><code class="language-bash">sudo cat &gt; /etc/docker/daemon.json &lt;&lt; EOF
+{
+  &quot;insecure-registries&quot; : [&quot;&lt;control-node-ip&gt;:5000&quot;]
+}
+EOF
+
+sudo systemctl restart docker
+</code></pre>
+<p>测试拉取镜像（根据 <a href="#%E9%AA%8C%E8%AF%81-registry-%E6%9C%8D%E5%8A%A1">验证 Registry 服务</a>的结果灵活调整 etcd 镜像的 tag）：</p>
+<pre><code class="language-bash">sudo docker pull &lt;control-node-ip&gt;:5000/t9kpublic/etcd:v3.5.6
+</code></pre>
+<h3 id="可选-安装-nvidia-driver"><a class="header" href="#可选-安装-nvidia-driver">[可选] 安装 NVIDIA Driver</a></h3>
+<p>如需离线安装 NVIDIA Driver，可以运行以下命令（要求在 <a href="../prepare-offline-packages/kubespray.html#%E4%B8%8B%E8%BD%BD-apt-%E5%8C%85">准备离线安装包</a>时包含了该 package）：</p>
+<pre><code class="language-bash">sudo apt install -y nvidia-driver-525-server
+</code></pre>
+<p>安装完成后，需要参考 <a href="../../online/">NVIDIA GPU Operator</a> 进行 Post Install 设置。</p>
+<h2 id="安装-k8s-集群"><a class="header" href="#安装-k8s-集群">安装 K8s 集群</a></h2>
+<p>1）编辑 (<code>~/ansible/$T9K_CLUSTER/inventory/group_vars/all/download.yml</code>)，设置以下变量。其中 <code>&lt;control-node-ip&gt;</code> 为“控制节点”的 IP 地址：</p>
+<pre><code class="language-yaml">files_repo: &quot;http://&lt;control-node-ip&gt;:8080&quot;
+gcr_image_repo: &quot;&lt;control-node-ip&gt;:5000/t9kpublic&quot;
+kube_image_repo: &quot;&lt;control-node-ip&gt;:5000/t9kpublic&quot;
+docker_image_repo: &quot;&lt;control-node-ip&gt;:5000/t9kpublic&quot;
+quay_image_repo: &quot;&lt;control-node-ip&gt;:5000/t9kpublic&quot;
+
+kubeadm_download_url: &quot;http://&lt;control-node-ip&gt;:8080/storage.googleapis.com/kubernetes-release/release/{{ kubeadm_version }}/bin/linux/{{ image_arch }}/kubeadm&quot;
+kubelet_download_url: &quot;http://&lt;control-node-ip&gt;:8080/storage.googleapis.com/kubernetes-release/release/{{ kube_version }}/bin/linux/{{ image_arch }}/kubelet&quot;
+kubectl_download_url: &quot;http://&lt;control-node-ip&gt;:8080/storage.googleapis.com/kubernetes-release/release/{{ kube_version }}/bin/linux/{{ image_arch }}/kubectl&quot;
+helm_download_url: &quot;http://&lt;control-node-ip&gt;:8080/get.helm.sh/helm-{{ helm_version }}-linux-{{ image_arch }}.tar.gz&quot;
+</code></pre>
+<p>另外，需要考虑离线环境的特殊设置，例如修改 <code>upstream_dns_servers</code> 的设置。</p>
+<p>2）参考 <a href="../../online/prepare-nodes.html">准备节点</a> 与 <a href="../../online/k8s-index.html">安装 K8s</a>，完成节点配置和安装 K8s 集群。</p>
+<h2 id="设置-kubeconfig-并验证"><a class="header" href="#设置-kubeconfig-并验证">设置 KUBECONFIG 并验证</a></h2>
+<p>1）若“控制节点”未安装命令行工具 kubectl 和 Helm，需要先行安装。</p>
+<p>Kubespray 会为 K8s 集群 master 节点的 root 用户安装 kubectl 和 helm。但是不会为 ansible 控制节点安装 kubectl 和 helm。我们需要为 ansible 控制节点安装 kubectl 和 helm。</p>
+<p>安装 kubectl（如果使用的不是 <code>storage.googleapis.com</code> 下载源，请相应地更换路径）：</p>
+<pre><code class="language-bash"># 复制本地文件
+cp ~/ansible/ks-clusters/tools/offline/offline-files/storage.googleapis.com/kubernetes-release/release/v1.25.9/bin/linux/amd64/kubectl  .
+</code></pre>
+<p>或者通过 nginx 服务下载：</p>
+<pre><code class="language-bash">wget http://&lt;control-node-ip&gt;:8080/storage.googleapis.com/kubernetes-release/release/v1.25.9/bin/linux/amd64/kubectl
+
+# 移动到 PATH 路径
+chmod +x kubectl
+sudo mv kubectl /usr/local/bin/kubectl
+</code></pre>
+<p>安装 helm（请根据版本、操作系统的不同灵活修改路径）：</p>
+<pre><code class="language-bash"># 复制本地文件
+cp ~/ansible/ks-clusters/tools/offline/offline-files/get.helm.sh/helm-v3.12.0-linux-amd64.tar.gz .
+</code></pre>
+<p>或者通过 nginx 服务下载：</p>
+<pre><code class="language-bash">wget http://&lt;control-node-ip&gt;:8080/get.helm.sh/helm-v3.12.0-linux-amd64.tar.gz
+
+# 解压并移动到 PATH 路径
+tar zxvf helm-v3.12.0-linux-amd64.tar.gz
+sudo mv linux-amd64/helm /usr/local/bin/helm
+rm -rf linux-amd64/
+</code></pre>
+<p>2）设置 KUBECONFIG：</p>
+<pre><code class="language-bash">mkdir -p ~/.kube/
+
+cp ~/ansible/$T9K_CLUSTER/inventory/artifacts/admin.conf \
+  ~/.kube/sample.conf
+export KUBECONFIG=~/.kube/sample.conf
+</code></pre>
+<p>3）验证：</p>
+<pre><code class="language-bash">kubectl get pod -A -o wide
+kubectl get node -o wide
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../../offline/install/index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../../offline/install/k8s-components.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../../offline/install/index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../../offline/install/k8s-components.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../../elasticlunr.min.js"></script>
+        <script src="../../mark.min.js"></script>
+        <script src="../../searcher.js"></script>
+
+        <script src="../../clipboard.min.js"></script>
+        <script src="../../highlight.js"></script>
+        <script src="../../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../../theme/sidebar.js"></script>
+
+
+    </div>
+    </body>
+</html>
