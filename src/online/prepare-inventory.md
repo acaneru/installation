@@ -15,9 +15,28 @@
 
 首先，在 ansible 控制节点上设置环境，按照如下步骤执行：
 
-1. 安装 ansible
-2. 克隆相关的 git repos
+1. 克隆相关的 git repos
+2. 安装 ansible
 3. 复制 inventory 模版
+
+### 克隆 repos
+
+```bash
+# create directory and clone repos
+mkdir -p ~/ansible
+cd ~/ansible
+
+git clone  git@github.com:t9k/ks-clusters.git
+git clone git@github.com:t9k/kubespray.git
+```
+
+将 kubespray 切换到合适分支：
+
+```bash
+# 将 kubespray 切换到合适分支，例如 kubernetes-1.25.9
+cd kubespray
+git checkout -b kubernetes-<version> origin/kubernetes-<version>
+```
 
 ### 安装 ansible
 
@@ -47,26 +66,6 @@ python -m pip install --no-index \
 
 ```bash
 ansible --version
-```
-
-
-### Clone repos
-
-```bash
-# create directory and clone repos
-mkdir -p ~/ansible
-cd ~/ansible
-
-git clone  git@github.com:t9k/ks-clusters.git
-git clone git@github.com:t9k/kubespray.git
-```
-
-将 kubespray 切换到合适分支：
-
-```bash
-# 将 kubespray 切换到合适分支，例如 kubernetes-1.25.9
-cd kubespray
-git checkout -b kubernetes-<version> origin/kubernetes-<version>
 ```
 
 ### 复制 inventory 模版
