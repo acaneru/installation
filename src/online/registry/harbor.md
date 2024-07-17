@@ -34,7 +34,7 @@ Harbor 对于节点有以下要求，详见 <a target="_blank" rel="noopener nor
 
 本节用于在一个 Ubuntu 系统中快速配置 Docker 运行环境并安装 Harbor。该 host 仅用于运行 Harbor，不应有其他系统。
 
-获取 [harbor.sh](../../../assets/installation/online/harbor.sh) 脚本，在安装路径中保存为 `harbor.sh` 并进行以下修改。
+获取 [harbor.sh](../../assets/online/harbor.sh) 脚本，在安装路径中保存为 `harbor.sh` 并进行以下修改。
 
 <aside class="note">
 <div class="title">注意</div>

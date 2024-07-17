@@ -127,7 +127,7 @@ ansible-playbook ../kubespray/cluster.yml \
 <div class="title">参数解释</div>
 
 ```
---become: 使用其它用户运行操作，默认使用 root 用户。
+--become: 使用其他用户运行操作，默认使用 root 用户。
 -K: 询问 become 所需的权限升级密码 (become password)。
 -e: 设置额外的变量，@说明通过文件传入。
 --vault-password-file: 保存了 vault 密码的文件。
@@ -179,7 +179,7 @@ ks-clusters 的 git repo 里已经配置了 `.gitignore` 文件以避免 `admin.
         ~/.kube/example-cluster.conf
     ```
 
-    如果使用 kube vip 配置了高可用集群，则应当将 server 地址设置为 kube vip 的 virtual IP 和 port，或其它 HA 场景的适当设置。
+    如果使用 kube vip 配置了高可用集群，则应当将 server 地址设置为 kube vip 的 virtual IP 和 port，或其他 HA 场景的适当设置。
 
 
 ##  集群检查

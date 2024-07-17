@@ -19,25 +19,25 @@
 点击**用户管理 > 用户**，进入用户列表页面。
 
 <figure class="screenshot">
-  <img alt="user-list" src="../../../assets/installation/online/user-list.png" />
+  <img alt="user-list" src="../../assets/online/user-list.png" />
 </figure>
 
 点击右上角的**创建用户**来创建一个新用户。
 
 <figure class="screenshot">
-  <img alt="create-user" src="../../../assets/installation/online/create-user.png" />
+  <img alt="create-user" src="../../assets/online/create-user.png" />
 </figure>
 
 点击**项目管理 > 项目**，进入项目列表页面。
 
 <figure class="screenshot">
-  <img alt="project-list" src="../../../assets/installation/online/project-list.png" />
+  <img alt="project-list" src="../../assets/online/project-list.png" />
 </figure>
 
 点击右上角的**创建项目**来创建一个新项目。
 
 <figure class="screenshot">
-  <img alt="create-project" src="../../../assets/installation/online/create-project.png" />
+  <img alt="create-project" src="../../assets/online/create-project.png" />
 </figure>
 
 ## T9k 调度器配置
@@ -51,25 +51,25 @@
 打开 **集群管理（Cluster Admin）** 页面（参考 [登录管理员账号](#登录管理员账号)），点击 **资源管理 > T9k 调度器 > 队列**，进入队列列表页面。
 
 <figure class="screenshot">
-  <img alt="queue-list" src="../../../assets/installation/online/queue-list.png" />
+  <img alt="queue-list" src="../../assets/online/queue-list.png" />
 </figure>
 
 点击右上角的 **+** 来创建一个新队列，队列名称填写为 `default`，其他字段按需填写（参考 [管理员手册 > 设置 Queue 的属性](../../../resource-management/queue.md#设置-queue-的属性)）。
 
 <figure class="screenshot">
-  <img alt="queue-list" src="../../../assets/installation/online/create-queue.png" />
+  <img alt="queue-list" src="../../assets/online/create-queue.png" />
 </figure>
 
 回到队列列表页面，点击 `default` 队列的名称，进入队列详情页面。
 
 <figure class="screenshot">
-  <img alt="queue-list" src="../../../assets/installation/online/queue-detail.png" />
+  <img alt="queue-list" src="../../assets/online/queue-detail.png" />
 </figure>
 
 点击**限制 > 用户/组**的编辑按钮，将用户权限设置为所有人。
 
 <figure class="screenshot">
-  <img alt="queue-list" src="../../../assets/installation/online/queue-all-users.png" />
+  <img alt="queue-list" src="../../assets/online/queue-all-users.png" />
 </figure>
 
 ## 监控系统

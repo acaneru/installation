@@ -14,7 +14,7 @@ TODO:
 | pypi 包        | python-packages/                   |
 | Server 用容器镜像  | server-images/                     |
 | 文件  | offline-files/                     |
-| 其它容器镜像 | 可修改，默认值为 container-images/ |
+| 其他容器镜像 | 可修改，默认值为 container-images/ |
 
 ## 准备
 

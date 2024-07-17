@@ -225,7 +225,7 @@ nvidia-smi
 <details><summary><code class="hljs">nvidia-smi output</code></summary>
 
 ```console
-{{#include ../../../assets/installation/online/nvidia-gpu-operator/nvidia-smi.log}}
+{{#include ../../assets/online/nvidia-gpu-operator/nvidia-smi.log}}
 ```
 
 </details>
@@ -620,7 +620,7 @@ GPU Operator 安装完成后，可以通过以下设置，让 GPU 以 [time-slic
 <details><summary><code class="hljs">config.yaml</code></summary>
 
 ```yaml
-{{#include ../../../assets/installation/online/nvidia-gpu-operator/config.yaml}}
+{{#include ../../assets/online/nvidia-gpu-operator/config.yaml}}
 ```
 
 </details>
@@ -714,7 +714,7 @@ kubectl -n gpu-operator get svc nvidia-dcgm-exporter  -o yaml
 <details><summary><code class="hljs">svc-nvidia-dcgm-exporter.yaml</code></summary>
 
 ```yaml
-{{#include ../../../assets/installation/online/nvidia-gpu-operator/svc-nvidia-dcgm-exporter.yaml}}
+{{#include ../../assets/online/nvidia-gpu-operator/svc-nvidia-dcgm-exporter.yaml}}
 ```
 
 </details>

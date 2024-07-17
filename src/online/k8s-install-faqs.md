@@ -166,7 +166,7 @@ Docker Hub 镜像源参考：<https://juejin.cn/post/7165806699461378085>。
 <aside class="note">
 <div class="title">注意</div>
 
-如果使用了其它 container runtime，请参考其对应文档进行设置。
+如果使用了其他 container runtime，请参考其对应文档进行设置。
 
 </aside>
 

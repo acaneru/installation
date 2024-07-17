@@ -8,4 +8,4 @@
 - [华为](./huawei/index.md)
 - [天数智芯 iluvatar](./iluvatar/index.md)
 - [沐曦 MetaX](./metax/index.md)
-- [燧原 enflame](./enflame/index.md)
+- [燧原 Enflame](./enflame/index.md)

@@ -180,7 +180,7 @@ Kubespray playbooks 使用 `inventory.ini` 中的如下分组：
 </aside>
 
 
-**其它分组**
+**其他分组**
 
 下列分组被非 Kubespray playbooks 使用：
 
