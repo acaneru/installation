@@ -24,7 +24,7 @@
         * [Elastic Search](online/k8s-components/elastic-search.md)
         * [监控相关](online/k8s-components/monitoring.md)
         * [Gatekeeper](online/k8s-components/gatekeeper.md)
-    * [硬件支持](hardware/index.md)
+    * [安装硬件支持](hardware/index.md)
         * [NVIDIA](hardware/nvidia/index.md)
             * [GPU Operator](hardware/nvidia/gpu-operator.md)
             * [Network Operator](hardware/nvidia/network-operator.md)

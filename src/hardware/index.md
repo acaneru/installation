@@ -12,4 +12,4 @@
 
 ## 下一步
 
-完成硬件支持之后，就可以[安装 TensorStack AI 计算平台](../products/index.md)。
+完成硬件支持之后，就可以 [安装 TensorStack AI 计算平台](../online/products/index.md)。
