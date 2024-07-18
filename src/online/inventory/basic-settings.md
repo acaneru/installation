@@ -131,7 +131,7 @@ ansible all -m ping -i inventory/inventory.ini
 
 ## 下一步
 
-准备好 ansible inventory 之后，即可进行下一步的[准备节点](./prepare-nodes.md)工作。
+准备好 ansible inventory 之后，即可进行下一步的 [准备节点](../prepare-nodes.md) 工作。
 
 ## 参考
 
