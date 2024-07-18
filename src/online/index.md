@@ -22,8 +22,8 @@
 * [安装存储服务](./storage-service/index.md)，例如 MinIO、Ceph 等。
 
 <figure class="architecture">
-  <img alt="process" src="../../assets/online/process.drawio.svg" />
-  <figcaption>图 1：在线安装流程。图左侧从上到下分别为准备步骤、核心步骤和检查步骤；图右侧为可选步骤，应根据需求选择性地执行</figcaption>
+  <img alt="process" src="../assets/online/process.drawio.svg" />
+  <figcaption>图 1：在线安装流程。图左侧从上到下分别为准备步骤、核心步骤和检查步骤；图右侧为可选步骤，应根据需求选择性地执行。</figcaption>
 </figure>
 
 ## 下一步
