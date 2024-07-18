@@ -6,7 +6,7 @@
 
 ## 前提条件
 
-完成[安装后配置](./post-install.md)。
+完成 [安装后配置](./post-install.md)。
 
 ## T9k 调度器配置
 
@@ -42,4 +42,6 @@
   <img alt="queue-list" src="../../assets/online/queue-all-users.png" />
 </figure>
 
+## 下一步
 
+运行 <a target="_blank" rel="noopener noreferrer" href="https://t9k.github.io/user-manuals/latest/get-started/index.html"> 用户手册 > 快速入门的例子 </a>，检验产品的功能。
