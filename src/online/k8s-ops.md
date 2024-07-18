@@ -2,7 +2,7 @@
 
 ## 集群节点
 
-### work 节点
+### Worker 节点
 
 > 参考：<https://github.com/kubernetes-sigs/kubespray/blob/master/docs/operations/nodes.md#addingreplacing-a-worker-node>
 
@@ -97,7 +97,7 @@
 
 3. 修改 inventory 文件，删去已经移除的节点。
 
-### control plane 节点
+### Control plane 节点
 
 对 control plane 节点的修改需要运行 cluster.yml，具体请参考文档：
 
