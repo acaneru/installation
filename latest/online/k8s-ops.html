@@ -180,7 +180,7 @@
                         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
 <h1 id="集群维护"><a class="header" href="#集群维护">集群维护</a></h1>
 <h2 id="集群节点"><a class="header" href="#集群节点">集群节点</a></h2>
-<h3 id="work-节点"><a class="header" href="#work-节点">work 节点</a></h3>
+<h3 id="worker-节点"><a class="header" href="#worker-节点">Worker 节点</a></h3>
 <blockquote>
 <p>参考：<a href="https://github.com/kubernetes-sigs/kubespray/blob/master/docs/operations/nodes.md#addingreplacing-a-worker-node">https://github.com/kubernetes-sigs/kubespray/blob/master/docs/operations/nodes.md#addingreplacing-a-worker-node</a></p>
 </blockquote>
@@ -262,7 +262,7 @@ ansible-playbook ../kubespray/remove-node.yml \
 <p>修改 inventory 文件，删去已经移除的节点。</p>
 </li>
 </ol>
-<h3 id="control-plane-节点"><a class="header" href="#control-plane-节点">control plane 节点</a></h3>
+<h3 id="control-plane-节点"><a class="header" href="#control-plane-节点">Control plane 节点</a></h3>
 <p>对 control plane 节点的修改需要运行 cluster.yml，具体请参考文档：</p>
 <ol>
 <li><a href="https://github.com/kubernetes-sigs/kubespray/blob/master/docs/operations/nodes.md#addingreplacing-a-control-plane-node">https://github.com/kubernetes-sigs/kubespray/blob/master/docs/operations/nodes.md#addingreplacing-a-control-plane-node</a></li>
