@@ -38,6 +38,7 @@
         * [安装前准备](online/products/pre-install.md)
         * [安装产品](online/products/install.md)
         * [安装后配置](online/products/post-install.md)
+        * [安装后可选配置](online/products/option-post-install.md)
     * [安装 Harbor Registry](online/registry/harbor.md)
     * [安装存储服务](online/storage-service/index.md)
         * [MinIO](online/storage-service/minio.md)
