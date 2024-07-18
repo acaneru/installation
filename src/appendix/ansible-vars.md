@@ -1,6 +1,6 @@
 ## 修改变量配置文件
 
-参考：<https://github.com/kubernetes-sigs/kubespray/blob/master/docs/vars.md>
+参考：<https://github.com/kubernetes-sigs/kubespray/blob/master/docs/ansible/vars.md>
 
 inventory sample 已经在 kubespray 提供的 inventory 范例基础上配置了常用场景的方案。下文将以使用 inventory sample-HA-1.25.9 安装高可用的 v1.25.9 K8s 集群为例，说明其中较为重要的配置。
 
@@ -62,7 +62,7 @@ K8s 集群的设置：
     1. kube proxy 是否启用严格的 arp 模式 (kube_proxy_strict_arp)
         1. 预设值：true
         1. 原因：为了使用 kube vip 的 ARP 模式，需要设置为 true
-1. 配置 kube vip 以支持高可用集群，参考 <a target="_blank" rel="noopener noreferrer" href="https://github.com/kubernetes-sigs/kubespray/blob/master/docs/ha-mode.md#ha-endpoints-for-k8s">HA endpoints for K8s</a> 及 <a target="_blank" rel="noopener noreferrer" href="https://github.com/kubernetes-sigs/kubespray/blob/master/docs/kube-vip.md">kube-vip</a>
+1. 配置 kube vip 以支持高可用集群，参考 <a target="_blank" rel="noopener noreferrer" href="https://github.com/kubernetes-sigs/kubespray/blob/master/docs/operations/ha-mode.md#ha-endpoints-for-k8s">HA endpoints for K8s</a> 及 <a target="_blank" rel="noopener noreferrer" href="https://github.com/kubernetes-sigs/kubespray/blob/master/docs/ingress/kube-vip.md">kube-vip</a>
     1. 启用 kube vip (kube_vip_enabled)
         1. 预设值：true
         1. 原因：需要启用 kube vip
@@ -85,7 +85,7 @@ K8s 集群的设置：
         1. 原因：ARP 模式可以在不需要路由器支持的情况下工作
 1. 加密 secret 中的数据 (kube_encrypt_secret_data)
     1. 预设值：false
-    1. 作用：静态加密 Secret，参考 <a target="_blank" rel="noopener noreferrer" href="https://github.com/kubernetes-sigs/kubespray/blob/master/docs/encrypting-secret-data-at-rest.md">Encrypting Secret Data at Rest</a>
+    1. 作用：静态加密 Secret，参考 <a target="_blank" rel="noopener noreferrer" href="https://github.com/kubernetes-sigs/kubespray/blob/master/docs/operations/encrypting-secret-data-at-rest.md">Encrypting Secret Data at Rest</a>
     1. 原因：未修改默认值
     1. 补充：考虑以后的安装中设置为 true，即使用默认的 secretbox 算法进行加密
 1. 集群 DNS 相关设置
@@ -98,9 +98,9 @@ K8s 集群的设置：
         1. 作用：解析主机名时，如果主机名中包含的点号 "." 数量少于 ndots，则会在主机名后面添加搜索域并进行解    析。本配置会通过 /etc/resolv.conf 影响使用 host network 的 Pod
         1. 原因：默认值 
         1. 补充：这一条目前和主机实际情况不符合，需要调查   
-    1. dns_mode 选择 coredns，参考 <a target="_blank" rel="noopener noreferrer" href="https://github.com/kubernetes-sigs/kubespray/blob/master/docs/dns-stack.md#dns-modes-supported-by-kubespray">DNS mode</a>
+    1. dns_mode 选择 coredns，参考 <a target="_blank" rel="noopener noreferrer" href="https://github.com/kubernetes-sigs/kubespray/blob/master/docs/advanced/dns-stack.md#dns-modes-supported-by-kubespray">DNS mode</a>
         1. 原因：惯例配置
-1. nodelocaldns 相关配置，参考 <a target="_blank" rel="noopener noreferrer" href="https://github.com/kubernetes-sigs/kubespray/blob/master/docs/dns-stack.md#nodelocal-dns-cache">Nodelocal DNS cache</a>
+1. nodelocaldns 相关配置，参考 <a target="_blank" rel="noopener noreferrer" href="https://github.com/kubernetes-sigs/kubespray/blob/master/docs/advanced/dns-stack.md#nodelocal-dns-cache">Nodelocal DNS cache</a>
     1. 启用 nodelocal dns cache (enable_nodelocaldns)
         1. 预设值：true
         1. 原因：能够提高集群 DNS 性能
@@ -144,7 +144,7 @@ K8s 附加组件设置：
 
 1. 安装使用的路径设置
     1. bin_dir 设置为 /usr/local/bin
-1. 设置 <a target="_blank" rel="noopener noreferrer" href="https://github.com/kubernetes-sigs/kubespray/blob/master/docs/dns-stack.md#upstream_dns_servers">upstream_dns_servers</a>，选择 114.114.114.114（或其他可靠的 DNS 服务）作为上游 DNS 服务器。
+1. 设置 <a target="_blank" rel="noopener noreferrer" href="https://github.com/kubernetes-sigs/kubespray/blob/master/docs/advanced/dns-stack.md#upstream_dns_servers">upstream_dns_servers</a>，选择 114.114.114.114（或其他可靠的 DNS 服务）作为上游 DNS 服务器。
     1. 原因：避免 DNS 查询循环，参考 [K8s DNS 配置](https://docs.google.com/document/d/1wPHoCcTU49jlVjFhWiQfWfQRkj5Ymzq6ovtuKHAlCuM/edit#heading=h.h1mp0pkm52wl)。
 
 ### group_vars/all/download.yml
@@ -152,7 +152,7 @@ K8s 附加组件设置：
 本文件来源于 kubespray sample 的 group_vars/all/offline.yml，结合了 download role 中的 <a target="_blank" rel="noopener noreferrer" href="https://github.com/kubernetes-sigs/kubespray/blob/v2.22.1/roles/download/defaults/main.yml">defaults/main.yml</a> 中的变量。用于指定命令行工具、镜像的下载源。部署 K8s 使用的镜像列表见文档：[[2023/08] Kubespray 测试](https://docs.google.com/document/d/1ktaFh43jI5cULvQe96GHeJBSjXpP2Kl4dQPST_Uw474/edit#heading=h.76vwdbfut8rn)。
 
 1. 通用下载源设置
-    1. files_repo: "https://ghproxy.com"
+    1. files_repo: "https://mirror.ghproxy.com"
         1. 作用：指定 github 的文件的下载源
     1. gcr_image_repo: "docker.io/t9kpublic"
         1. 作用：指定 gcr registry 中镜像的下载源
@@ -170,7 +170,7 @@ K8s 附加组件设置：
 
 ### group_vars/all/docker.yml
 
-docker 的设置，参考 <a target="_blank" rel="noopener noreferrer" href="https://github.com/kubernetes-sigs/kubespray/blob/master/docs/docker.md">Docker Support</a>：
+docker 的设置，参考 <a target="_blank" rel="noopener noreferrer" href="https://github.com/kubernetes-sigs/kubespray/blob/master/docs/CRI/docker.md">Docker Support</a>：
 
 1. Docker 数据存储路径 (docker_daemon_graph)
     1. 预设值: "/var/lib/docker"
@@ -191,7 +191,7 @@ docker 的设置，参考 <a target="_blank" rel="noopener noreferrer" href="htt
 
 ### group_vars/all/etcd.yml
 
-etcd 的设置，参考 <a target="_blank" rel="noopener noreferrer" href="https://github.com/kubernetes-sigs/kubespray/blob/master/docs/etcd.md#etcd">etcd</a>：
+etcd 的设置，参考 <a target="_blank" rel="noopener noreferrer" href="https://github.com/kubernetes-sigs/kubespray/blob/master/docs/operations/etcd.md#etcd">etcd</a>：
 
 1. 容器运行时 (container_manager)
     1. 预设值：docker

@@ -6,7 +6,7 @@
 
 ### ansible 环境
 
-参考[准备节点与安装 K8s](./prepare-nodes-and-install-k8s.md)完成以下准备工作：
+参考[准备节点与安装 K8s](./prepare-nodes-and-install-k8s.md) 完成以下准备工作：
 
 1. 安装 ansible
 1. 将本机的 SSH 公钥复制到所有受控节点上

@@ -2,7 +2,11 @@
 
 ## 集群节点
 
-### 增加 node
+### work 节点
+
+> 参考：<https://github.com/kubernetes-sigs/kubespray/blob/master/docs/operations/nodes.md#addingreplacing-a-worker-node>
+
+#### 增加 worker 节点
 
 1. 修改 inventory.ini，下面是一个增加节点（nc15，worker node）的示例：
     
@@ -64,9 +68,7 @@
 
     </aside>
 
-### 移除 node
-
-> 参考：<https://github.com/kubernetes-sigs/kubespray/blob/master/docs/nodes.md#addingreplacing-a-worker-node>
+#### 移除 worker 节点
 
 1. 更新 facts：
 
@@ -95,12 +97,12 @@
 
 3. 修改 inventory 文件，删去已经移除的节点。
 
-### master 节点
+### control plane 节点
 
 对 control plane 节点的修改需要运行 cluster.yml，具体请参考文档：
 
-1. <https://github.com/kubernetes-sigs/kubespray/blob/master/docs/nodes.md#addingreplacing-a-control-plane-node>
-1. <https://github.com/kubernetes-sigs/kubespray/blob/master/docs/nodes.md#replacing-a-first-control-plane-node>
+1. <https://github.com/kubernetes-sigs/kubespray/blob/master/docs/operations/nodes.md#addingreplacing-a-control-plane-node>
+1. <https://github.com/kubernetes-sigs/kubespray/blob/master/docs/operations/nodes.md#replacing-a-first-control-plane-node>
 
 ## 集群拆除
 
@@ -159,6 +161,6 @@ nc15                       : ok=742  changed=61   unreachable=0    failed=0    s
 
 ## 参考
 
-<https://github.com/kubernetes-sigs/kubespray/blob/master/docs/nodes.md#addingreplacing-a-worker-node>
+<https://github.com/kubernetes-sigs/kubespray/blob/master/docs/operations/nodes.md>
 
-<https://github.com/kubernetes-sigs/kubespray/blob/master/docs/upgrades.md>
+<https://github.com/kubernetes-sigs/kubespray/blob/master/docs/operations/upgrades.md>

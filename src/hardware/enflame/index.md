@@ -6,7 +6,7 @@
 
 ### 燧原驱动
 
-详情参考<a href="https://support.enflame-tech.com/onlinedoc_dev_2.5.115/4-develop/kmd/kernel_module_guide/content/source/kernel_module_guide.html#kmd" target="_blank">KMD 用户使用手册</a>
+详情参考 <a href="https://support.enflame-tech.com/onlinedoc_dev_2.5.115/4-develop/kmd/kernel_module_guide/content/source/kernel_module_guide.html#kmd" target="_blank">KMD 用户使用手册</a>。
 
 ### TopsCloud 产品
 

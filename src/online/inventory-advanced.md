@@ -15,7 +15,7 @@ ansible all -m ping -i inventory/inventory.ini \
 
 ### 配置 bastion host
 
-Kubespray 的脚本支持使用 Bastion Host，可在 inventory 中设置 <a target="_blank" rel="noopener noreferrer" href="https://github.com/kubernetes-sigs/kubespray/blob/master/docs/ansible.md#bastion-host">Bastion host</a>。
+Kubespray 的脚本支持使用 Bastion Host，可在 inventory 中设置 <a target="_blank" rel="noopener noreferrer" href="https://github.com/kubernetes-sigs/kubespray/blob/master/docs/ansible/ansible.md#bastion-host">Bastion host</a>。
 
 修改 `inventory/inventory.ini` 文件，设置以下内容：
 
@@ -118,9 +118,7 @@ ansible-playbook ../kubespray/cluster.yml \
 
 我们可以一次性地通过 ansible 命令将控制节点的 SSH key 复制到所有受控节点上，以方便之后直接使用 SSH key 进行身份验证。
 
-> TODO: Is sshpass required?
-
-安装 sshpass，以支持 ansible 使用 Password Authentication：
+根据[讨论](https://stackoverflow.com/questions/42835626/ansible-to-use-the-ssh-connection-type-with-passwords-you-must-install-the-s)，控制节点需要安装 sshpass，以支持 ansible 使用 Password Authentication：
 
 ``` bash
 # for macOS

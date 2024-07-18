@@ -10,12 +10,7 @@
 - [Elastic Search](./elastic-search.md) - 存储集群的 log
 - [监控相关](./monitoring.md) - 一些设置
 - [Gatekeeper](./gatekeeper.md) - 准入控制
-- [NVIDIA GPU Operator](./nvidia-gpu-operator.md) - NV GPU 产品的支持
-- [NVIDIA Network Operator](./nvidia-network-operator.md) - NV 网络产品的支持
-
 
 ## 下一步
 
-完成 K8s 组件安装之后，就可进行：
-
-- [安装 TensorStack AI 计算平台](../products/index.md)
+完成 K8s 组件安装之后，根据需要安装必要的[硬件支持](../../hardware/index.md)。

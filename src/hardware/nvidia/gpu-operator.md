@@ -896,13 +896,9 @@ spec:
 ```
 然后使用 `kubectl edit clusterpolicy cluster-policy` 来修改 `spec.devicePlugin.version` 字段。
 
-## 下一步
-
-如何管理 NVIDIA GPU： [配置 NVIDIA GPU](../../../resource-management/GPU/nvidia.md)
-
 ## 参考
 
-* [1] [NVIDIA GPU Operator/v24.3.0 Github](https://github.com/NVIDIA/gpu-operator/tree/v24.3.0)
-* [2] [GPU Operator 兼容平台](https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/latest/platform-support.html#supported-operating-systems-and-kubernetes-platforms)
-* [3] [GPU Operator Component Matrix](https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/latest/platform-support.html#gpu-operator-component-matrix)
-* [4] [ClusterPolicy 定义](https://github.com/NVIDIA/gpu-operator/blob/v24.3.0/api/v1/clusterpolicy_types.go#L1669)
+* [NVIDIA GPU Operator/v24.3.0 Github](https://github.com/NVIDIA/gpu-operator/tree/v24.3.0)
+* [GPU Operator 兼容平台](https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/latest/platform-support.html#supported-operating-systems-and-kubernetes-platforms)
+* [GPU Operator Component Matrix](https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/latest/platform-support.html#gpu-operator-component-matrix)
+* [ClusterPolicy 定义](https://github.com/NVIDIA/gpu-operator/blob/v24.3.0/api/v1/clusterpolicy_types.go#L1669)

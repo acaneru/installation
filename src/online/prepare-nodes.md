@@ -54,7 +54,7 @@ ansible-playbook ../ks-clusters/t9k-playbooks/0-gather-information.yml \
 ls /tmp/facts/
 ```
 
-特别地，确认 GPU、网络设备等信息是否复合预期。
+特别地，确认 GPU、网络设备等信息是否符合预期。
 
 ### 禁用 Ubuntu 自动更新
 
@@ -101,4 +101,4 @@ chrony_client_ip_range:
 
 ## 下一步
 
-准备好节点之后，我们可进行 [安装 K8s](./k8s-install.md) 的工作。
+准备好节点之后，我们可进行 [安装 K8s](./k8s-index.md) 的工作。
