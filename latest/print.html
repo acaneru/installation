@@ -231,8 +231,10 @@
 <p>我们使用 <a target="_blank" rel="noopener noreferrer" href="https://docs.ansible.com/">ansible</a> 安装 K8s 及各种辅助组件，因此，我们需要准备一台电脑作为 <a target="_blank" rel="noopener noreferrer" href="https://docs.ansible.com/ansible/latest/network/getting_started/basic_concepts.html">ansible 控制节点</a>，以运行 ansible 命令，并在这个控制节点上，准备 ansible 的 <a target="_blank" rel="noopener noreferrer" href="https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html">inventory</a>。</p>
 <figure class="architecture">
   <img alt="ansible" src="online/inventory/../../assets/online/inventory.drawio.svg" width="80%" />
-  <figcaption>图 1：安装了 ansible 的控制节点根据 inventory 和 playbook 的定义自动化管理和配置集群节点，以安装 K8s 及其组件</figcaption>
+  <figcaption>图 1：使用 ansible 系统脚本化安装和配置 K8s 集群及其组件。</figcaption>
 </figure>
+<h2 id="下一步-1"><a class="header" href="#下一步-1">下一步</a></h2>
+<p>我们可以开始 inventory 的 <a href="online/inventory/./basic-settings.html">基本设置</a>。</p>
 <div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
 <h1 id="基本设置"><a class="header" href="#基本设置">基本设置</a></h1>
 <h2 id="目的"><a class="header" href="#目的">目的</a></h2>
@@ -321,8 +323,8 @@ ansible-inventory -i inventory/inventory.ini --list
 ansible all -m ping -i inventory/inventory.ini
 </code></pre>
 <p>有关 inventory 更多的设置，请参考 <a href="online/inventory/./inventory-advanced.html">inventory 高级设置</a>。</p>
-<h2 id="下一步-1"><a class="header" href="#下一步-1">下一步</a></h2>
-<p>准备好 ansible inventory 之后，即可进行下一步的<a href="online/inventory/./prepare-nodes.html">准备节点</a>工作。</p>
+<h2 id="下一步-2"><a class="header" href="#下一步-2">下一步</a></h2>
+<p>准备好 ansible inventory 之后，即可进行下一步的 <a href="online/inventory/../prepare-nodes.html">准备节点</a> 工作。</p>
 <h2 id="参考-1"><a class="header" href="#参考-1">参考</a></h2>
 <p><a href="https://docs.ansible.com/">https://docs.ansible.com/</a></p>
 <div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
@@ -548,7 +550,7 @@ chrony_client_ip_range:
 - &lt;chrony_client_ip_range_1&gt; # 1.2.3.4/24
 - &lt;chrony_client_ip_range_2&gt; # 100.0.0.1/8
 </code></pre>
-<h2 id="下一步-2"><a class="header" href="#下一步-2">下一步</a></h2>
+<h2 id="下一步-3"><a class="header" href="#下一步-3">下一步</a></h2>
 <p>准备好节点之后，我们可进行 <a href="online/./k8s-index.html">安装 K8s</a> 的工作。</p>
 <div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
 <h1 id="安装-k8s"><a class="header" href="#安装-k8s">安装 K8s</a></h1>
@@ -558,7 +560,7 @@ chrony_client_ip_range:
 <li><a href="online/./k8s-storage.html">设置集群存储</a>，为 K8s 集群设置存储服务，配置 StorageClass。</li>
 </ol>
 <p>本节其他部分可选，例如增加/减少集群节点等。</p>
-<h2 id="下一步-3"><a class="header" href="#下一步-3">下一步</a></h2>
+<h2 id="下一步-4"><a class="header" href="#下一步-4">下一步</a></h2>
 <p>完成 K8s 安装之后，需要进行 <a href="online/./k8s-components/index.html">安装 K8s 组件</a> 的步骤，以在 K8s 安装其他必须的服务。</p>
 <div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
 <h1 id="安装-k8s-1"><a class="header" href="#安装-k8s-1">安装 K8s</a></h1>
@@ -697,7 +699,7 @@ sed -i &quot;1d&quot; $HOME/.kube/example-cluster.conf
 <p>验证 kubeconfig 可用，并查看集群中的节点信息：</p>
 <pre><code class="language-bash">KUBECONFIG=~/.kube/example-cluster.conf kubectl get node
 </code></pre>
-<h2 id="下一步-4"><a class="header" href="#下一步-4">下一步</a></h2>
+<h2 id="下一步-5"><a class="header" href="#下一步-5">下一步</a></h2>
 <ul>
 <li><a href="online/./k8s-storage.html">设置集群存储</a></li>
 </ul>
@@ -1514,7 +1516,7 @@ sudo reboot
 <li><a href="online/k8s-components/./monitoring.html">监控相关</a> - 一些设置</li>
 <li><a href="online/k8s-components/./gatekeeper.html">Gatekeeper</a> - 准入控制</li>
 </ul>
-<h2 id="下一步-5"><a class="header" href="#下一步-5">下一步</a></h2>
+<h2 id="下一步-6"><a class="header" href="#下一步-6">下一步</a></h2>
 <p>完成 K8s 组件安装之后，根据需要 <a href="online/k8s-components/../../hardware/index.html">安装硬件支持</a>。</p>
 <div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
 <h1 id="istio"><a class="header" href="#istio">Istio</a></h1>
@@ -2011,7 +2013,7 @@ kubectl -n t9k-system logs deploy/gatekeeper-controller-manager --tail=50
 <li><a href="hardware/./iluvatar/index.html">天数智芯 iluvatar</a></li>
 <li><a href="hardware/./metax/index.html">沐曦 MetaX</a></li>
 </ul>
-<h2 id="下一步-6"><a class="header" href="#下一步-6">下一步</a></h2>
+<h2 id="下一步-7"><a class="header" href="#下一步-7">下一步</a></h2>
 <p>完成硬件支持之后，就可以 <a href="hardware/../online/products/index.html">安装 TensorStack AI 计算平台</a>。</p>
 <div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
 <h1 id="nvidia-硬件支持"><a class="header" href="#nvidia-硬件支持">NVIDIA 硬件支持</a></h1>
@@ -3669,7 +3671,7 @@ done
 <blockquote>
 <p>如果计划安装的产品尚未生成镜像列表，则需要参考文档 <a href="online/products/../appendix/generate-t9k-product-image-list.html">生成 T9k 产品镜像列表</a>。</p>
 </blockquote>
-<h2 id="下一步-7"><a class="header" href="#下一步-7">下一步</a></h2>
+<h2 id="下一步-8"><a class="header" href="#下一步-8">下一步</a></h2>
 <p>完成本文档的准备工作后，可进行实际的 <a href="online/products/./install.html">产品安装</a>。</p>
 <h2 id="参考-22"><a class="header" href="#参考-22">参考</a></h2>
 <p><a href="https://freessl.cn/">https://freessl.cn/</a></p>
@@ -3775,7 +3777,7 @@ t9k-cluster-admin               t9k-system      1               2023-11-19 06:02
 t9k-aistore                     t9k-system      3               2023-11-19 06:37:17.947109956 +0000 UTC deployed        t9k-aistore-1.78.5                      1.78.5
 </code></pre>
 </details>
-<h2 id="下一步-8"><a class="header" href="#下一步-8">下一步</a></h2>
+<h2 id="下一步-9"><a class="header" href="#下一步-9">下一步</a></h2>
 <p>进行 <a href="online/products/./post-install.html">安装后配置</a>。</p>
 <h2 id="参考-23"><a class="header" href="#参考-23">参考</a></h2>
 <p><a href="https://helm.sh/docs/">https://helm.sh/docs/</a></p>
@@ -3870,7 +3872,7 @@ kubectl get node -l node-role.kubernetes.io/ingress
 <h3 id="配置-fluentd"><a class="header" href="#配置-fluentd">配置 fluentd</a></h3>
 <p>Kubernetes 底层可以使用不同的容器运行时。不同的运行时，存储的日志格式是不同的，因此需要根据使用的容器运行时进行配置。</p>
 <p>详情：<a href="online/products/../../../monitoring-and-log-system/fluentd.html#%E4%BF%AE%E6%94%B9-fluentd-%E9%85%8D%E7%BD%AE">管理员手册 &gt; 配置 Fluentd</a></p>
-<h2 id="下一步-9"><a class="header" href="#下一步-9">下一步</a></h2>
+<h2 id="下一步-10"><a class="header" href="#下一步-10">下一步</a></h2>
 <p>运行<a target="_blank" rel="noopener noreferrer" href="https://t9k.github.io/user-manuals/latest/get-started/index.html">用户手册 &gt; 快速入门的例子</a>，检验产品的功能。</p>
 <p>执行 <a href="online/products/./post-install-optional.html">安装后可选配置</a>。</p>
 <h2 id="参考-24"><a class="header" href="#参考-24">参考</a></h2>
@@ -3905,7 +3907,7 @@ kubectl get node -l node-role.kubernetes.io/ingress
 <figure class="screenshot">
   <img alt="queue-list" src="online/products/../../assets/online/queue-all-users.png" />
 </figure>
-<h2 id="下一步-10"><a class="header" href="#下一步-10">下一步</a></h2>
+<h2 id="下一步-11"><a class="header" href="#下一步-11">下一步</a></h2>
 <p>运行 <a target="_blank" rel="noopener noreferrer" href="https://t9k.github.io/user-manuals/latest/get-started/index.html"> 用户手册 &gt; 快速入门的例子 </a>，检验产品的功能。</p>
 <div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
 <h1 id="正确性检查-1"><a class="header" href="#正确性检查-1">正确性检查</a></h1>
