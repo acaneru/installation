@@ -2,7 +2,12 @@
 
 从 NVIDIA 官网下载  NVIDIA MLNX_OFED 驱动，根据实际情况选择对应的版本。例如：MLNX_OFED_LINUX-5.9-0.5.6.0-ubuntu20.04-x86_64.tgz
 
-注意：如有必要通过命令行下载，可以参考 [Installing MLNX_OFED Using apt-get](https://docs.nvidia.com/networking/display/MLNXOFEDv562090/Installing+MLNX_OFED#InstallingMLNX_OFED-ofedinstallationusingapt-getInstallingMLNX_OFEDUsingapt-get)。
+<aside class="note">
+<div class="title">注意</div>
+
+如有必要通过命令行下载，可以参考 [Installing MLNX_OFED Using apt-get](https://docs.nvidia.com/networking/display/MLNXOFEDv562090/Installing+MLNX_OFED#InstallingMLNX_OFED-ofedinstallationusingapt-getInstallingMLNX_OFEDUsingapt-get)。
+
+</aside>
 
 从本地复制 [NVIDIA MLNX_OFED](https://network.nvidia.com/products/infiniband-drivers/linux/mlnx_ofed/) 驱动到目标节点上：
 

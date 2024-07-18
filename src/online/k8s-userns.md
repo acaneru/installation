@@ -82,7 +82,12 @@ diff -u -r sample-multi-1.28.6-containerd/group_vars/k8s_cluster/k8s-cluster.yml
  local_release_dir: "/tmp/releases"
 ```
 
-> 注意：截止文档撰写时，containerd 只发布了 2.0.0-rc.1，runc 只发布了 1.2.0-rc.1。如可行，建议使用正式发布版本。
+<aside class="note">
+<div class="title">注意</div>
+
+截止文档撰写时，containerd 只发布了 2.0.0-rc.1，runc 只发布了 1.2.0-rc.1。如可行，建议使用正式发布版本。
+
+</aside>
 
 此外，由于自定义了容器运行时及其组件的版本，且该版本信息不包含在 <a target="_blank" rel="noopener noreferrer" href="https://github.com/kubernetes-sigs/kubespray/blob/master/roles/kubespray-defaults/defaults/main/checksums.yml">checksums.yml</a> 中。还需要在此文件中补充 containerd 和 runc 文件的 checksum：
 

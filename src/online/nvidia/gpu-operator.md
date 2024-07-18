@@ -132,8 +132,12 @@ nvidia-smi
 
 #### 关闭 GSP
 
-注意：510.x.x 及之后的 driver，在 nvidia driver bug 未修复前，还需要 [Disable GSP](#disable-gsp)。
+<aside class="note">
+<div class="title">注意</div>
 
+510.x.x 及之后的 driver，在 nvidia driver bug 未修复前，还需要 [Disable GSP](#disable-gsp)。
+
+</aside>
 
 #### 验证
 

@@ -149,7 +149,12 @@ done
 | `cert.keycloak`     | t9k-system         | auth.sample.t9kcloud.cn | 安全系统入口 |
 | `cert.lakefs`       | t9k-system         | lakefs.sample.t9kcloud.cn | AI 资产和实验管理服务的 S3 接口地址 |
 
-> 注意：上表中的 `Host` 字段为示意，部署时应当使用实际的域名，而不是 `*.sample.t9kcloud.cn`。
+<aside class="note">
+<div class="title">注意</div>
+
+上表中的 `Host` 字段为示意，部署时应当使用实际的域名，而不是 `*.sample.t9kcloud.cn`。
+
+</aside>
 
 如果我们使用多域名证书，可以使用同一份 cert 文件创建这些 secret：
 

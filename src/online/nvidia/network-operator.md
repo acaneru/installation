@@ -166,7 +166,7 @@ ansible-playbook ../ks-clusters/t9k-playbooks/4-install-ib-driver.yml \
   --vault-password-file=~/ansible/.vault-password.txt
 ```
 
-<aside class="note warning">
+<aside class="note">
 <div class="title">注意</div>
 
 本脚本暂不支持离线安装，可以参考 [附录：手动安装 MLNX_OFED 驱动](../../appendix/manually-install-mlnx-ofed-driver.md) 来手动安装 MLNX_OFED 驱动。

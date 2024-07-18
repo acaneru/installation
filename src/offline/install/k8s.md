@@ -196,7 +196,7 @@ git checkout -b kubernetes-offline-<version> \
 cd ..
 ```
 
-3）然后参考 [准备 inventory](../../online/prepare-inventory.md)，完成安装 ansible 和准备 inventory。
+3）然后参考[基本设置](../../online/inventory/basic-settings.md)，完成安装 ansible 和准备 inventory。
 
 如果离线环境中没有 conda，则使用下面命令安装 ansible 运行环境：
 

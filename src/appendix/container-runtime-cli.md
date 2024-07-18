@@ -1,6 +1,6 @@
 # CRI 命令行工具
 
-Docker、containerd 和 CRI-O 是三个主流的 <a target="_blank" rel="noopener noreferrer" href="https://github.com/kubernetes/cri-api"> K8s 容器运行时（CRI）</a>。本文介绍几个常用命令行工具，用于管理镜像、容器的生命周期等。
+Docker、containerd 和 CRI-O 是三个主流的 <a target="_blank" rel="noopener noreferrer" href="https://github.com/kubernetes/cri-api"> K8s 容器运行时（CRI）</a>。本文档介绍几个常用命令行工具，用于管理镜像、容器的生命周期等。
 
 ## crictl
 
@@ -179,7 +179,12 @@ ctr namespace ls
 ctr namespace create <name>
 ```
 
-> 注意：下文所有命令实际使用时都需要添加参数 `-n <namespace>` 来指定 namespace。
+<aside class="note">
+<div class="title">注意</div>
+
+下文所有命令实际使用时都需要添加参数 `-n <namespace>` 来指定 namespace。
+
+</aside>
 
 ### 容器和任务
 

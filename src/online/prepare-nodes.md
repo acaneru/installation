@@ -1,7 +1,5 @@
 # 准备节点
 
-我们支持在 Ubuntu 20.04, 22.04 上安装 K8s，其他版本将会适时提供支持。
-
 ## 目的
 
 1. 使用 ansible 对集群服务器做基本的配置;
@@ -9,7 +7,7 @@
 
 ## 前提条件
 
-完成 [准备 inventory](./prepare-inventory.md) 中的工作。
+完成[设置 ansible inventory](./inventory/index.md) 中的工作。
 
 确认 inventory 可用：
 
@@ -24,21 +22,7 @@ ansible-inventory -i inventory/inventory.ini --list
 ansible all -m ping -i inventory/inventory.ini
 ```
 
-## 准备节点
-
-安装 K8s 之前，需要做如下准备工作：
-
-1. 禁用 Ubuntu 自动更新；
-1. 设置自动同步系统时钟。
-
-<aside class="note">
-<div class="title">注意</div>
-
-如果为临时测试目的，可跳过 “禁止 Ubuntu 自动更新” 和 “设置自动同步系统时钟”。
-
-</aside>
-
-### 获取节点信息
+## 获取节点信息
 
 运行脚本：
 
@@ -56,10 +40,19 @@ ls /tmp/facts/
 
 特别地，确认 GPU、网络设备等信息是否符合预期。
 
-### 禁用 Ubuntu 自动更新
+## 禁用 Ubuntu 自动更新
+
+<aside class="note">
+<div class="title">注意</div>
+
+如果为临时测试目的，可跳过这一步。
+
+</aside>
+
+目前支持在 Ubuntu 20.04 或 22.04 上安装 K8s，其他版本将会适时提供支持。
 
 <aside class="note warning">
-<div class="title">注意</div>
+<div class="title">警告</div>
 
 该脚本中包含重启节点的操作。
 
@@ -73,7 +66,14 @@ ansible-playbook ../ks-clusters/t9k-playbooks/1-disable-auto-upgrade.yml \
   --become -K
 ```
 
-### 设置时钟同步
+## 设置时钟同步
+
+<aside class="note">
+<div class="title">注意</div>
+
+如果为临时测试目的，可跳过这一步。
+
+</aside>
 
 运行脚本：
 

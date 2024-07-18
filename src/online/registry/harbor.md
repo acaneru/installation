@@ -1,6 +1,13 @@
-# 安装 Harbor
+# 安装 Harbor Registry
 
-本文介绍如何在一个 Ubuntu 系统中安装 Harbor，以提供本地的快速容器镜像服务。
+<aside class="note">
+<div class="title">注意</div>
+
+如果使用公有容器镜像服务，可跳过这一步。
+
+</aside>
+
+本文档介绍如何在一个 Ubuntu 系统中安装 Harbor，以提供本地的快速容器镜像服务。
 
 ## 前提条件
 

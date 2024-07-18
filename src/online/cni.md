@@ -1,6 +1,6 @@
 # CNI 配置
 
-本文说明如何为 K8s 集群安装不同的 CNI（Container Network Interface）。
+本文档说明如何为 K8s 集群安装不同的 CNI（Container Network Interface）。
 
 <aside class="note">
 <div class="title">注意</div>

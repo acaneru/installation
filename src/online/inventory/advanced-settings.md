@@ -1,4 +1,4 @@
-# Inventory 高级设置
+# 高级设置
 
 ## 更多设置
 
@@ -113,7 +113,6 @@ ansible-playbook ../kubespray/cluster.yml \
   --vault-password-file=~/ansible/.vault-password.txt
 ```
 
-
 ### 复制 SSH 公钥
 
 我们可以一次性地通过 ansible 命令将控制节点的 SSH key 复制到所有受控节点上，以方便之后直接使用 SSH key 进行身份验证。
@@ -151,7 +150,7 @@ ansible all \
 ansible -i inventory/inventory.ini -m ping all
 ```
 
-## Inventory 结构
+## inventory 结构
 
 ### 节点组
 
@@ -177,7 +176,6 @@ Kubespray playbooks 使用 `inventory.ini` 中的如下分组：
 
 </aside>
 
-
 **其他分组**
 
 下列分组被非 Kubespray playbooks 使用：
@@ -185,7 +183,6 @@ Kubespray playbooks 使用 `inventory.ini` 中的如下分组：
 * `chronyserver` -  使用 `t9k-playbooks/2-sync-time.yml` 安装 chrony 时，此 group 指定 chrony server 节点；
 * `chronyclients` - 同上，安装 chrony 时，此 group 指定 chrony client 节点；
 * `nfs_server` -  使用 `t9k-playbooks/10-install-nfs.yml` 安装 nfs 作为集群存储时，需要用这个 group 指定 nfs server 节点（nfs server 只使用一个节点，即此 group 中的第一个节点）。
-
 
 ### 目录结构
 

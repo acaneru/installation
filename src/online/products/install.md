@@ -70,8 +70,12 @@ t9k-asset-hub
 t9k-experiment-management
 ```
 
-> 注意：产品模块 "t9k-monitoring" 需要安装在 namespace `t9k-monitoring` 中；其他所有产品都安装在 namespace `t9k-system` 中。
+<aside class="note">
+<div class="title">注意</div>
 
+产品模块 "t9k-monitoring" 需要安装在 namespace `t9k-monitoring` 中；其他所有产品都安装在 namespace `t9k-system` 中。
+
+</aside>
 
 ## 基本检查
 

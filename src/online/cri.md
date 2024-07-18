@@ -1,6 +1,6 @@
 # CRI 配置
 
-本文说明如何配置 inventory，以使用各种容器运行时来运行 K8s 集群。
+本文档说明如何配置 inventory，以使用各种容器运行时来运行 K8s 集群。
 
 <aside class="note">
 <div class="title">注意</div>
@@ -71,8 +71,12 @@ docker_options: "--default-ulimit=memlock=-1:-1 --default-ulimit=stack=67108864:
 docker_log_opts: "--log-opt max-size=10m --log-opt max-file=5"
 ```
 
-> 注意：Kubespray 默认设置了 `kubelet_logfiles_max_size: 10Mi`，我们建议将 `docker_log_opts` 中的 `max-size` 设置为相同的大小，以避免 [Failed ReopenContainerLog](https://github.com/Mirantis/cri-dockerd/issues/35) 的问题。
+<aside class="note">
+<div class="title">注意</div>
 
+Kubespray 默认设置了 `kubelet_logfiles_max_size: 10Mi`，我们建议将 `docker_log_opts` 中的 `max-size` 设置为相同的大小，以避免 [Failed ReopenContainerLog](https://github.com/Mirantis/cri-dockerd/issues/35) 的问题。
+
+</aside>
 
 ## containerd
 
@@ -102,7 +106,12 @@ containerd_runc_runtime:
     binaryName: "{{ bin_dir }}/runc"
 ```
 
-> 注意：不推荐修改 `containerd_default_runtime`，因为 Kubespray 的相关支持不完善。
+<aside class="note">
+<div class="title">注意</div>
+
+不推荐修改 `containerd_default_runtime`，因为 Kubespray 的相关支持不完善。
+
+</aside>
 
 你可以为 containerd 配置额外的底层容器运行时，例如 kata：
 
@@ -183,7 +192,12 @@ crio_runtimes:
     root: /run/runc
 ```
 
-> 注意：不推荐修改 CRI-O 的默认容器运行时，因为 Kubespray 的相关支持不完善。
+<aside class="note">
+<div class="title">注意</div>
+
+不推荐修改 CRI-O 的默认容器运行时，因为 Kubespray 的相关支持不完善。
+
+</aside>
 
 你可以为 CRI-O 配置额外的底层容器运行时，例如启用 crun：
 
@@ -253,7 +267,7 @@ crio_registries:
 * [CRI-O 容器运行时](https://github.com/t9k/ks-clusters/tree/master/inventory/sample-multi-1.28.6-crio)
 
 你可以做如下修改后，直接使用这些示例 inventory 安装相应的 K8s 集群：
-* [修改 `inventory.ini`](./prepare-inventory.md#设置-inventory)
+* [修改 `inventory.ini`](./inventory/basic-settings.md#设置-inventory)
 * 根据实际网络环境设置 `group_vars/all/all.yml` 中的 `upstream_dns_servers` 变量
 
 ## 附录：额外容器运行时设置

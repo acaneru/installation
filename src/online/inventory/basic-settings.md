@@ -1,6 +1,4 @@
-# 设置 inventory
-
-我们使用 <a target="_blank" rel="noopener noreferrer" href="https://docs.ansible.com/">ansible</a> 安装 K8s 及各种辅助组件，因此，我们需要准备一台电脑作为 <a target="_blank" rel="noopener noreferrer" href="https://docs.ansible.com/ansible/latest/network/getting_started/basic_concepts.html">ansible 控制节点</a>，以运行 ansible 命令，并在这个控制节点上，准备 ansible 的 <a target="_blank" rel="noopener noreferrer" href="https://docs.ansible.com/ansible/latest/inventory_guide/intro_inventory.html">inventory</a>。
+# 基本设置
 
 ## 目的
 
@@ -26,7 +24,7 @@
 mkdir -p ~/ansible
 cd ~/ansible
 
-git clone  git@github.com:t9k/ks-clusters.git
+git clone git@github.com:t9k/ks-clusters.git
 git clone git@github.com:t9k/kubespray.git
 ```
 
@@ -99,7 +97,7 @@ cp ../ks-clusters/inventory/ansible.cfg .
 cp -r ../ks-clusters/inventory/sample-<variant> inventory
 ```
 
->  此步骤复制的 `inventory` 子目录里的内容详情见：[Inventory 结构](./inventory-advanced.md#inventory-结构)。
+>  此步骤复制的 `inventory` 子目录里的内容详情见：[inventory 结构](./inventory-advanced.md#inventory-结构)。
 
 ## 设置 inventory
 
@@ -128,12 +126,12 @@ ansible-inventory -i inventory/inventory.ini --list
 ansible all -m ping -i inventory/inventory.ini
 ```
 
-有关 Inventory 更多的设置，请参考 [Inventory 高级设置](./inventory-advanced.md)。
+有关 inventory 更多的设置，请参考 [inventory 高级设置](./inventory-advanced.md)。
 
 
 ## 下一步
 
-准备好 ansible inventory 之后，即可进行下一步的 [准备节点](./prepare-nodes.md) 工作。
+准备好 ansible inventory 之后，即可进行下一步的[准备节点](./prepare-nodes.md)工作。
 
 ## 参考
 

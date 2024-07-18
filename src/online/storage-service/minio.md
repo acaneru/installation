@@ -1,10 +1,10 @@
-# 安装 MinIO
+# MinIO
 
 本节说明针对测试场景，如何安装一个 “单节点、单存储盘” 的 minio 服务，以提供 <a target="_blank" rel="noopener noreferrer" href="https://en.wikipedia.org/wiki/Amazon_S3">S3 协议的对象存储服务（Object Storage Service）</a>。
 
 参考： <a target="_blank" rel="noopener noreferrer" href="https://min.io/docs/minio/linux/operations/install-deploy-manage/deploy-minio-single-node-single-drive.html">Deploy MinIO: Single-Node Single-Drive</a>。
 
-<aside class="note warning">
+<aside class="note">
 <div class="title">注意</div>
 
 本文档仅介绍了一个单节点、测试目的的 minIO；生产级别的安装请参考  <a target="_blank" rel="noopener noreferrer" href="https://min.io/docs/">minio 官方文档</a>。

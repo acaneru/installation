@@ -148,9 +148,9 @@ tmpfs                               16G     0   16G   0% /sys/fs/cgroup
 
 上述的两个 issue 中，前一个 issue 中的回答解释了问题的原因，并提供了一个 workaround。后一个 issue 简单介绍了这个问题的原因和现状，并附上了相关 KEP 的[链接](https://github.com/kubernetes/enhancements/blob/master/keps/sig-node/2371-cri-pod-container-stats/README.md)。
 
-## 无法拉取 docker hub 镜像
+## 无法拉取 Docker Hub 镜像
 
-使用下面的命令验证 docker 可以从 docker hub 拉取镜像：
+使用下面的命令验证 docker 可以从 Docker Hub 拉取镜像：
 
 ```bash
 docker pull t9kpublic/hello-world

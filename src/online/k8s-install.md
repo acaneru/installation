@@ -6,7 +6,7 @@
 
 ## 前提条件
 
-准备好了 inventory 并且服务器节点满足要求，可按照前述 [准备 Inventory](./prepare-inventory.md) 和 [准备节点](./prepare-nodes.md) 步骤执行。
+准备好了 inventory 并且服务器节点满足要求，可按照前述 [准备 ansible inventory](./inventory/index.md) 和 [准备节点](./prepare-nodes.md) 步骤执行。
 
 ## 配置
 

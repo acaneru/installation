@@ -65,7 +65,12 @@ ansible-playbook playbook.yml --tags tag1,tag2,tag3
 ansible-playbook playbook.yml --skip-tags tag1,tag2,tag3
 ```
 
-> 注意：具有 Tag "Always" 的任务一定会被执行。
+<aside class="note">
+<div class="title">注意</div>
+
+具有 Tag "Always" 的任务一定会被执行。
+
+</aside>
 
 ### 查看所有 Task
 
@@ -97,5 +102,9 @@ Perform task: TASK: Gathering Facts (N)o/(y)es/(c)ontinue:
 * yes: 执行这个 Task
 * continue: 执行这个 Task 及后续所有的 Task（不再逐步询问）
 
-> 注意：Kubespray 是一个相当长的 Playbook，包含了上千个 Task。逐步执行会需要较长时间。在需要逐步执行调试时，建议通过 [ansible tags](#ansible-tags) 指定其中一部分 Task 来执行。
+<aside class="note">
+<div class="title">注意</div>
 
+Kubespray 是一个相当长的 Playbook，包含了上千个 Task。逐步执行会需要较长时间。在需要逐步执行调试时，建议通过 [ansible tags](#ansible-tags) 指定其中一部分 Task 来执行。
+
+</aside>

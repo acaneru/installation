@@ -133,7 +133,7 @@ Kubernetes 底层可以使用不同的容器运行时。不同的运行时，存
 
 ## 下一步
 
-运行 <a target="_blank" rel="noopener noreferrer" href="https://t9k.github.io/user-manuals/latest/get-started/index.html"> 用户手册 > 快速入门的例子 </a>，检验产品的功能。
+运行<a target="_blank" rel="noopener noreferrer" href="https://t9k.github.io/user-manuals/latest/get-started/index.html">用户手册 > 快速入门的例子</a>，检验产品的功能。
 
 执行 [安装后可选配置](./post-install-optional.md)。
 

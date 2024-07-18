@@ -1,8 +1,8 @@
-# 安装 NFS 及 StorageClass
+# NFS 和 StorageClass
 
 本文档是在 K8s 集群选定的单个节点上安装一个 NFS 服务，并基于该服务在 K8s 集群中安装 NFS CSI driver 和相应的 StorageClass `nfs-csi`。
 
-<aside class="note warning">
+<aside class="note">
 <div class="title">注意</div>
 
 使用 NFS 作为 K8s 集群存储仅在小规模或者测试场景下适用。
@@ -11,7 +11,7 @@
 
 ## 前置条件
 
-完成 [K8s 基本集群](../k8s-install.md) 的部署。
+完成 [K8s 基本集群](../k8s-install.md)的部署。
 
 ## 安装
 
@@ -104,9 +104,15 @@ ansible-playbook ../ks-clusters/t9k-playbooks/10-install-nfs.yml \
 
 ## 验证
 
+<<<<<<< HEAD
 安装过程的最后步骤包含了使用此 NFS 的测试案例，详情见上一小节。
 
 还可以运行如下步骤，手工验证安装的 pacakges 和服务。
+=======
+安装过程的最后步骤包含了使用次 NFS 的测试案例，详情见上一节。
+
+还可以安装如下步骤，手工验证安装的 packages 和服务。
+>>>>>>> 60be6c4 (Add some figures and improve the languages)
 
 ### 检查 Package
 

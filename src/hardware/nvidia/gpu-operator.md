@@ -233,8 +233,12 @@ nvidia-smi
 
 #### 关闭 GSP
 
-注意：510.x.x 及之后的 driver，在 nvidia driver bug 未修复前，还需要 [Disable GSP](#disable-gsp)。
+<aside class="note">
+<div class="title">注意</div>
 
+510.x.x 及之后的 driver，在 nvidia driver bug 未修复前，还需要 [Disable GSP](#disable-gsp)。
+
+</aside>
 
 #### 验证
 
@@ -877,7 +881,12 @@ helm install --wait --generate-name \
 
 参考 NVIDIA GPU Operator [官方文档](https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/latest/upgrade.html#option-1-manually-upgrading-crds)
 
-注意：更新可能会导致正在使用 GPU 的工作负载出错。
+<aside class="note">
+<div class="title">注意</div>
+
+更新可能会导致正在使用 GPU 的工作负载出错。
+
+</aside>
 
 ### 修改组件版本
 

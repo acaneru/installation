@@ -179,7 +179,7 @@ docker 的设置，参考 <a target="_blank" rel="noopener noreferrer" href="htt
     1. 预设值: "--log-opt max-size=50m --log-opt max-file=5"
     1. 原因：默认设置
 1. 设置 docker registry mirrors (docker_registry_mirrors)
-    1. 原因：加速国内拉取 docker hub 镜像的速度。
+    1. 原因：加速国内拉取 Docker Hub 镜像的速度。
     1. 设置的镜像源为:
         1. https://dockerproxy.com/
         1. https://hub-mirror.c.163.com/
