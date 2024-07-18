@@ -1,8 +1,8 @@
 # 设置集群存储
 
-K8s 集群至少需要安装一个 StorageClass 来提供集群存储服务，即 “<a target="_blank" rel="noopener noreferrer" href="https://kubernetes.io/docs/concepts/storage/dynamic-provisioning/">动态持久卷制备/Dynamic Volume Provisioning</a>”。
+K8s 集群至少需要安装一个 StorageClass 来提供集群存储服务，即 “<a target="_blank" rel="noopener noreferrer" href="https://kubernetes.io/docs/concepts/storage/dynamic-provisioning/">动态持久卷制备（Dynamic Volume Provisioning）</a>”。
 
-我们可以使用多家存储系统产品，例如 NFS, Ceph, Lustre, GPFS 等。
+我们可以使用多家存储系统产品，例如 NFS、Ceph、Lustre、GPFS 等。
 
 ## 目的
 
@@ -66,6 +66,12 @@ NFS 适合小规模或者测试场景，可通过 ansible 方便的安装，详�
 ## 使用 Lustre
 
 TODO: Add details.
+
+
+## 使用 GPFS
+
+TODO: Add details.
+
 
 ## 参考
 

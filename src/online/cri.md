@@ -1,6 +1,6 @@
 # CRI 配置
 
-本文说明如何配置 inventory，以便使用各种容器运行时来运行 K8s 集群。
+本文说明如何配置 inventory，以使用各种容器运行时来运行 K8s 集群。
 
 <aside class="note">
 <div class="title">注意</div>
@@ -55,10 +55,7 @@ docker_storage_options: -s overlay2
 
 ```yaml
 docker_registry_mirrors:
-  - https://dockerproxy.com/
-  - https://hub-mirror.c.163.com/
-  - https://mirror.baidubce.com/
-  - https://ccr.ccs.tencentyun.com/
+  - https://registry.dockermirror.com
 ```
 
 设置 Docker 的默认 ulimit 值：
@@ -150,16 +147,7 @@ runc_download_url: "{{ files_repo }}/github.com/opencontainers/runc/releases/dow
 containerd_registries_mirrors:
  - prefix: docker.io
    mirrors:
-    - host: https://dockerproxy.com
-      capabilities: ["pull", "resolve"]
-      skip_verify: false
-    - host: https://hub-mirror.c.163.com
-      capabilities: ["pull", "resolve"]
-      skip_verify: false
-    - host: https://mirror.baidubce.com
-      capabilities: ["pull", "resolve"]
-      skip_verify: false
-    - host: https://ccr.ccs.tencentyun.com
+    - host: https://registry.dockermirror.com
       capabilities: ["pull", "resolve"]
       skip_verify: false
 ```
@@ -253,13 +241,7 @@ crio_registries:
     location: docker.io
     unqualified: false
     mirrors:
-      - location: dockerproxy.com
-        insecure: false
-      - location: hub-mirror.c.163.com
-        insecure: false
-      - location: mirror.baidubce.com
-        insecure: false
-      - location: ccr.ccs.tencentyun.com
+      - location: registry.dockermirror.com
         insecure: false
 ```
 

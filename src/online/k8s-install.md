@@ -41,7 +41,7 @@
 
 使用不同的容器运行时，请参考 [CRI 配置](./cri.md)。
 
-如需使用 <a target="_blank" rel="noopener noreferrer" href="https://kubernetes.io/docs/concepts/workloads/pods/user-namespaces/">User Namespaces</a>，参考 [设置 User Namespace](./k8s-userns.md)。
+如需使用 <a target="_blank" rel="noopener noreferrer" href="https://kubernetes.io/docs/concepts/workloads/pods/user-namespaces/">User Namespaces</a>，请参考 [设置 User Namespace](./k8s-userns.md)。
 
 ### 设置 CNI
 
@@ -72,7 +72,7 @@ kube_proxy_mode: ipvs
 # must be set to true for MetalLB, kube-vip(ARP enabled) to work
 kube_proxy_strict_arp: true
 
-# reference: https://github.com/kubernetes-sigs/kubespray/blob/master/docs/kube-vip.md#kube-vip
+# reference: https://github.com/kubernetes-sigs/kubespray/blob/master/docs/ingress/kube-vip.md#kube-vip
 # Enable kube vip as HA for control-plane, requires a Virtual IP
 kube_vip_enabled: true
 kube_vip_controlplane_enabled: true
@@ -179,7 +179,7 @@ ks-clusters 的 git repo 里已经配置了 `.gitignore` 文件以避免 `admin.
         ~/.kube/example-cluster.conf
     ```
 
-    如果使用 kube vip 配置了高可用集群，则应当将 server 地址设置为 kube vip 的 virtual IP 和 port，或其他 HA 场景的适当设置。
+   如果通过 kube-vip 配置了 HA 模式，则应当使用 kube-vip 的虚拟 IP 地址 + 端口，或其他 HA 场景的适当设置。
 
 
 ##  集群检查

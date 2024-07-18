@@ -15,7 +15,7 @@
 
 ## 安装
 
-如直接使用 Internet 的镜像仓库（docker hub）安装，则跳过 “离线设置” 部分。
+如直接使用 Internet 的镜像仓库（例如 docker hub、阿里云等）安装，则跳过 “离线设置” 部分。
 
 ### 离线设置
 
@@ -36,7 +36,7 @@ cd ~/ansible/$T9K_CLUSTER
 vim inventory/group_vars/all/download.yml
 ```
 
-示例，使用运行在 `192.169.101.159:5000` 的 image registry：
+下面的示例使用运行在 `192.169.101.159:5000` 的 image registry：
 
 ```diff
 diff -u ./inventory/group_vars/all/download.yml ./inventory/group_vars/all/new-download.yml
@@ -104,9 +104,9 @@ ansible-playbook ../ks-clusters/t9k-playbooks/10-install-nfs.yml \
 
 ## 验证
 
-安装过程的最后步骤包含了使用次 NFS 的测试案例，详情见上一小节。
+安装过程的最后步骤包含了使用此 NFS 的测试案例，详情见上一小节。
 
-还可以安装如下步骤，手工验证安装的 pacakges 和服务。
+还可以运行如下步骤，手工验证安装的 pacakges 和服务。
 
 ### 检查 Package
 
@@ -117,7 +117,7 @@ ansible-playbook ../ks-clusters/t9k-playbooks/10-install-nfs.yml \
 
 ```bash
 # use apt to show installed pacakgess
-apt list --installed |grep nfs
+apt list --installed | grep nfs
 
 # or, use dpkg
 dpkg --get-selections | grep nfs

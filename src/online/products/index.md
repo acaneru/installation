@@ -1,6 +1,6 @@
-# 安装产品
+# 安装 TensorStack AI 计算平台
 
-T9k 产品安装分为以下三个阶段：
+安装 TensorStack AI 计算平台分为以下三个阶段：
 
 1. [安装前的准备工作](./pre-install.md)
 1. [安装产品](./install.md)

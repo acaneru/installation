@@ -52,7 +52,18 @@ kube_owner: root
 kube_proxy_remove: true
 ```
 
-运行 Kubespray 安装 K8s 集群，安装完成后，所有 Node 和 Pod 将处于 not ready 状态，因为没有可用的 CNI。
+<aside class="note">
+<div class="title">注意</div>
+
+Cilium 的 [L2 Annoucement](https://docs.cilium.io/en/v1.15/network/l2-announcements/)、[Gateway API](https://docs.cilium.io/en/v1.15/network/servicemesh/gateway-api/gateway-api/) 等高级功能要求启用 [Kubernetes Without kube-proxy](https://docs.cilium.io/en/v1.15/network/kubernetes/kubeproxy-free/) 特性，而这项特性存在以下[局限性](https://docs.cilium.io/en/v1.15/network/kubernetes/kubeproxy-free/#limitations)：
+
+1. 当集群存储为 Ceph 时，所有节点的 Linux kernel 版本必须为 5.8 及以上。
+
+2. 当集群存储为 NFS 时，所有节点的 Linux kernel 版本必须为 6.6 及以上。
+</aside>
+
+
+运行 Kubespray 安装 K8s 集群，安装完成后，所有 Node 和 Pod 将处于 not ready 状态，因为尚不存在可用的 CNI；Cilium 安装完毕后将自动恢复正常。
 
 ### 安装 Cilium
 

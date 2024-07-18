@@ -1,4 +1,4 @@
-# 安装 Network Operator
+# 安装 NVIDIA Network Operator
 
 ```
 TODO:

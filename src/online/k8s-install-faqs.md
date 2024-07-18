@@ -2,13 +2,13 @@
 
 ## 大集群
 
-如果集群节点数 > 100，请阅读： <https://github.com/kubernetes-sigs/kubespray/blob/master/docs/large-deployments.md>
+如果集群节点数 > 100，请阅读： <https://github.com/kubernetes-sigs/kubespray/blob/master/docs/operations/large-deployments.md>
 
 ## 离线安装
 
 请使用 [离线安装](../offline/index.md) 文档。
 
-kubespray 的离线安装文档：<https://github.com/kubernetes-sigs/kubespray/blob/master/docs/offline-environment.md>
+kubespray 的离线安装文档：<https://github.com/kubernetes-sigs/kubespray/blob/master/docs/operations/offline-environment.md>
 
 ## 修改 LVM size
 
@@ -256,6 +256,4 @@ sudo reboot
 
 ## 参考
 
-<https://github.com/kubernetes-sigs/kubespray/blob/master/docs/large-deployments.md>
-
-<https://juejin.cn/post/7165806699461378085>
+<https://github.com/kubernetes-sigs/kubespray/blob/master/docs/operations/large-deployments.md>
