@@ -1,15 +1,8 @@
 # 安装前准备
 
-```
-TODO:  
-  1. 更换 `lakefs.sample.t9kcloud.cn` 为更明确的名字，例如 `s3.sample.t9kcloud.cn`?
-  2. 为啥 landingpage ingress 需要手工创建？
-  3. Use ansible to automate step "Pre-pull Image"
-```
-
 ## 目的
 
-为安装 T9k 产品做安装前的准备工作，包括获取 DNS，证书，预先创建一些 K8s 资源等。
+为安装 T9k 产品做安装前的准备工作，包括获取域名及证书、预先创建一些 K8s 资源等。
 
 ## 前提条件
 
@@ -19,24 +12,24 @@ TODO:
   * 已安装前述的各种 [k8s 组件](../k8s-components/index.md);
   * 可使用 `kubectl`，具备 cluster-admin 权限；
   * 可访问安装过程中使用的容器镜像服务（一般在公网上，可支持本地 mirror）；
-* 能够访问存放安装包的网络服务（一般在公网上，可支持本地 mirror）。
-* `kubectl`, >= v1.25.x+; `helm`, >= v3.9.x；
+* 能够访问存放安装包的网络服务（一般在公网上，可支持本地 mirror）；
+* `kubectl` 版本 >= v1.25.x；`helm` 版本 >= v3.9.x。
 
 ## 域名及证书
 
-准备产品的域名、设置域名解析、获取域名证书。
+本节准备产品的域名、设置域名解析、获取域名证书。
 
 ### 获取域名
 
 > 应当以合适的途径获得域名，并配置其解析。
 
-下文假设用户选择使用 DNS `sample.t9kcloud.cn` 部署产品，各个具体的模块的子 DNS 如下表。
+下文假设用户选择使用域名 `sample.t9kcloud.cn` 部署产品，各个具体的模块的子域名如下表。
 
 | 域名                         | 说明                                |
 | ---------------------------- | ----------------------------------- |
 | `home.sample.t9kcloud.cn`    | 平台主入口                          |
 | `auth.sample.t9kcloud.cn`    | 安全系统                            |
-| `lakefs.sample.t9kcloud.cn`  | AI 资产和实验管理服务的 S3 接口地址 |
+| `s3.sample.t9kcloud.cn`      | AI 资产和实验管理服务的 S3 接口地址 |
 | `*.ksvc.sample.t9kcloud.cn` | 模型推理服务                        |
 
 注意事项：
@@ -52,7 +45,7 @@ TODO:
 验证：
 
 ```bash
-# 注意：需要使用实际的 DNS
+# 注意：需要使用实际的域名
 dig home.sample.t9kcloud.cn +short
 ```
 
@@ -76,17 +69,17 @@ dig home.sample.t9kcloud.cn +short
 
 ```bash
 # 验证公钥证书有效期：
-cat server.crt  | openssl x509 -noout -enddate
+cat server.crt | openssl x509 -noout -enddate
 
 # 确认公钥证书对应的域名：
-cat server.crt  | openssl x509 -noout -text \
-  |grep -A 1 -i "Subject Alternative Name"
+cat server.crt | openssl x509 -noout -text \
+  | grep -A 1 -i "Subject Alternative Name"
 
 # 输出公钥证书所有内容：
-cat server.crt  | openssl x509 -noout -text
+cat server.crt | openssl x509 -noout -text
 
 # 确认私钥的 RSA 格式正确：
-cat server.key |  openssl rsa -check
+cat server.key | openssl rsa -check
 ```
 
 ## 创建 K8s 资源
@@ -101,7 +94,7 @@ cat server.key |  openssl rsa -check
 | t9k-syspub     |  存储公共配置            |
 | t9k-monitoring |  监控及告警系统          |
 
-确认以下 namespace 存在，如果不存在则创建：
+确认以下 namespace 是否存在：
 
 ```bash
 kubectl get ns t9k-system
@@ -109,7 +102,7 @@ kubectl get ns t9k-syspub
 kubectl get ns t9k-monitoring
 ```
 
-创建：
+如果不存在则创建：
 
 ```
 for ns in "t9k-system" "t9k-syspub" "t9k-monitoring"; do
@@ -145,9 +138,9 @@ done
 
 | Name | Namespace | Host | 说明 |
 | ----------------- | ------------------ | --------- | -------------------------- |
-| `cert.landing-page` | istio-system       | home.sample.t9kcloud.cn | 平台主入口 |
-| `cert.keycloak`     | t9k-system         | auth.sample.t9kcloud.cn | 安全系统入口 |
-| `cert.lakefs`       | t9k-system         | lakefs.sample.t9kcloud.cn | AI 资产和实验管理服务的 S3 接口地址 |
+| `cert.home` | istio-system       | home.sample.t9kcloud.cn | 平台主入口 |
+| `cert.auth`     | t9k-system         | auth.sample.t9kcloud.cn | 安全系统入口 |
+| `cert.s3`       | t9k-system         | s3.sample.t9kcloud.cn | AI 资产和实验管理服务的 S3 接口地址 |
 
 <aside class="note">
 <div class="title">注意</div>
@@ -159,17 +152,17 @@ done
 如果我们使用多域名证书，可以使用同一份 cert 文件创建这些 secret：
 
 ```bash
-kubectl create secret tls cert.landing-page \
+kubectl create secret tls cert.home \
     --cert='server.crt' \
     --key='server.key' \
     -n istio-system
 
-kubectl create secret tls cert.keycloak \
+kubectl create secret tls cert.auth \
     --cert='server.crt' \
     --key='server.key' \
     -n t9k-system
 
-kubectl create secret tls cert.lakefs \
+kubectl create secret tls cert.s3 \
     --cert='server.crt' \
     --key='server.key' \
     -n t9k-system
@@ -178,52 +171,7 @@ kubectl create secret tls cert.lakefs \
 说明：
 
 1. 如果使用单独的证书，需要在上面的命令中使用不同的文件分别创建 Secret。
-2. 目前模型推理服务的 Ingress (*.ksvc.sample.t9kcloud.cn) 使用 HTTP 协议，不需要配置 Cert/Secret
-
-### Ingress
-
-产品目前使用如下 Ingress：
-
-| Name    | Namespace | 说明                            |
-| ---------------- | ------------------ | ------------------------------- |
-| `t9k.landing-page` | istio-system       | 平台主入口                      |
-| `t9k.keycloak`     | t9k-system         | 安全系统                        |
-| `t9k.lakefs `      | t9k-system         | AI 资产和实验管理服务的 S3 接口 |
-| `t9k.serving`      | istio-system       | 模型推理服务                    |
-
-运行以下命令创建 Ingress `t9k.landing-page`：
-
-```bash
-kubectl create -f - << EOF
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: t9k.landing-page
-  namespace: istio-system
-  annotations:
-    kubernetes.io/ingress.class: nginx
-spec:
-  rules:
-  - host: "home.sample.t9kcloud.cn"
-    http:
-      paths:
-      - backend:
-          service:
-            name: istio-ingressgateway
-            port:
-              number: 80
-        pathType: ImplementationSpecific
-  tls:
-  - hosts:
-    - "home.sample.t9kcloud.cn"
-    secretName: "cert.landing-page"
-EOF
-```
-
-说明：
-
-1. 其他 Ingress 将在后续安装过程中自动创建
-2. `host, hosts` 当使用实际的 DNS
+2. 目前模型推理服务的 Ingress (*.ksvc.sample.t9kcloud.cn) 使用 HTTP 协议，不需要配置 Cert/Secret。
 
 ## 准备配置
 
@@ -239,22 +187,25 @@ EOF
 
 根据前述准备工作， 并参考 `values.yaml` 的注释修改此文件中的相应字段。
 
-## Pre-Pull Image
+## 预先拉取镜像
 
-可选，预先下载 T9k 产品需要的所有镜像。
+可选，预先拉取 T9k 产品需要的所有镜像。
 
-Pre-Pull 需要在所有加入了 K8s 集群的节点上进行。在节点上预先拉取镜像有以下好处：
+预先拉取镜像需要在所有加入了 K8s 集群的节点上进行，有以下好处：
 1. 加快部署速度，减少部署过程中等待 Pod 就绪的时间；
 2. 减少 Pod 因为其依赖项尚未就绪，导致 Pod 出错、重启的风险；
 3. 可以较快地判断已经部署的产品是否正常运行，并及时处理潜在的错误。
 
-从 github 上获取与产品对应的<a target="_blank" rel="noopener noreferrer" href="https://github.com/t9k/ks-clusters/tree/master/tools/offline-t9k/imagelist">镜像列表</a>，拉取列表中的镜像：
+从 github 上获取与产品对应的<a target="_blank" rel="noopener noreferrer" href="https://github.com/t9k/ks-clusters/tree/master/tools/offline-t9k/imagelist">镜像列表</a>，保存到本地，然后运行以下命令拉取列表中的镜像：
 
 ```bash
-for image in $(cat t9k-2024-03-25.list); do
-    docker pull $image
-done
+ansible-playbook ../ks-clusters/t9k-playbooks/22-pre-pull-images.yml \
+  -i inventory/inventory.ini \
+  --become -K \
+  -e path_to_image_list=<PATH>
 ```
+
+其中，`<PATH>` 需要替换为镜像列表文件的路径，可以是绝对路径或者相对于 playbook 文件 `22-pre-pull-images.yml` 的相对路径。
 
 > 如果计划安装的产品尚未生成镜像列表，则需要参考文档 [生成 T9k 产品镜像列表](../appendix/generate-t9k-product-image-list.md)。
 

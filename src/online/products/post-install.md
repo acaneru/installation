@@ -111,7 +111,7 @@ kubectl get node -l beta.kubernetes.io/fluentd-ds-ready="true"
 # 查看具有 control-plane 标签的节点，期望的输出是所有控制平面节点
 kubectl get node -l node-role.kubernetes.io/control-plane
 
-# 查看具有 control-plane 标签的节点，期望的输出是 1-2 个负责控制 ingress 的节点
+# 查看具有 ingress 标签的节点，期望的输出是 1-2 个负责控制 ingress 的节点
 kubectl get node -l node-role.kubernetes.io/ingress
 ```
 
