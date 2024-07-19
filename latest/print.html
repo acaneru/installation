@@ -1671,7 +1671,7 @@ kube-root-ca.crt                      1      225d
 grep t9kpublic ../ks-clusters/additionals/knative/v1.9.0/*
 
 # replace image registry
-sed -i &quot;s|t9kpublic|192.168.101.159:5000/t9kpublic|g&quot; \
+sed -i &quot;s|docker.io/t9kpublic|192.168.101.159:5000/t9kpublic|g&quot; \
     ../ks-clusters/additionals/knative/v1.9.0/*
 </code></pre>
 </aside>
