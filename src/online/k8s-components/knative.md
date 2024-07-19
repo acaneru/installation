@@ -32,7 +32,7 @@ Knative 依赖 K8s 集群、<a target="_blank" rel="noopener noreferrer" href="h
 grep t9kpublic ../ks-clusters/additionals/knative/v1.9.0/*
 
 # replace image registry
-sed -i "s|t9kpublic|192.168.101.159:5000/t9kpublic|g" \
+sed -i "s|docker.io/t9kpublic|192.168.101.159:5000/t9kpublic|g" \
     ../ks-clusters/additionals/knative/v1.9.0/*
 ```
 </aside>
