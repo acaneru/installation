@@ -49,9 +49,9 @@ kubectl apply -f ../ks-clusters/additionals/knative/v1.9.0/net-istio.yaml
 
 ### 修改 config
 
-修改 knative config-domain 来配置 DNS 的 domain suffix。
+修改 knative config-domain 来配置用于推理服务的 domain suffix。
 
-下面的示例会将 domain suffix 设置为 `ksvc.sample.t9kcloud.cn`。
+下面的示例会将 domain suffix 设置为 `ksvc.sample.t9kcloud.cn`：
 
 ```bash
 kubectl patch configmap/config-domain \

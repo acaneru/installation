@@ -89,7 +89,7 @@ kubectl get pod -A -w
 kubectl get pod -A -o wide | grep -Eiv "running|complete"
 ```
 
-查看产品模块的安装信息（helm chart releas），以 t9k-core 为例：
+查看产品模块的安装信息（helm chart release），以 t9k-core 为例：
 
 ```bash
 helm status -n t9k-system t9k-core
