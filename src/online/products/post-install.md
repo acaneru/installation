@@ -13,7 +13,7 @@
 <aside class="note warning">
 <div class="title">注意</div>
 
-下文使用的 `home.sample.t9kcloud.cn` 仅为示例，请使用安装时实际配置的 DNS。
+下文使用的 `home.sample.t9kcloud.cn` 仅为示例，请使用安装时实际配置的域名。
 
 </aside>
 
