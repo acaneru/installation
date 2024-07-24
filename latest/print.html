@@ -1663,27 +1663,27 @@ kube-root-ca.crt                      1      225d
 <li>Kubernetes 版本 v1.28.6，Istio 版本 1.20.6，适用 Knative v1.13.1</li>
 </ul>
 <h2 id="安装-1"><a class="header" href="#安装-1">安装</a></h2>
-<p>下面以安装 Knative v1.9.0 为例。如需安装其他版本，可以选择相应的文件夹进行安装。</p>
+<p>下面以安装 Knative v1.13.1 为例。如需安装其他版本，可以选择相应的文件夹进行安装。</p>
 <aside class="note">
 <div class="title">离线安装</div>
 <p>如需要使用本地镜像仓库（替换 <code>192.168.101.159:5000</code> 为实际的地址）：</p>
 <pre><code class="language-bash"># verify t9kpublic is only used in image name
-grep t9kpublic ../ks-clusters/additionals/knative/v1.9.0/*
+grep t9kpublic ../ks-clusters/additionals/knative/v1.13.1/*
 
 # replace image registry
 sed -i &quot;s|docker.io/t9kpublic|192.168.101.159:5000/t9kpublic|g&quot; \
-    ../ks-clusters/additionals/knative/v1.9.0/*
+    ../ks-clusters/additionals/knative/v1.13.1/*
 </code></pre>
 </aside>
 <p>运行以下命令在 K8s 集群中安装 Knative：</p>
-<pre><code class="language-bash">kubectl apply -f ../ks-clusters/additionals/knative/v1.9.0/serving-crds.yaml
-kubectl apply -f ../ks-clusters/additionals/knative/v1.9.0/serving-core.yaml
-kubectl apply -f ../ks-clusters/additionals/knative/v1.9.0/net-istio.yaml
+<pre><code class="language-bash">kubectl apply -f ../ks-clusters/additionals/knative/v1.13.1/serving-crds.yaml
+kubectl apply -f ../ks-clusters/additionals/knative/v1.13.1/serving-core.yaml
+kubectl apply -f ../ks-clusters/additionals/knative/v1.13.1/net-istio.yaml
 </code></pre>
 <h2 id="安装后配置-1"><a class="header" href="#安装后配置-1">安装后配置</a></h2>
 <h3 id="修改-config"><a class="header" href="#修改-config">修改 config</a></h3>
-<p>修改 knative config-domain 来配置 DNS 的 domain suffix。</p>
-<p>下面的示例会将 domain suffix 设置为 <code>ksvc.sample.t9kcloud.cn</code>。</p>
+<p>修改 knative config-domain 来配置用于推理服务的 domain suffix。</p>
+<p>下面的示例会将 domain suffix 设置为 <code>ksvc.sample.t9kcloud.cn</code>：</p>
 <pre><code class="language-bash">kubectl patch configmap/config-domain \
   --namespace knative-serving \
   --type merge \
@@ -1704,7 +1704,7 @@ kubectl apply -f ../ks-clusters/additionals/knative/v1.9.0/net-istio.yaml
 <li><code>spec.rules[0].host</code> 应该与前述步骤的 domain suffix 一致。</li>
 <li>需要配置 DNS，让 <code>*.ksvc.sample.t9kcloud.cn</code> 能够映射到 ingress 所在的节点的 IP。</li>
 </ol>
-<pre><code class="language-bash">kubectl -n istio-system create -f ../ks-clusters/additionals/knative/v1.9.0/ingress.yaml
+<pre><code class="language-bash">kubectl -n istio-system create -f ../ks-clusters/additionals/knative/v1.13.1/ingress.yaml
 
 # verify it's there
 kubectl -n istio-system get ing/t9k.serving
@@ -1718,14 +1718,12 @@ kubectl -n istio-system get ing/t9k.serving
 activator-5cc89f4c4d-w6hdz               1/1     Running   0          6m44s
 autoscaler-6fb596f4bb-vw4q8              1/1     Running   0          6m44s
 controller-6b5874c54-j5gc4               1/1     Running   0          6m44s
-domain-mapping-5b6c878f85-v7zqs          1/1     Running   0          6m43s
-domainmapping-webhook-59f98dc77b-6rtbp   1/1     Running   0          6m42s
 net-istio-controller-777b6b4d89-j7qg4    1/1     Running   0          6m33s
 net-istio-webhook-78665d59fd-86kxq       1/1     Running   0          6m33s
 webhook-79f8449d8f-8cdc7                 1/1     Running   0          6m40s
 </code></pre>
 <p>创建一个 knative service 进行测试：</p>
-<pre><code class="language-bash">kubectl -n default create -f ../ks-clusters/additionals/knative/v1.9.0/hello-ksvc.yaml
+<pre><code class="language-bash">kubectl -n default create -f ../ks-clusters/additionals/knative/v1.13.1/hello-ksvc.yaml
 </code></pre>
 <p>等待 knative service 就绪：</p>
 <pre><code class="language-bash">kubectl -n default get ksvc
@@ -3699,7 +3697,7 @@ kubectl get pod -A -w
 # 查看 K8s 集群中是否有异常状态的 Pod
 kubectl get pod -A -o wide | grep -Eiv &quot;running|complete&quot;
 </code></pre>
-<p>查看产品模块的安装信息（helm chart releas），以 t9k-core 为例：</p>
+<p>查看产品模块的安装信息（helm chart release），以 t9k-core 为例：</p>
 <pre><code class="language-bash">helm status -n t9k-system t9k-core
 </code></pre>
 <pre><code>NAME: t9k-core
@@ -3747,7 +3745,7 @@ t9k-aistore                     t9k-system      3               2023-11-19 06:37
 <h2 id="管理员登录"><a class="header" href="#管理员登录">管理员登录</a></h2>
 <aside class="note warning">
 <div class="title">注意</div>
-<p>下文使用的 <code>home.sample.t9kcloud.cn</code> 仅为示例，请使用安装时实际配置的 DNS。</p>
+<p>下文使用的 <code>home.sample.t9kcloud.cn</code> 仅为示例，请使用安装时实际配置的域名。</p>
 </aside>
 <p>以 T9k 产品管理员 (t9k-admin) 身份登陆系统，完成初步设置：</p>
 <ol>
