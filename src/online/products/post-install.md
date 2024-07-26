@@ -17,11 +17,7 @@
 
 </aside>
 
-以 T9k 产品管理员 (t9k-admin) 身份登陆系统，完成初步设置：
-
-1. 在浏览器中访问 <https://home.sample.t9kcloud.cn/t9k/landing-page/>；
-2. 点击**集群管理（Cluster Admin）**；
-3. 通过 [安装产品](./install.md) 一节使用的配置文件中设置的 T9k 平台管理员账号密码登录。
+在浏览器中访问集群管理控制台 <https://home.sample.t9kcloud.cn/t9k/cluster-admin/web/>，通过 [安装产品](./install.md) 一节使用的配置文件中设置的 T9k 平台管理员账号密码登录。
 
 点击**用户管理 > 用户**，进入用户列表页面。
 
