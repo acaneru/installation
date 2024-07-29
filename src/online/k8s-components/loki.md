@@ -26,6 +26,16 @@ sed -i -e 's/docker.io/192.168.101.159:5000/' ../ks-clusters/additionals/loki/pr
 ```
 </aside>
 
+### Values 配置
+
+#### 存储
+
+参考 [Loki Values](https://github.com/grafana/loki/blob/v3.0.0/production/helm/loki/values.yaml#L272)，Loki 支持 s3、gcs 等多种日志存储方式，我们一般使用 S3 存储。
+
+在使用 S3 数据库存储时，需要提前创建好 Loki 所需 Bucket：loki-chunks、loki-ruler 和 loki-admin。如果需要修改 Bucket 名称，请修改 `../ks-clusters/additionals/loki/loki.yaml` 中的 `loki.storage.bucketName` 字段。同时，据实填写 `loki.storage.s3` 中的字段。
+
+Loki 支持在未提前创建数据库的情况下部署，Loki 会自动部署 Minio 并在其中创建好对应的 Bucket（参考 `../ks-clusters/additionals/loki/loki-single.yaml` 中的 `minio` 字段）。
+
 ### 多节点集群
 
 多节点 K8s 集群中的安装，选择下列一种方式。
@@ -34,12 +44,12 @@ sed -i -e 's/docker.io/192.168.101.159:5000/' ../ks-clusters/additionals/loki/pr
 
 ```bash
 helm install loki \
-  grafana/loki --version 6.6.4 \
+  oci://tsz.io/t9kcharts/loki --version 6.6.4 \
   -n t9k-monitoring \
   -f ../ks-clusters/additionals/loki/loki.yaml 
 
-helm upgrade promtail \
-  grafana/promtail --version 6.16.2 \
+helm install promtail \
+  oci://tsz.io/t9kcharts/promtail --version 6.16.2 \
   -n t9k-monitoring \
   -f ../ks-clusters/additionals/loki/promtail.yaml
 ```
@@ -52,7 +62,7 @@ helm install loki \
   -n t9k-monitoring \
   -f ../ks-clusters/additionals/loki/loki.yaml 
 
-helm upgrade promtail \
+helm install promtail \
   ../ks-clusters/tools/offline-additionals/charts/promtail-6.16.2.tgz \
   -n t9k-monitoring \
   -f ../ks-clusters/additionals/loki/promtail.yaml
@@ -66,12 +76,12 @@ helm upgrade promtail \
 
 ```bash
 helm install loki \
-  grafana/loki --version 6.6.4 \
+  oci://tsz.io/t9kcharts/loki --version 6.6.4 \
   -n t9k-monitoring \
   -f ../ks-clusters/additionals/loki/loki-single.yaml 
 
-helm upgrade promtail \
-  grafana/promtail --version 6.16.2 \
+helm install promtail \
+  oci://tsz.io/t9kcharts/promtail --version 6.16.2 \
   -n t9k-monitoring \
   -f ../ks-clusters/additionals/loki/promtail.yaml
 ```
@@ -84,7 +94,7 @@ helm install loki \
   -n t9k-monitoring \
   -f ../ks-clusters/additionals/loki/loki-single.yaml 
 
-helm upgrade promtail \
+helm install promtail \
   ../ks-clusters/tools/offline-additionals/charts/promtail-6.16.2.tgz \
   -n t9k-monitoring \
   -f ../ks-clusters/additionals/loki/promtail.yaml
