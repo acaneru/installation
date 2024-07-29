@@ -23,6 +23,7 @@
         * [Knative](online/k8s-components/knative.md)
         * [Metrics Server](online/k8s-components/metrics-server.md)
         * [Elastic Search](online/k8s-components/elastic-search.md)
+        * [Loki](online/k8s-components/loki.md)
         * [监控相关](online/k8s-components/monitoring.md)
         * [Gatekeeper](online/k8s-components/gatekeeper.md)
     * [安装硬件支持](hardware/index.md)
