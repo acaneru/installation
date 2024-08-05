@@ -595,6 +595,17 @@ chrony_client_ip_range:
 <ul>
 <li><code>upstream_dns_servers</code>: 设置集群使用的上游 DNS 服务器，建议与当前环境中的 DNS 配置一致。</li>
 </ul>
+<h3 id="设置代理"><a class="header" href="#设置代理">设置代理</a></h3>
+<p>如果你需要为包管理工具、容器运行时设置代理。</p>
+<p>在 <code>all.yml</code> 中设置如下参数即可：</p>
+<pre><code class="language-yaml">http_proxy: &quot;&lt;proxy-server&gt;&quot;
+https_proxy: &quot;&lt;proxy-server&gt;&quot;
+https_proxy_cert_file: &quot;&quot;
+no_proxy: &quot;127.0.0.0/8,localhost,192.168.0.0/16,...&quot;
+</code></pre>
+<p>如果仅需要为容器运行时设置代理，则增加以下设置：</p>
+<pre><code class="language-yaml">skip_http_proxy_on_os_packages: true
+</code></pre>
 <h3 id="设置-cri"><a class="header" href="#设置-cri">设置 CRI</a></h3>
 <p>使用不同的容器运行时，请参考 <a href="online/./cri.html">CRI 配置</a>。</p>
 <p>如需使用 <a target="_blank" rel="noopener noreferrer" href="https://kubernetes.io/docs/concepts/workloads/pods/user-namespaces/">User Namespaces</a>，请参考 <a href="online/./k8s-userns.html">设置 User Namespace</a>。</p>
