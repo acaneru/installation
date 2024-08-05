@@ -37,6 +37,25 @@
 
 * `upstream_dns_servers`: 设置集群使用的上游 DNS 服务器，建议与当前环境中的 DNS 配置一致。
 
+### 设置代理
+
+如果你需要为包管理工具、容器运行时设置代理。
+
+在 `all.yml` 中设置如下参数即可：
+
+```yaml
+http_proxy: "<proxy-server>"
+https_proxy: "<proxy-server>"
+https_proxy_cert_file: ""
+no_proxy: "127.0.0.0/8,localhost,192.168.0.0/16,..."
+```
+
+如果仅需要为容器运行时设置代理，则增加以下设置：
+
+```yaml
+skip_http_proxy_on_os_packages: true
+```
+
 ### 设置 CRI
 
 使用不同的容器运行时，请参考 [CRI 配置](./cri.md)。
