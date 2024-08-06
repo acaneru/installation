@@ -50,7 +50,12 @@ https_proxy_cert_file: ""
 no_proxy: "127.0.0.0/8,localhost,192.168.0.0/16,..."
 ```
 
-如果仅需要为容器运行时设置代理，则增加以下设置：
+* `http_proxy`：设置 HTTP 代理的 URL，例如 `http://proxy.example.com:8080`。
+* `https_proxy`：设置 HTTPS 代理的 URL，例如 `https://proxy.example.com:8080`。
+* `https_proxy_cert_file`：如果需要自定义 CA 证书来访问代理，请设置证书文件的路径。例如 `/path/to/ca.crt`。
+* `no_proxy`：设置不使用代理的地址列表，地址之间使用逗号分隔。例如 `127.0.0.0/8,localhost,192.168.0.0/16,.example.com`。
+
+如果不需要为包管理工具设置代理，则增加以下设置：
 
 ```yaml
 skip_http_proxy_on_os_packages: true
