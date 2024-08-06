@@ -147,29 +147,43 @@ tmpfs                              1.6G  4.0K  1.6G   1% /run/user/1000
 
 ## 无法拉取 Docker Hub 镜像
 
-使用下面的命令验证 docker 可以从 Docker Hub 拉取镜像：
+使用下面的命令验证容器运行时可以从 Docker Hub 拉取镜像：
 
 ```bash
-docker pull t9kpublic/hello-world
-docker pull hello-world
+# 容器运行时是 Docker
+docker pull docker.io/t9kpublic/hello-world
+
+# 容器运行时不是 Docker
+# 注意 crictl 命令拉取镜像时不会显示进度条，因此需要耐心等待 1-2 分钟
+crictl pull docker.io/t9kpublic/hello-world
 ```
 
-如果节点无法顺利拉取 docker.io 的镜像，可以通过设置 registry-mirrors 来解决。
+如果节点无法顺利拉取 Docker Hub 的镜像，可以通过设置 Registry 镜像站或者设置代理来解决。下面提供具体的设置方法。
 
-Docker Hub 镜像源参考：<https://juejin.cn/post/7165806699461378085>。
+### 未加入 K8s 集群
 
-具体设置可分为如下 2 种情况。
+Kubespray 添加节点的过程会卸载原有的容器运行时，并自动安装规定版本的容器运行时。
 
-<aside class="note">
-<div class="title">注意</div>
+通过修改 Kubespray inventory 的配置，可以使得节点安装的容器运行时进行相应的配置。你可以选择一种方式来设置：
 
-如果使用了其他 container runtime，请参考其对应文档进行设置。
+1. 参考安装 K8s 文档的[设置代理](k8s-install.md#设置代理)，其中说明了如何为容器运行时设置代理。
+1. 参考 [CRI 配置](cri.md)文档，找到你选择的容器运行时，在“可选操作”中说明了如何为容器运行时“设置 Registry 镜像站”。
 
-</aside>
 
-### 已加入 K8s 集群
+### 已加入 K8s 集群 - 设置 Registry 镜像站
 
-修改 docker 的配置文件：
+本章说明如何为一个已经加入 K8s 集群的节点设置容器运行时的代理。
+
+因为修改设置需要重启节点的容器运行时服务，所以建议在开始操作前，先驱逐节点上的工作负载：
+
+```bash
+# 在配置了 kubectl 的节点执行
+kubectl drain <node> --ignore-daemonsets  --delete-emptydir-data --force
+```
+
+#### Docker 容器运行时
+
+修改 Docker 的配置文件：
 
 ```bash
 sudo vim /etc/systemd/system/docker.service.d/docker-options.conf
@@ -186,12 +200,12 @@ diff -u docker-options.old.conf docker-options.new.conf
  --exec-opt native.cgroupdriver=systemd \
   \
 - \
-+--registry-mirror=https://dockerproxy.com/ --registry-mirror=https://hub-mirror.c.163.com/ --registry-mirror=https://mirror.baidubce.com/ --registry-mirror=https://ccr.ccs.tencentyun.com/  \
++--registry-mirror=https://registry.dockermirror.com/ \
  --data-root=/var/lib/docker \
  --log-opt max-size=50m --log-opt max-file=5"
 ```
 
-加载配置，并重启 docker：
+加载配置，并重启 Docker：
 
 ```bash
 sudo systemctl daemon-reload
@@ -211,17 +225,147 @@ sudo docker info
 Server:
 …
  Registry Mirrors:
-  https://dockerproxy.com/
-  https://hub-mirror.c.163.com/
-  https://mirror.baidubce.com/
-  https://ccr.ccs.tencentyun.com/
+  https://registry.dockermirror.com/
 …
 ```
 
-### 未加入 K8s 集群
+最后，去掉节点的 taint，允许工作负载被调度到节点上：
 
-Kubespray 添加节点的过程会安装 Docker，而移除节点的过程会卸载 Docker。我们可以修改 kubespray inventory 的配置来直接完成配置，具体见 [ansible vars](../appendix/ansible-vars.md#group_varsalldockeryml)。
+```bash
+# 在配置了 kubectl 的节点执行
+kubectl uncordon <node>
+```
 
+#### containerd 容器运行时
+
+首先确认该文件夹存在，如果不存在则进行创建：
+
+```bash
+sudo mkdir -p /etc/containerd/certs.d/docker.io
+```
+
+编辑配置文件：
+
+```bash
+sudo vim /etc/containerd/certs.d/docker.io/hosts.toml
+```
+
+在配置文件中加入以下设置：
+
+```bash
+server = "https://docker.io"
+[host."https://registry.dockermirror.com"]
+  capabilities = ["pull","resolve"]
+  skip_verify = false
+  override_path = false
+```
+
+重启容器运行时：
+
+```bash
+sudo systemctl restart containerd
+```
+
+验证：
+
+```bash
+# 注意 crictl 命令拉取镜像时不会显示进度条，因此需要耐心等待 1-2 分钟
+crictl pull docker.io/t9kpublic/hello-world
+```
+
+最后，去掉节点的 taint，允许工作负载被调度到节点上：
+
+```bash
+# 在配置了 kubectl 的节点执行
+kubectl uncordon <node>
+```
+
+#### CRI-O 容器运行时
+
+编辑 CRI-O 的配置文件：
+
+```bash
+vim /etc/containers/registries.conf.d/10-docker.io.conf
+```
+
+加入 Registry 镜像站的设置：
+
+```bash
+[[registry]]
+prefix = "docker.io"
+insecure = false
+blocked = false
+location = "docker.io"
+
+[[registry.mirror]]
+location = "registry.dockermirror.com"
+insecure = false
+```
+
+重启容器运行时：
+
+```bash
+sudo systemctl restart crio
+```
+
+验证：
+
+```bash
+# 注意 crictl 命令拉取镜像时不会显示进度条，因此需要耐心等待 1-2 分钟
+crictl pull docker.io/t9kpublic/hello-world
+```
+
+最后，去掉节点的 taint，允许工作负载被调度到节点上：
+
+```bash
+# 在配置了 kubectl 的节点执行
+kubectl uncordon <node>
+```
+
+
+### 已加入 K8s 集群 - 设置代理
+
+本章说明如何为一个已经加入 K8s 集群的节点设置容器运行时的代理。
+
+由于需要重启节点的容器运行时服务，建议在开始操作前，先驱逐节点上的工作负载：
+
+```bash
+# 在配置了 kubectl 的节点执行
+kubectl drain <node> --ignore-daemonsets  --delete-emptydir-data --force
+```
+
+准备一个保存了代理信息的文件，文件内容为：
+
+```bash
+[Service]
+Environment="HTTP_PROXY=<proxy-server>" "HTTPS_PROXY=<proxy-server>" "NO_PROXY=localhost,<no-proxy-IP>"
+```
+
+将该文件存放到指定路径下：
+
+* Docker 容器运行时：`/etc/systemd/system/docker.service.d/http-proxy.conf`
+* containerd 容器运行时：`/etc/systemd/system/containerd.service.d/http-proxy.conf`
+* CRI-O 容器运行时：`/etc/systemd/system/crio.service.d/http-proxy.conf`
+
+<aside class="note">
+<div class="title">注意</div>
+
+如果指定路径中不存在该文件，直接创建即可；如果指定文件中已经存在配置文件，则需要在原配置文件的基础上添加上述文件内容。
+
+</aside>
+
+然后重启容器运行时，这里以 Docker 为例，其他容器运行时同理：
+
+```bash
+systemctl restart docker
+```
+
+最后，去掉节点的 taint，允许工作负载被调度到节点上：
+
+```bash
+# 在配置了 kubectl 的节点执行
+kubectl uncordon <node>
+```
 
 ## 升级 linux kernel 后无法找到网卡
 
