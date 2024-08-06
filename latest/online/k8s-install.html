@@ -218,7 +218,13 @@ https_proxy: &quot;&lt;proxy-server&gt;&quot;
 https_proxy_cert_file: &quot;&quot;
 no_proxy: &quot;127.0.0.0/8,localhost,192.168.0.0/16,...&quot;
 </code></pre>
-<p>如果仅需要为容器运行时设置代理，则增加以下设置：</p>
+<ul>
+<li><code>http_proxy</code>：设置 HTTP 代理的 URL，例如 <code>http://proxy.example.com:8080</code>。</li>
+<li><code>https_proxy</code>：设置 HTTPS 代理的 URL，例如 <code>https://proxy.example.com:8080</code>。</li>
+<li><code>https_proxy_cert_file</code>：如果需要自定义 CA 证书来访问代理，请设置证书文件的路径。例如 <code>/path/to/ca.crt</code>。</li>
+<li><code>no_proxy</code>：设置不使用代理的地址列表，地址之间使用逗号分隔。例如 <code>127.0.0.0/8,localhost,192.168.0.0/16,.example.com</code>。</li>
+</ul>
+<p>如果不需要为包管理工具设置代理，则增加以下设置：</p>
 <pre><code class="language-yaml">skip_http_proxy_on_os_packages: true
 </code></pre>
 <h3 id="设置-cri"><a class="header" href="#设置-cri">设置 CRI</a></h3>
