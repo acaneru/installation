@@ -177,21 +177,24 @@ kubectl create secret tls cert.s3 \
 
 ### 设置 values.yaml
 
+从 github 上获取与产品版本对应的 <a target="_blank" rel="noopener noreferrer" href="https://github.com/t9k/ks-clusters/tree/master/values">示例 values.yaml 文件</a>，其中名称带有 “uc” 的适用于 User Console 安装模式，其他的适用于传统安装模式。
+
 <aside class="note">
 <div class="title">注意</div>
 
-1. <https://github.com/t9k/ks-clusters/tree/master/values> 提供示例 values.yaml
 1. 带有注释 MUST 的设置必须检查。
+1. 如需自定义安装安装功能模块（例如不安装集群管理的部分功能），需要参考[集群管理安装配置](../../appendix/cluster-admin-installation-configuration.md)进一步调整 `values.yaml` 的设置。
 
 </aside>
 
-根据前述准备工作， 并参考 `values.yaml` 的注释修改此文件中的相应字段。
+参考 `values.yaml` 的注释修改此文件中的相应字段。
 
 ## 预先拉取镜像
 
 可选，预先拉取 T9k 产品需要的所有镜像。
 
 预先拉取镜像需要在所有加入了 K8s 集群的节点上进行，有以下好处：
+
 1. 加快部署速度，减少部署过程中等待 Pod 就绪的时间；
 2. 减少 Pod 因为其依赖项尚未就绪，导致 Pod 出错、重启的风险；
 3. 可以较快地判断已经部署的产品是否正常运行，并及时处理潜在的错误。
@@ -211,7 +214,7 @@ ansible-playbook ../ks-clusters/t9k-playbooks/22-pre-pull-images.yml \
 
 ## 下一步
 
-完成本文档的准备工作后，可进行实际的 [产品安装](./install.md)。
+完成本文档的准备工作后，可进行实际的 [产品安装](./install-uc-mode.md)。
 
 ## 参考
 
