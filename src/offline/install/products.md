@@ -160,7 +160,7 @@ EOF
 
 ### 安装产品
 
-参考 [安装产品](../../online/products/install.md)。
+参考 [安装产品](../../online/products/install-uc-mode.md)。
 
 <aside class="note">
 <div class="title">注意</div>
