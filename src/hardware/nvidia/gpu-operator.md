@@ -105,7 +105,9 @@ GPU Operator 会用到许多镜像，你可以通过命令行参数指定这些�
 ansible-playbook ../ks-clusters/t9k-playbooks/3-install-gpu-operator.yml \
     -i inventory/inventory.ini \
     --become -K \
-    -e nvidia_gpu_operator_image_registry="t9kpublic" \
+    -e nvidia_gpu_operator_charts="oci://tsz.io/t9kcharts/gpu-operator"
+    -e nvidia_gpu_operator_image_registry="docker.io/t9kpublic" \
+    -e nvidia_node_feature_discovery_repo="docker.io/t9kpublic/node-feature-discovery" \
     -e nvidia_gpu_operator_version="v24.3.0" \
     -e nvidia_node_feature_discovery_tag="v0.15.4" \
     -e device_plugin_version="v0.15.0" \
@@ -113,6 +115,21 @@ ansible-playbook ../ks-clusters/t9k-playbooks/3-install-gpu-operator.yml \
 ```
 
 这个 Playbook 执行的任务包括 [helm template](#helm-template)，[安装 GPU Operator](#安装-1)，以及[配置 Prometheus](#配置-prometheus)。
+
+<aside class="note">
+<div class="title">离线安装</div>
+
+修改命令行参数，可以基于本地 Helm Chart 和镜像仓库来安装 GPU Operator：
+
+```bash
+ansible-playbook ../ks-clusters/t9k-playbooks/3-install-gpu-operator.yml \
+    -i inventory/inventory.ini \
+    --become -K \
+    -e nvidia_gpu_operator_charts="<path/to/helm-chart>"
+    -e nvidia_gpu_operator_image_registry="<registry>" \
+    -e nvidia_node_feature_discovery_repo="<registry>/node-feature-discovery"
+```
+</aside>
 
 ## 手动安装
 
