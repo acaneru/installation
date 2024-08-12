@@ -178,8 +178,12 @@
                     <main>
                         <div class="sidetoc"><nav class="pagetoc"></nav></div>
                         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
-<h1 id="elastic-search"><a class="header" href="#elastic-search">Elastic Search</a></h1>
+<h1 id="可选-elastic-search"><a class="header" href="#可选-elastic-search">[可选] Elastic Search</a></h1>
 <p>如果使用 Elastic Search 保存集群日志，则需要安装此组件。</p>
+<aside class="note">
+<div class="title">注意</div>
+<p>使用 Elastic Search 保存集群日志的方式已经过时，请安装并使用 <a href="./loki.html">Loki</a>。</p>
+</aside>
 <h2 id="目的"><a class="header" href="#目的">目的</a></h2>
 <p>在 namespace <code>t9k-monitoring</code> 中安装 Elastic Search 以存储集群日志。</p>
 <h2 id="安装"><a class="header" href="#安装">安装</a></h2>
