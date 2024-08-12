@@ -1,6 +1,14 @@
-# Elastic Search
+# [可选] Elastic Search
 
 如果使用 Elastic Search 保存集群日志，则需要安装此组件。
+
+
+<aside class="note">
+<div class="title">注意</div>
+
+使用 Elastic Search 保存集群日志的方式已经过时，请安装并使用 [Loki](./loki.md)。
+
+</aside>
 
 ## 目的
 

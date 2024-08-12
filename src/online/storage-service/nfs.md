@@ -104,15 +104,9 @@ ansible-playbook ../ks-clusters/t9k-playbooks/10-install-nfs.yml \
 
 ## 验证
 
-<<<<<<< HEAD
 安装过程的最后步骤包含了使用此 NFS 的测试案例，详情见上一小节。
 
 还可以运行如下步骤，手工验证安装的 pacakges 和服务。
-=======
-安装过程的最后步骤包含了使用次 NFS 的测试案例，详情见上一节。
-
-还可以安装如下步骤，手工验证安装的 packages 和服务。
->>>>>>> 60be6c4 (Add some figures and improve the languages)
 
 ### 检查 Package
 
