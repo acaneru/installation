@@ -128,6 +128,10 @@ ansible-playbook ../ks-clusters/t9k-playbooks/3-install-gpu-operator.yml \
     -e nvidia_gpu_operator_charts="<path/to/helm-chart>"
     -e nvidia_gpu_operator_image_registry="<registry>" \
     -e nvidia_node_feature_discovery_repo="<registry>/node-feature-discovery"
+    -e nvidia_gpu_operator_version="v24.3.0" \
+    -e nvidia_node_feature_discovery_tag="v0.15.4" \
+    -e device_plugin_version="v0.15.0" \
+    -e enable_install_gpu_driver=false
 ```
 </aside>
 
