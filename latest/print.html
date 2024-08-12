@@ -2286,13 +2286,30 @@ kubectl -n t9k-system logs deploy/gatekeeper-controller-manager --tail=50
 <pre><code class="language-bash">ansible-playbook ../ks-clusters/t9k-playbooks/3-install-gpu-operator.yml \
     -i inventory/inventory.ini \
     --become -K \
-    -e nvidia_gpu_operator_image_registry=&quot;t9kpublic&quot; \
+    -e nvidia_gpu_operator_charts=&quot;oci://tsz.io/t9kcharts/gpu-operator&quot;
+    -e nvidia_gpu_operator_image_registry=&quot;docker.io/t9kpublic&quot; \
+    -e nvidia_node_feature_discovery_repo=&quot;docker.io/t9kpublic/node-feature-discovery&quot; \
     -e nvidia_gpu_operator_version=&quot;v24.3.0&quot; \
     -e nvidia_node_feature_discovery_tag=&quot;v0.15.4&quot; \
     -e device_plugin_version=&quot;v0.15.0&quot; \
     -e enable_install_gpu_driver=false
 </code></pre>
 <p>这个 Playbook 执行的任务包括 <a href="hardware/nvidia/gpu-operator.html#helm-template">helm template</a>，<a href="hardware/nvidia/gpu-operator.html#%E5%AE%89%E8%A3%85-1">安装 GPU Operator</a>，以及<a href="hardware/nvidia/gpu-operator.html#%E9%85%8D%E7%BD%AE-prometheus">配置 Prometheus</a>。</p>
+<aside class="note">
+<div class="title">离线安装</div>
+<p>修改命令行参数，可以基于本地 Helm Chart 和镜像仓库来安装 GPU Operator：</p>
+<pre><code class="language-bash">ansible-playbook ../ks-clusters/t9k-playbooks/3-install-gpu-operator.yml \
+    -i inventory/inventory.ini \
+    --become -K \
+    -e nvidia_gpu_operator_charts=&quot;&lt;path/to/helm-chart&gt;&quot;
+    -e nvidia_gpu_operator_image_registry=&quot;&lt;registry&gt;&quot; \
+    -e nvidia_node_feature_discovery_repo=&quot;&lt;registry&gt;/node-feature-discovery&quot;
+    -e nvidia_gpu_operator_version=&quot;v24.3.0&quot; \
+    -e nvidia_node_feature_discovery_tag=&quot;v0.15.4&quot; \
+    -e device_plugin_version=&quot;v0.15.0&quot; \
+    -e enable_install_gpu_driver=false
+</code></pre>
+</aside>
 <h2 id="手动安装"><a class="header" href="#手动安装">手动安装</a></h2>
 <h3 id="可选-nvidia-驱动"><a class="header" href="#可选-nvidia-驱动">[可选] NVIDIA 驱动</a></h3>
 <p>你可以选择在节点上手动安装 NVIDIA 驱动，然后再安装 GPU Operator。在下面的演示中，安装的驱动版本是 <code>nvidia-driver-525-server</code>，你可以根据系统兼容性、GPU 硬件兼容性自行选择驱动版本。</p>
