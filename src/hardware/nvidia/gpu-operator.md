@@ -726,50 +726,6 @@ kubectl label nodes $NODE nvidia.com/gpu.deploy.operands=false
 
 参考：<https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/latest/getting-started.html#operands>
 
-### 配置 Prometheus
-
-GPU Operator 默认会在集群内部署 dcgm exporter，你需要创建 CRD `ServiceMonitor ` 示例来配置 Prometheus 收集 dcgm exporter 提供的 metrics 数据。
-
-nvidia dcgm exporter 的 service 如下所示：
-
-```bash
-kubectl -n gpu-operator get svc nvidia-dcgm-exporter  -o yaml
-```
-
-<details><summary><code class="hljs">svc-nvidia-dcgm-exporter.yaml</code></summary>
-
-```yaml
-{{#include ../../assets/online/nvidia-gpu-operator/svc-nvidia-dcgm-exporter.yaml}}
-```
-
-</details>
-
-创建 ServiceMonitor ：
-
-```bash
-kubectl -n t9k-monitoring create -f - << EOF
-apiVersion: monitoring.coreos.com/v1
-kind: ServiceMonitor
-metadata:
-  labels:
-    tensorstack.dev/default-config: "true"
-    tensorstack.dev/metrics-collected-by: t9k-monitoring
-  name: nvidia-dcgm-exporter
-  namespace: t9k-monitoring
-spec:
-  endpoints:
-  - interval: 30s
-    port: gpu-metrics
-  jobLabel: app
-  namespaceSelector:
-    matchNames:
-    - gpu-operator
-  selector:
-    matchLabels:
-      app: nvidia-dcgm-exporter
-EOF
-```
-
 ## 附录
 
 ### Disable GSP

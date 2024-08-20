@@ -86,10 +86,53 @@ cAdvisor 服务的安装步骤：
     ```bash
     kubectl apply -n kube-system -f ../ks-clusters/additionals/monitoring/cadvisor.yaml
     ```
+### 监控 NVIDIA GPU Operator
+
+运行下列命令创建 ServiceMonitor，配置 Prometheus 收集 NVIDIA DCGM Exporter 的 metrics 数据：
+
+```bash
+kubectl -n t9k-monitoring create -f - << EOF
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    tensorstack.dev/default-config: "true"
+    tensorstack.dev/metrics-collected-by: t9k-monitoring
+  name: nvidia-dcgm-exporter
+  namespace: t9k-monitoring
+spec:
+  endpoints:
+  - interval: 30s
+    port: gpu-metrics
+  jobLabel: app
+  namespaceSelector:
+    matchNames:
+    - gpu-operator
+  selector:
+    matchLabels:
+      app: nvidia-dcgm-exporter
+EOF
+```
+
+NVIDIA GPU Operator 部署的 DCGM Exporter 的 service YAML 如下所示：
+
+```bash
+kubectl -n gpu-operator get svc nvidia-dcgm-exporter  -o yaml
+```
+
+<details><summary><code class="hljs">svc-nvidia-dcgm-exporter.yaml</code></summary>
+
+```yaml
+{{#include ../../assets/online/nvidia-gpu-operator/svc-nvidia-dcgm-exporter.yaml}}
+```
+
+</details>
 
 ### 告警通知
 
-参考 [管理员手册 > 告警通知](../../../monitoring-and-log-system/monitoring-system.md#告警通知) 来配置系统，告警信息可以通过邮件、企业微信的形式发送给运维人员。
+配置告警通知，可以让 T9k 系统将告警信息通过邮件、企业微信的形式发送给运维人员。
+
+参考 `管理员手册 > 5.1.2. 系统配置 > 告警通知`。
 
 ## Logging 系统
 
@@ -135,4 +178,4 @@ Kubernetes 底层可以使用不同的容器运行时。不同的运行时，存
 
 ## 参考
 
-<https://prometheus-operator.dev/docs/operator/api/#monitoring.coreos.com/v1alpha1.AlertmanagerConfig>
+<https://prometheus-operator.dev/docs/api-reference/api/#monitoring.coreos.com/v1alpha1.AlertmanagerConfig>
