@@ -2860,70 +2860,6 @@ spec:
 <pre><code class="language-bash">kubectl label nodes $NODE nvidia.com/gpu.deploy.operands=false
 </code></pre>
 <p>参考：<a href="https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/latest/getting-started.html#operands">https://docs.nvidia.com/datacenter/cloud-native/gpu-operator/latest/getting-started.html#operands</a></p>
-<h3 id="配置-prometheus"><a class="header" href="#配置-prometheus">配置 Prometheus</a></h3>
-<p>GPU Operator 默认会在集群内部署 dcgm exporter，你需要创建 CRD <code>ServiceMonitor </code> 示例来配置 Prometheus 收集 dcgm exporter 提供的 metrics 数据。</p>
-<p>nvidia dcgm exporter 的 service 如下所示：</p>
-<pre><code class="language-bash">kubectl -n gpu-operator get svc nvidia-dcgm-exporter  -o yaml
-</code></pre>
-<details><summary><code class="hljs">svc-nvidia-dcgm-exporter.yaml</code></summary>
-<pre><code class="language-yaml">apiVersion: v1
-kind: Service
-metadata:
-  annotations:
-    prometheus.io/scrape: &quot;true&quot;
-  labels:
-    app: nvidia-dcgm-exporter
-  name: nvidia-dcgm-exporter
-  namespace: gpu-operator
-  ownerReferences:
-  - apiVersion: nvidia.com/v1
-    blockOwnerDeletion: true
-    controller: true
-    kind: ClusterPolicy
-    name: cluster-policy
-    uid: aa21a324-8efc-43c9-b1fc-6e7b5e0869fd
-spec:
-  clusterIP: 10.233.51.234
-  clusterIPs:
-  - 10.233.51.234
-  internalTrafficPolicy: Cluster
-  ipFamilies:
-  - IPv4
-  ipFamilyPolicy: SingleStack
-  ports:
-  - name: gpu-metrics
-    port: 9400
-    protocol: TCP
-    targetPort: 9400
-  selector:
-    app: nvidia-dcgm-exporter
-  sessionAffinity: None
-  type: ClusterIP
-</code></pre>
-</details>
-<p>创建 ServiceMonitor ：</p>
-<pre><code class="language-bash">kubectl -n t9k-monitoring create -f - &lt;&lt; EOF
-apiVersion: monitoring.coreos.com/v1
-kind: ServiceMonitor
-metadata:
-  labels:
-    tensorstack.dev/default-config: &quot;true&quot;
-    tensorstack.dev/metrics-collected-by: t9k-monitoring
-  name: nvidia-dcgm-exporter
-  namespace: t9k-monitoring
-spec:
-  endpoints:
-  - interval: 30s
-    port: gpu-metrics
-  jobLabel: app
-  namespaceSelector:
-    matchNames:
-    - gpu-operator
-  selector:
-    matchLabels:
-      app: nvidia-dcgm-exporter
-EOF
-</code></pre>
 <h2 id="附录"><a class="header" href="#附录">附录</a></h2>
 <h3 id="disable-gsp"><a class="header" href="#disable-gsp">Disable GSP</a></h3>
 <p>在 NVIDIA Driver 510.x.x 版本之后，会有一个 Bug。当 Driver 产生 &quot;Timeout waiting for RPC from GSP!&quot; 错误时，通过 Disable GSP 可能解决这个错误。</p>
@@ -4415,8 +4351,72 @@ kubectl -n t9k-monitoring get servicemonitor kubelet \
 </code></pre>
 </li>
 </ol>
+<h3 id="监控-nvidia-gpu-operator"><a class="header" href="#监控-nvidia-gpu-operator">监控 NVIDIA GPU Operator</a></h3>
+<p>运行下列命令创建 ServiceMonitor，配置 Prometheus 收集 NVIDIA DCGM Exporter 的 metrics 数据：</p>
+<pre><code class="language-bash">kubectl -n t9k-monitoring create -f - &lt;&lt; EOF
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    tensorstack.dev/default-config: &quot;true&quot;
+    tensorstack.dev/metrics-collected-by: t9k-monitoring
+  name: nvidia-dcgm-exporter
+  namespace: t9k-monitoring
+spec:
+  endpoints:
+  - interval: 30s
+    port: gpu-metrics
+  jobLabel: app
+  namespaceSelector:
+    matchNames:
+    - gpu-operator
+  selector:
+    matchLabels:
+      app: nvidia-dcgm-exporter
+EOF
+</code></pre>
+<p>NVIDIA GPU Operator 部署的 DCGM Exporter 的 service YAML 如下所示：</p>
+<pre><code class="language-bash">kubectl -n gpu-operator get svc nvidia-dcgm-exporter  -o yaml
+</code></pre>
+<details><summary><code class="hljs">svc-nvidia-dcgm-exporter.yaml</code></summary>
+<pre><code class="language-yaml">apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    prometheus.io/scrape: &quot;true&quot;
+  labels:
+    app: nvidia-dcgm-exporter
+  name: nvidia-dcgm-exporter
+  namespace: gpu-operator
+  ownerReferences:
+  - apiVersion: nvidia.com/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ClusterPolicy
+    name: cluster-policy
+    uid: aa21a324-8efc-43c9-b1fc-6e7b5e0869fd
+spec:
+  clusterIP: 10.233.51.234
+  clusterIPs:
+  - 10.233.51.234
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+  - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+  - name: gpu-metrics
+    port: 9400
+    protocol: TCP
+    targetPort: 9400
+  selector:
+    app: nvidia-dcgm-exporter
+  sessionAffinity: None
+  type: ClusterIP
+</code></pre>
+</details>
 <h3 id="告警通知"><a class="header" href="#告警通知">告警通知</a></h3>
-<p>参考 <a href="online/products/../../../monitoring-and-log-system/monitoring-system.html#%E5%91%8A%E8%AD%A6%E9%80%9A%E7%9F%A5">管理员手册 &gt; 告警通知</a> 来配置系统，告警信息可以通过邮件、企业微信的形式发送给运维人员。</p>
+<p>配置告警通知，可以让 T9k 系统将告警信息通过邮件、企业微信的形式发送给运维人员。</p>
+<p>参考 <code>管理员手册 &gt; 5.1.2. 系统配置 &gt; 告警通知</code>。</p>
 <h2 id="logging-系统"><a class="header" href="#logging-系统">Logging 系统</a></h2>
 <h3 id="节点-label"><a class="header" href="#节点-label">节点 Label</a></h3>
 <p>检查节点的以下 label：</p>
@@ -4446,7 +4446,7 @@ kubectl get node -l node-role.kubernetes.io/ingress
 <p>运行<a target="_blank" rel="noopener noreferrer" href="https://t9k.github.io/user-manuals/latest/get-started/index.html">用户手册 &gt; 快速入门的例子</a>，检验产品的功能。</p>
 <p>执行 <a href="online/products/./post-install-optional.html">安装后可选配置</a>。</p>
 <h2 id="参考-26"><a class="header" href="#参考-26">参考</a></h2>
-<p><a href="https://prometheus-operator.dev/docs/operator/api/#monitoring.coreos.com/v1alpha1.AlertmanagerConfig">https://prometheus-operator.dev/docs/operator/api/#monitoring.coreos.com/v1alpha1.AlertmanagerConfig</a></p>
+<p><a href="https://prometheus-operator.dev/docs/api-reference/api/#monitoring.coreos.com/v1alpha1.AlertmanagerConfig">https://prometheus-operator.dev/docs/api-reference/api/#monitoring.coreos.com/v1alpha1.AlertmanagerConfig</a></p>
 <div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
 <h1 id="安装后可选配置"><a class="header" href="#安装后可选配置">安装后可选配置</a></h1>
 <h2 id="目的-14"><a class="header" href="#目的-14">目的</a></h2>
