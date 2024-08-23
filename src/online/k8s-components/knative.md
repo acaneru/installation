@@ -15,6 +15,7 @@ Knative 依赖 K8s 集群、<a target="_blank" rel="noopener noreferrer" href="h
 * Kubernetes 版本 v1.22.0，Istio 版本 1.15.2，适用 Knative v1.7.1
 * Kubernetes 版本 v1.25.9，Istio 版本 1.15.2，适用 Knative v1.9.0
 * Kubernetes 版本 v1.28.6，Istio 版本 1.20.6，适用 Knative v1.13.1
+* Kubernetes 版本 v1.30.4，Istio 版本 1.23.0，适用 Knative v1.15.1
 
 
 
