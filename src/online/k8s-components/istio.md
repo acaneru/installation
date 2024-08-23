@@ -11,6 +11,7 @@ T9k 产品需要使用 Istio 的 routing API (e.g. Gateway, VirtualService) 以�
 
 * Kubernetes v1.22 到 v1.25，安装 Istio 1.15.2。
 * Kubernetes v1.26 到 v1.28，安装 Istio 1.20.6。
+* Kubernetes v1.29 到 v1.30，安装 Istio 1.23.0。
 
 ### 下载 istio
 
