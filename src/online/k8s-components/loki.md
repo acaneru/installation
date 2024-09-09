@@ -36,6 +36,89 @@ sed -i -e 's/docker.io/192.168.101.159:5000/' ../ks-clusters/additionals/loki/pr
 
 Loki 支持在未提前创建数据库的情况下部署，Loki 会自动部署 Minio 并在其中创建好对应的 Bucket（参考 `../ks-clusters/additionals/loki/loki-single.yaml` 中的 `minio` 字段）。
 
+#### T9k 审计日志
+
+如果想启用 [T9k 审计日志](../products/pre-install/t9k-monitoring.md#启用-t9k-审计日志)，请确保 `../ks-clusters/additionals/loki/promtail.yaml` 文件的 `config.snippets.scrapeConfigs` 字段中包含下列内容：
+
+```yaml
+      # ----------------------------------------------------
+      # Collect auditing logs.
+      # ----------------------------------------------------
+      - job_name: t9k-auditing-logs
+        static_configs:
+          - targets:
+              - localhost
+            labels:
+              __path__: /var/log/kubernetes/audit/*log       
+        pipeline_stages:
+          - json:
+              expressions:
+                object_resources: objectRef.resource
+                requestURI: requestURI
+          - drop:
+              source: requestURI
+              expression: ".*dryRun=.*"
+          - labels:
+              object_resources:
+          - match:
+              selector: '{object_resources="proxyoperations"}'
+              stages:
+                - json:
+                    expressions:
+                      requestObject: requestObject
+                      spec: requestObject.spec
+                      verb: requestObject.spec.verb
+                      involvedObject: requestObject.spec.involvedObject
+                      timestamp: requestReceivedTimestamp
+                - labels:
+                    involvedObject:
+                    verb:
+                - static_labels:
+                    type: t9k_operations
+                    level: info
+                - timestamp:
+                    source: timestamp
+                    format: RFC3339 
+                - output:
+                    source: spec
+          - match:
+              selector: '{object_resources!="proxyoperations"}'
+              stages:
+                - json:
+                    expressions:
+                      verb: verb
+                      object_apiGroup: objectRef.apiGroup
+                      object_resources: objectRef.resource
+                      object_namespace: objectRef.namespace
+                      response_code: responseStatus.code
+                      timestamp: requestReceivedTimestamp
+                - labels:
+                    object_namespace:
+                    object_apiGroup:
+                    object_resources:
+                    response_code:
+                    verb:
+                - static_labels:
+                    type: k8s_objects
+                - timestamp:
+                    source: timestamp
+                    format: RFC3339
+                - match:
+                    selector: '{response_code=~"1.+|2.+|3.+"}'
+                    stages:
+                      - static_labels:
+                          level: info
+                - match:
+                    selector: '{response_code!~"1.+|2.+|3.+"}'
+                    stages:
+                      - static_labels:
+                          level: warning
+                - labeldrop:
+                    - response_code
+          - tenant:
+              value: t9k-auditing-logs
+```
+
 ### 多节点集群
 
 多节点 K8s 集群中的安装，选择下列一种方式。

@@ -57,9 +57,12 @@
 7. AutotuneExperiment：依赖 AutotuneExperiment 的集群管理组件有
     1. Cluster Admin Web
         1. 工作负载->资源状态->AutotuneExperiment
-8. 集群预先安装 elasticserach：
+8. 集群预先安装 elasticserach：依赖 elasticserach 的集群管理组件有
     1. Cluster Admin Web
         1. 监控与报警->其他工具->Kibana
+9. T9k 审计日志：依赖 T9k 审计日志的集群管理组件有
+    1. Cluster Admin Web
+        1. 审计日志
 
 ## Values.yaml
 
@@ -76,9 +79,10 @@ Duration Keeper 组件相关的参数：
 1. options.durationKeeper：值类型 bool。设为 false 时，系统不会安装 Duration Keeper
 
 控制 Cluster Admin Web 是否显示 UI 组件的参数：
-1. 参数的键是 global.t9k.clusterAdminWeb.uiComponentDisplay.<ui-component-name>
+1. 参数的键是 `global.t9k.clusterAdminWeb.uiComponentDisplay.<ui-component-name>`
 2. 值类型是 bool，表明是否显示这个 UI 组件
-3. <ui-component-name> 及其对应的 ui 组件如下：
+3. `<ui-component-name>` 及其对应的 ui 组件如下：
+    1. auditing: 审计日志
     1. overviewWorkloadT9kJobs: 总览->工作负载章节->展示 Job 数量
     2. t9kSchedulerWorkloadListFilterButton: 所有页面->工作负载列表->队列/PodGroup 筛选按钮
     3. resourceManagementT9kScheduler: 资源管理->调度
