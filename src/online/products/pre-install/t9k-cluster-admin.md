@@ -1,6 +1,6 @@
-# 配置 T9k Monitoring
+# 配置 t9k-cluster-admin
 
-在安装产品模块 T9k Monitoring 之前，请根据你所需要的功能来配置 K8s 集群和 T9k 产品。
+在安装产品模块 t9k-cluster-admin 之前，请根据你所需要的功能来配置 K8s 集群和 T9k 产品。
 
 ## T9k 审计日志
 
@@ -22,11 +22,11 @@ T9k 审计日志分为下列两种类型：
 
 #### values.yaml
 
-确保 t9k-monitoring 使用的 values.yaml 设置了下列字段：
+确保 t9k-cluster-admin 使用的 values.yaml 设置了下列字段：
 
 ```yaml
 options:
-  t9kUseralertOperator:
+  proxyOperationCtl:
     enabled: true
 ```
 
@@ -44,13 +44,13 @@ options:
 
 #### values.yaml
 
-##### t9k-monitoring
+##### t9k-cluster-admin
 
-确保产品模块 t9k-monitoring 使用的 values.yaml 设置了下列字段：
+确保产品模块 t9k-cluster-admin 使用的 values.yaml 设置了下列字段：
 
 ```yaml
 options:
-  t9kUseralertOperator:
+  proxyOperationCtl:
     enabled: false
 ```
 
