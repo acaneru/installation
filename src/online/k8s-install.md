@@ -26,6 +26,7 @@
 * `kube_pods_subnet`: 分配给 Pod 的 IP 地址范围。
 * `kube_vip_enabled`: 启用 kube-vip，详见 [kube-vip](https://github.com/kubernetes-sigs/kubespray/blob/master/docs/ingress/kube-vip.md)。
 * `loadbalancer_apiserver`: 设置 apiserver 的负载均衡器，详见 [HA endpoints for K8s](https://github.com/kubernetes-sigs/kubespray/blob/master/docs/operations/ha-mode.md)。
+* `kubernetes_audit`: 控制是否启用 kubernetes audit。
 
 #### addons.yml
 
@@ -36,6 +37,72 @@
 #### all.yml
 
 * `upstream_dns_servers`: 设置集群使用的上游 DNS 服务器，建议与当前环境中的 DNS 配置一致。
+
+### 设置 Kubernetes 审计
+
+如果你想启用 [T9k 审计日志](./products/pre-install/t9k-monitoring.md#启用-t9k-审计日志)，请确保 `k8s-cluster.yaml` 文件中包含下列内容：
+
+<aside class="note">
+<div class="title">注意</div>
+
+不建议你自行修改下列的 audit_policy_custom_rules 字段，以避免影响 T9k 审计日志的功能。
+
+</aside>
+
+```yaml
+# audit log for kubernetes
+kubernetes_audit: true
+audit_log_path: /var/log/audit/kube-apiserver-audit.log
+# num days
+audit_log_maxage: 30
+# the num of audit logs to retain
+audit_log_maxbackups: 10
+# the max size in MB to retain
+audit_log_maxsize: 100
+# policy file
+audit_policy_file: "{{ kube_config_dir }}/audit-policy/apiserver-audit-policy.yaml"
+# custom audit policy rules (to replace the default ones)
+audit_policy_custom_rules: |
+  # ProxyOperation in t9k-system namespace by anybody or serviceaccounts
+  - level: Request
+    namespaces: ["t9k-system"]
+    verbs: ["create"]
+    resources:
+    - group: "tensorstack.dev"
+      resources: ["proxyoperations"]
+  # ignore object variation caused by serviceaccounts
+  - level: None
+    userGroups:
+    - system:serviceaccounts
+  # ignore audting events caused by k8s system components
+  - level: None
+    userGroups:
+    - system:nodes
+  # ignore audting events caused by k8s system components
+  - level: None
+    users:
+    - system:kube-controller-manager
+    - system:kube-scheduler
+    - system:apiserver
+  # ignore events & accessreview
+  - level: None
+    resources:
+    - group: ""
+      resources: ["events"]
+    - group: "authorization.k8s.io"
+      resources: ["localsubjectaccessreviews","selfsubjectaccessreviews","selfsubjectrulesreviews","subjectaccessreviews"]
+  # namespace-scoped objects in system namespaces
+  - level: RequestResponse
+    verbs: ["create","update","patch","delete"]
+    namespaces: ["t9k-system","t9k-monitoring","ingress-nginx","istio-system","knative-serving","kube-system","t9k-syspub"]
+  # cluster-wide objects
+  - level: RequestResponse
+    verbs: ["create","update","patch","delete"]
+    namespaces:
+    - ""
+  # ignore others
+  - level: None
+```
 
 ### 设置代理
 
