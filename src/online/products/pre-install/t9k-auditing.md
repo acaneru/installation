@@ -18,6 +18,8 @@ T9k 审计日志分为下列两种类型：
 
 ### values.yaml
 
+**t9k-cluster-admin**
+
 确保 t9k-cluster-admin 使用的 values.yaml 设置了下列字段：
 
 ```yaml
@@ -25,6 +27,14 @@ options:
   proxyOperationCtl:
     enabled: true
 ```
+
+**t9k-security-console-api**
+
+确保产品模块 t9k-security-console-api 使用的 values.yaml 中字段 `global.t9k.securityService.resourceManagement.proxyoperation.enabled` 的值是 true
+
+**t9k-cost**
+
+确保产品模块 t9k-cost 使用的 values.yaml 中字段 `global.t9k.cost.proxyoperation.enabled` 的值是 true
 
 ## 禁用 T9k 审计日志
 
@@ -40,7 +50,7 @@ options:
 
 ### values.yaml
 
-#### t9k-cluster-admin
+**t9k-cluster-admin**
 
 确保产品模块 t9k-cluster-admin 使用的 values.yaml 设置了下列字段：
 
@@ -50,10 +60,10 @@ options:
     enabled: false
 ```
 
-#### t9k-security-console-api
+**t9k-security-console-api**
 
 确保产品模块 t9k-security-console-api 使用的 values.yaml 中字段 `global.t9k.securityService.resourceManagement.proxyoperation.enabled` 的值是 false。
 
-#### t9k-cost
+**t9k-cost**
 
 确保产品模块 t9k-cost 使用的 values.yaml 中字段 `global.t9k.cost.proxyoperation.enabled` 的值是 false。
