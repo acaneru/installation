@@ -38,7 +38,7 @@
         * [沐曦 MetaX](hardware/metax/index.md)
     * [安装 TensorStack AI 计算平台](online/products/index.md)
         * [安装前准备](online/products/pre-install.md)
-            * [审计日志系统](online/products/pre-install/t9k-auditing.md)
+            * [审计日志](online/products/pre-install/t9k-auditing.md)
         * [安装产品-User Console 模式](online/products/install-uc-mode.md)
             * [安装产品](online/products/install-uc.md)
             * [注册 APP](online/products/register-app.md)
