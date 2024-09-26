@@ -200,7 +200,7 @@ sed -i -e 's/docker.io/192.168.101.159:5000/' ../ks-clusters/additionals/loki/pr
 <p>在使用 S3 数据库存储时，需要提前创建好 Loki 所需 Bucket：loki-chunks、loki-ruler 和 loki-admin。如果需要修改 Bucket 名称，请修改 <code>../ks-clusters/additionals/loki/loki.yaml</code> 中的 <code>loki.storage.bucketName</code> 字段。同时，据实填写 <code>loki.storage.s3</code> 中的字段。</p>
 <p>Loki 支持在未提前创建数据库的情况下部署，Loki 会自动部署 Minio 并在其中创建好对应的 Bucket（参考 <code>../ks-clusters/additionals/loki/loki-single.yaml</code> 中的 <code>minio</code> 字段）。</p>
 <h4 id="t9k-审计日志"><a class="header" href="#t9k-审计日志">T9k 审计日志</a></h4>
-<p>如果想启用 <a href="../products/pre-install/t9k-monitoring.html#%E5%90%AF%E7%94%A8-t9k-%E5%AE%A1%E8%AE%A1%E6%97%A5%E5%BF%97">T9k 审计日志</a>，请确保 <code>../ks-clusters/additionals/loki/promtail.yaml</code> 文件的 <code>config.snippets.scrapeConfigs</code> 字段中包含下列内容：</p>
+<p>如果想启用 <a href="../products/pre-install/t9k-auditing.html#%E5%90%AF%E7%94%A8-t9k-%E5%AE%A1%E8%AE%A1%E6%97%A5%E5%BF%97">T9k 审计日志</a>，请确保 <code>../ks-clusters/additionals/loki/promtail.yaml</code> 文件的 <code>config.snippets.scrapeConfigs</code> 字段中包含下列内容：</p>
 <pre><code class="language-yaml">      # ----------------------------------------------------
       # Collect auditing logs.
       # ----------------------------------------------------
