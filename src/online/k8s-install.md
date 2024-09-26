@@ -40,7 +40,7 @@
 
 ### 设置 Kubernetes 审计
 
-如果你想启用 [T9k 审计日志](./products/pre-install/t9k-monitoring.md#启用-t9k-审计日志)，请确保 `k8s-cluster.yaml` 文件中包含下列内容：
+如果你想启用 [T9k 审计日志](./products/pre-install/t9k-auditing.md#启用-t9k-审计日志)，请确保 `k8s-cluster.yaml` 文件中包含下列内容：
 
 <aside class="note">
 <div class="title">注意</div>

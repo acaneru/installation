@@ -38,7 +38,7 @@ Loki 支持在未提前创建数据库的情况下部署，Loki 会自动部署 
 
 #### T9k 审计日志
 
-如果想启用 [T9k 审计日志](../products/pre-install/t9k-monitoring.md#启用-t9k-审计日志)，请确保 `../ks-clusters/additionals/loki/promtail.yaml` 文件的 `config.snippets.scrapeConfigs` 字段中包含下列内容：
+如果想启用 [T9k 审计日志](../products/pre-install/t9k-auditing.md#启用-t9k-审计日志)，请确保 `../ks-clusters/additionals/loki/promtail.yaml` 文件的 `config.snippets.scrapeConfigs` 字段中包含下列内容：
 
 ```yaml
       # ----------------------------------------------------
