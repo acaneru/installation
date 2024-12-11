@@ -8,6 +8,14 @@
 
 #### 增加 worker 节点
 
+在增加 worker 节点之前，建议进行以下检查和设置：
+
+1. 对该节点运行运行[准备节点](./prepare-nodes.md)中的“禁用 Ubuntu 自动更新”和“设置时钟同步”。
+    1. 运行时使用 "--limit" 命令行参数指定节点，以避免影响集群中的正常节点。
+1. 如果节点有 GPU，IB 网卡等设备，检查是否正确安装了设备驱动。
+
+然后，按照以下步骤将 worker 节点加入集群：
+
 1. 修改 inventory.ini，下面是一个增加节点（nc15，worker node）的示例：
     
     <details><summary><code class="hljs">diff -u inventory-old.ini inventory-new.ini</code></summary>
@@ -67,6 +75,12 @@
     使用命令行参数 `--limit nc15` 限制 playbook 的执行范围在 nc15 节点上，保障其他节点不受影响。如果有多个节点需要添加，使用例如 `--limit nc15,nc16` 的格式指定。
 
     </aside>
+
+在增加 worker 节点之后，建议进行以下检查和设置：
+
+1. 检查节点是否可以正常使用集群存储。
+1. 如果节点有 GPU，IB 网卡等扩展资源，检查是否可以在集群中正常使用。
+
 
 #### 移除 worker 节点
 

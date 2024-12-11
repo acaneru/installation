@@ -81,14 +81,14 @@ ansible-playbook ../ks-clusters/t9k-playbooks/1-disable-auto-upgrade.yml \
 ansible-playbook ../ks-clusters/t9k-playbooks/2-sync-time.yml \
   -i inventory/inventory.ini \
   --become -K \
-  -e <chrony_server_ip> \
-  -e chrony_client_ip_range=<chrony_client_ip_range_1>,<chrony_client_ip_range_2>
+  -e '{"chrony_server_ip": "1.2.3.4"}' \
+  -e '{"chrony_client_ip_range": ["1.2.3.4/24","100.0.0.1/8"]}'
 ```
 
 其中的变量说明如下：
 
 1. `chrony_server_ip`：运行 chrony server 节点的 IP 地址。
-1. `chrony_client_ip_range_1`：chrony 生效的 IP 地址网段，例如 `1.2.3.4/24`，可设置一个或多个网段，使用逗号分割。
+1. `chrony_client_ip_range`：chrony 生效的 IP 地址网段，例如 `1.2.3.4/24`，可设置一个或多个网段，使用逗号分割。
 
 也可以直接在 YAML 中设置变量（在 ks-clusters/t9k-playbooks/group_vars/all/all.yml 中）：
 
