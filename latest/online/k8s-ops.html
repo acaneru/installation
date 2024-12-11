@@ -185,6 +185,16 @@
 <p>参考：<a href="https://github.com/kubernetes-sigs/kubespray/blob/master/docs/operations/nodes.md#addingreplacing-a-worker-node">https://github.com/kubernetes-sigs/kubespray/blob/master/docs/operations/nodes.md#addingreplacing-a-worker-node</a></p>
 </blockquote>
 <h4 id="增加-worker-节点"><a class="header" href="#增加-worker-节点">增加 worker 节点</a></h4>
+<p>在增加 worker 节点之前，建议进行以下检查和设置：</p>
+<ol>
+<li>对该节点运行运行<a href="./prepare-nodes.html">准备节点</a>中的“禁用 Ubuntu 自动更新”和“设置时钟同步”。
+<ol>
+<li>运行时使用 &quot;--limit&quot; 命令行参数指定节点，以避免影响集群中的正常节点。</li>
+</ol>
+</li>
+<li>如果节点有 GPU，IB 网卡等设备，检查是否正确安装了设备驱动。</li>
+</ol>
+<p>然后，按照以下步骤将 worker 节点加入集群：</p>
 <ol>
 <li>
 <p>修改 inventory.ini，下面是一个增加节点（nc15，worker node）的示例：</p>
@@ -235,6 +245,11 @@ ansible-playbook ../kubespray/scale.yml \
 <p>使用命令行参数 <code>--limit nc15</code> 限制 playbook 的执行范围在 nc15 节点上，保障其他节点不受影响。如果有多个节点需要添加，使用例如 <code>--limit nc15,nc16</code> 的格式指定。</p>
 </aside>
 </li>
+</ol>
+<p>在增加 worker 节点之后，建议进行以下检查和设置：</p>
+<ol>
+<li>检查节点是否可以正常使用集群存储。</li>
+<li>如果节点有 GPU，IB 网卡等扩展资源，检查是否可以在集群中正常使用。</li>
 </ol>
 <h4 id="移除-worker-节点"><a class="header" href="#移除-worker-节点">移除 worker 节点</a></h4>
 <ol>

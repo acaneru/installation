@@ -189,9 +189,9 @@
 <aside class="note">
 <div class="title">离线安装</div>
 <p>修改镜像仓库的设置：</p>
-<pre><code class="language-bash">sed -i -e 's/docker.io/192.168.101.159:5000/' ../ks-clusters/additionals/loki/loki.yaml
-sed -i -e 's/docker.io/192.168.101.159:5000/' ../ks-clusters/additionals/loki/loki-single.yaml
-sed -i -e 's/docker.io/192.168.101.159:5000/' ../ks-clusters/additionals/loki/promtail.yaml
+<pre><code class="language-bash">sed -i 's|docker.io/t9kpublic|192.168.101.159:5000/t9kpublic|g' ../ks-clusters/additionals/loki/loki.yaml
+sed -i 's|docker.io/t9kpublic|192.168.101.159:5000/t9kpublic|g' ../ks-clusters/additionals/loki/loki-single.yaml
+sed -i 's|docker.io/t9kpublic|192.168.101.159:5000/t9kpublic|g' ../ks-clusters/additionals/loki/promtail.yaml
 </code></pre>
 </aside>
 <h3 id="values-配置"><a class="header" href="#values-配置">Values 配置</a></h3>

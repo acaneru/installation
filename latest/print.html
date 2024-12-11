@@ -536,13 +536,13 @@ ansible all -m ping -i inventory/inventory.ini
 <pre><code class="language-bash">ansible-playbook ../ks-clusters/t9k-playbooks/2-sync-time.yml \
   -i inventory/inventory.ini \
   --become -K \
-  -e &lt;chrony_server_ip&gt; \
-  -e chrony_client_ip_range=&lt;chrony_client_ip_range_1&gt;,&lt;chrony_client_ip_range_2&gt;
+  -e '{&quot;chrony_server_ip&quot;: &quot;1.2.3.4&quot;}' \
+  -e '{&quot;chrony_client_ip_range&quot;: [&quot;1.2.3.4/24&quot;,&quot;100.0.0.1/8&quot;]}'
 </code></pre>
 <p>其中的变量说明如下：</p>
 <ol>
 <li><code>chrony_server_ip</code>：运行 chrony server 节点的 IP 地址。</li>
-<li><code>chrony_client_ip_range_1</code>：chrony 生效的 IP 地址网段，例如 <code>1.2.3.4/24</code>，可设置一个或多个网段，使用逗号分割。</li>
+<li><code>chrony_client_ip_range</code>：chrony 生效的 IP 地址网段，例如 <code>1.2.3.4/24</code>，可设置一个或多个网段，使用逗号分割。</li>
 </ol>
 <p>也可以直接在 YAML 中设置变量（在 ks-clusters/t9k-playbooks/group_vars/all/all.yml 中）：</p>
 <pre><code class="language-bash">chrony_server_ip: &lt;chrony_server_ip&gt; # 1.2.3.4
@@ -1268,6 +1268,16 @@ containerd_archive_checksums:
 <p>参考：<a href="https://github.com/kubernetes-sigs/kubespray/blob/master/docs/operations/nodes.md#addingreplacing-a-worker-node">https://github.com/kubernetes-sigs/kubespray/blob/master/docs/operations/nodes.md#addingreplacing-a-worker-node</a></p>
 </blockquote>
 <h4 id="增加-worker-节点"><a class="header" href="#增加-worker-节点">增加 worker 节点</a></h4>
+<p>在增加 worker 节点之前，建议进行以下检查和设置：</p>
+<ol>
+<li>对该节点运行运行<a href="online/./prepare-nodes.html">准备节点</a>中的“禁用 Ubuntu 自动更新”和“设置时钟同步”。
+<ol>
+<li>运行时使用 &quot;--limit&quot; 命令行参数指定节点，以避免影响集群中的正常节点。</li>
+</ol>
+</li>
+<li>如果节点有 GPU，IB 网卡等设备，检查是否正确安装了设备驱动。</li>
+</ol>
+<p>然后，按照以下步骤将 worker 节点加入集群：</p>
 <ol>
 <li>
 <p>修改 inventory.ini，下面是一个增加节点（nc15，worker node）的示例：</p>
@@ -1318,6 +1328,11 @@ ansible-playbook ../kubespray/scale.yml \
 <p>使用命令行参数 <code>--limit nc15</code> 限制 playbook 的执行范围在 nc15 节点上，保障其他节点不受影响。如果有多个节点需要添加，使用例如 <code>--limit nc15,nc16</code> 的格式指定。</p>
 </aside>
 </li>
+</ol>
+<p>在增加 worker 节点之后，建议进行以下检查和设置：</p>
+<ol>
+<li>检查节点是否可以正常使用集群存储。</li>
+<li>如果节点有 GPU，IB 网卡等扩展资源，检查是否可以在集群中正常使用。</li>
 </ol>
 <h4 id="移除-worker-节点"><a class="header" href="#移除-worker-节点">移除 worker 节点</a></h4>
 <ol>
@@ -2072,9 +2087,9 @@ elasticsearch-data-2   1/1     Running   0          64d
 <aside class="note">
 <div class="title">离线安装</div>
 <p>修改镜像仓库的设置：</p>
-<pre><code class="language-bash">sed -i -e 's/docker.io/192.168.101.159:5000/' ../ks-clusters/additionals/loki/loki.yaml
-sed -i -e 's/docker.io/192.168.101.159:5000/' ../ks-clusters/additionals/loki/loki-single.yaml
-sed -i -e 's/docker.io/192.168.101.159:5000/' ../ks-clusters/additionals/loki/promtail.yaml
+<pre><code class="language-bash">sed -i 's|docker.io/t9kpublic|192.168.101.159:5000/t9kpublic|g' ../ks-clusters/additionals/loki/loki.yaml
+sed -i 's|docker.io/t9kpublic|192.168.101.159:5000/t9kpublic|g' ../ks-clusters/additionals/loki/loki-single.yaml
+sed -i 's|docker.io/t9kpublic|192.168.101.159:5000/t9kpublic|g' ../ks-clusters/additionals/loki/promtail.yaml
 </code></pre>
 </aside>
 <h3 id="values-配置"><a class="header" href="#values-配置">Values 配置</a></h3>

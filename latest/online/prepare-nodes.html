@@ -230,13 +230,13 @@ ansible all -m ping -i inventory/inventory.ini
 <pre><code class="language-bash">ansible-playbook ../ks-clusters/t9k-playbooks/2-sync-time.yml \
   -i inventory/inventory.ini \
   --become -K \
-  -e &lt;chrony_server_ip&gt; \
-  -e chrony_client_ip_range=&lt;chrony_client_ip_range_1&gt;,&lt;chrony_client_ip_range_2&gt;
+  -e '{&quot;chrony_server_ip&quot;: &quot;1.2.3.4&quot;}' \
+  -e '{&quot;chrony_client_ip_range&quot;: [&quot;1.2.3.4/24&quot;,&quot;100.0.0.1/8&quot;]}'
 </code></pre>
 <p>其中的变量说明如下：</p>
 <ol>
 <li><code>chrony_server_ip</code>：运行 chrony server 节点的 IP 地址。</li>
-<li><code>chrony_client_ip_range_1</code>：chrony 生效的 IP 地址网段，例如 <code>1.2.3.4/24</code>，可设置一个或多个网段，使用逗号分割。</li>
+<li><code>chrony_client_ip_range</code>：chrony 生效的 IP 地址网段，例如 <code>1.2.3.4/24</code>，可设置一个或多个网段，使用逗号分割。</li>
 </ol>
 <p>也可以直接在 YAML 中设置变量（在 ks-clusters/t9k-playbooks/group_vars/all/all.yml 中）：</p>
 <pre><code class="language-bash">chrony_server_ip: &lt;chrony_server_ip&gt; # 1.2.3.4
