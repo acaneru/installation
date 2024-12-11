@@ -20,9 +20,9 @@ kubectl create ns t9k-monitoring
 修改镜像仓库的设置：
 
 ```bash
-sed -i -e 's/docker.io/192.168.101.159:5000/' ../ks-clusters/additionals/loki/loki.yaml
-sed -i -e 's/docker.io/192.168.101.159:5000/' ../ks-clusters/additionals/loki/loki-single.yaml
-sed -i -e 's/docker.io/192.168.101.159:5000/' ../ks-clusters/additionals/loki/promtail.yaml
+sed -i 's|docker.io/t9kpublic|192.168.101.159:5000/t9kpublic|g' ../ks-clusters/additionals/loki/loki.yaml
+sed -i 's|docker.io/t9kpublic|192.168.101.159:5000/t9kpublic|g' ../ks-clusters/additionals/loki/loki-single.yaml
+sed -i 's|docker.io/t9kpublic|192.168.101.159:5000/t9kpublic|g' ../ks-clusters/additionals/loki/promtail.yaml
 ```
 </aside>
 
