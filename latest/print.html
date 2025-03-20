@@ -4520,36 +4520,6 @@ t9k-aistore                     t9k-system      3               2023-11-19 06:37
   <img alt="create-project" src="online/products/../../assets/online/create-project.png" />
 </figure>
 <h2 id="监控系统"><a class="header" href="#监控系统">监控系统</a></h2>
-<h3 id="安装-cadvisor-服务"><a class="header" href="#安装-cadvisor-服务">安装 cAdvisor 服务</a></h3>
-<aside class="note warning">
-<div class="title">注意</div>
-<p>需要确认 t9k-monitoring 已经正确安装。</p>
-</aside>
-<p>在 K8s 1.24 及之后的一些版本，kubelet cadvisor 无法提供有效的 metrics 信息。管理员需要单独部署 cadvisor 服务来提供集群的 metrics 信息。已知 K8s 版本 1.24.10，1.25.9 存在此问题，根据 <a target="_blank" rel="noopener noreferrer" href="https://github.com/google/cadvisor/issues/2785#issuecomment-1205538108">issue</a> 中的讨论，其它版本也可能存在相同的问题。</p>
-<p>cAdvisor 服务的安装步骤：</p>
-<ol>
-<li>
-<p>删除 servicemonitor kubelet 的 cadvisor 部分：</p>
-<pre><code class="language-bash">kubectl -n t9k-monitoring edit servicemonitor kubelet
-
-# 需要删除的部分
-kubectl -n t9k-monitoring get servicemonitor kubelet \
-    -o jsonpath=&quot;{.spec.endpoints[?(@.path=='/metrics/cadvisor')]}&quot;
-</code></pre>
-</li>
-<li>
-<p>部署 cadvisor 服务：</p>
-<aside class="note warning">
- <div class="title">离线安装</div>
-<p>如果采用本地容器镜像服务器，需要修改镜像仓库的设置：</p>
-<pre><code class="language-bash">sed -i &quot;s|docker.io/t9kpublic|192.168.101.159:5000/t9kpublic|g&quot; \
-  ../ks-clusters/additionals/monitoring/cadvisor.yaml
-</code></pre>
-</aside>
-<pre><code class="language-bash">kubectl apply -n kube-system -f ../ks-clusters/additionals/monitoring/cadvisor.yaml
-</code></pre>
-</li>
-</ol>
 <h3 id="监控-nvidia-gpu-operator"><a class="header" href="#监控-nvidia-gpu-operator">监控 NVIDIA GPU Operator</a></h3>
 <p>运行下列命令创建 ServiceMonitor，配置 Prometheus 收集 NVIDIA DCGM Exporter 的 metrics 数据：</p>
 <pre><code class="language-bash">kubectl -n t9k-monitoring create -f - &lt;&lt; EOF
