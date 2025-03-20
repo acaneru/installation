@@ -45,47 +45,6 @@
 
 ## 监控系统
 
-### 安装 cAdvisor 服务
-
-<aside class="note warning">
-<div class="title">注意</div>
-
-需要确认 t9k-monitoring 已经正确安装。
-
-</aside>
-
-在 K8s 1.24 及之后的一些版本，kubelet cadvisor 无法提供有效的 metrics 信息。管理员需要单独部署 cadvisor 服务来提供集群的 metrics 信息。已知 K8s 版本 1.24.10，1.25.9 存在此问题，根据 <a target="_blank" rel="noopener noreferrer" href="https://github.com/google/cadvisor/issues/2785#issuecomment-1205538108">issue</a> 中的讨论，其它版本也可能存在相同的问题。
-
-cAdvisor 服务的安装步骤：
-
-1. 删除 servicemonitor kubelet 的 cadvisor 部分：
-
-    ```bash
-    kubectl -n t9k-monitoring edit servicemonitor kubelet
-
-    # 需要删除的部分
-    kubectl -n t9k-monitoring get servicemonitor kubelet \
-        -o jsonpath="{.spec.endpoints[?(@.path=='/metrics/cadvisor')]}"
-    ```
-
-2. 部署 cadvisor 服务：
- 
-    <aside class="note warning">
-    <div class="title">离线安装</div>
-
-    如果采用本地容器镜像服务器，需要修改镜像仓库的设置：
-
-    ```bash
-    sed -i "s|docker.io/t9kpublic|192.168.101.159:5000/t9kpublic|g" \
-      ../ks-clusters/additionals/monitoring/cadvisor.yaml
-    ```
-
-    </aside>
-
-
-    ```bash
-    kubectl apply -n kube-system -f ../ks-clusters/additionals/monitoring/cadvisor.yaml
-    ```
 ### 监控 NVIDIA GPU Operator
 
 运行下列命令创建 ServiceMonitor，配置 Prometheus 收集 NVIDIA DCGM Exporter 的 metrics 数据：
