@@ -3690,53 +3690,1208 @@ pod &quot;rdma-gpu-test-pod-2&quot; deleted
 <p><a href="https://www.amd.com/en/support/linux-drivers">https://www.amd.com/en/support/linux-drivers</a></p>
 <div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
 <h1 id="燧原"><a class="header" href="#燧原">燧原</a></h1>
-<h2 id="简介"><a class="header" href="#简介">简介</a></h2>
-<p>在集群内部署下列内容即可实现在 Kubernetes 中使用燧原 GPU。</p>
-<h3 id="燧原驱动"><a class="header" href="#燧原驱动">燧原驱动</a></h3>
-<p>详情参考 <a href="https://support.enflame-tech.com/onlinedoc_dev_2.5.115/4-develop/kmd/kernel_module_guide/content/source/kernel_module_guide.html#kmd" target="_blank">KMD 用户使用手册</a>。</p>
-<h3 id="topscloud-产品"><a class="header" href="#topscloud-产品">TopsCloud 产品</a></h3>
-<p>燧原 TopsCloud 用于提供在 K8s 上使用 GCU 的解决方案，包括下面几个组件：</p>
-<ul>
-<li>资源管理：
-<ul>
-<li><a href="https://support.enflame-tech.com/onlinedoc_dev_2.5.115/6-k8s/k8s/k8s-device-plugin/content/source/enflame_gcu_k8s_plugin_user_guide.html#k8s-device-plugin" target="_blank">K8s Device Plugin</a>：将节点上的 GCU 硬件注册为 K8s 扩展资源。</li>
-<li><a href="https://support.enflame-tech.com/onlinedoc_dev_2.5.115/6-k8s/k8s/GCUshare/content/source/index.html" target="_blank">GCUShare</a> 相关的组件：GCUShare 用于支持多个 Pod 共享 GCU，主要包含下列组件：
-<ul>
-<li>gcushare-scheduler-extender：kube-scheduler 插件，增加调度器功能，使得调度器可以为使用 share GCU 的 Pod 提供调度支持。</li>
-<li>gcushare-device-plugin：将节点上的 GCU 硬件注册为 K8s 扩展资源。</li>
-</ul>
+<h2 id="总览"><a class="header" href="#总览">总览</a></h2>
+<p>下面是在集群中部署燧原产品的文档，以支持在 Kubernetes 中使用燧原 GCU。需要部署的燧原产品版本：</p>
+<ol>
+<li>TopsRider 软件栈：版本 TopsRider_i3x_3.3.20250314_deb_amd64。</li>
+<li>TopsCloud：版本 3.3.20。</li>
+</ol>
+<p>安装步骤分为 3 步：</p>
+<ol>
+<li>在 GCU 节点上安装 GCU 驱动（TopsRider）</li>
+<li>安装部署 GCU Operator（TopsCloud）</li>
+<li>[安装后]监控配置：完成上述步骤后，后续安装 T9k 产品时，需要设置针对燧原 GCU 资源的监控配置。</li>
+</ol>
+<p>注：安装包由燧原提供。</p>
+<h2 id="环境"><a class="header" href="#环境">环境</a></h2>
+<p>下面是经过验证的环境：</p>
+<ol>
+<li>K8s 集群版本：v1.30.4</li>
+<li>GCU 节点：
+<ol>
+<li>OS：Ubuntu 22.04.5</li>
+<li>Kernel：5.15.0-130-generic</li>
+<li>容器运行时：containerd://1.7.21</li>
+</ol>
 </li>
-<li><a href="https://support.enflame-tech.com/onlinedoc_dev_2.5.115/6-k8s/k8s/Container-toolkit/content/source/index.html" target="_blank">Container Toolkit</a>：使得容器可以使用 GCU 卡。主要包含一个 container-runtime，可以自动为容器挂载 GCU 设备、注入运行环境。</li>
-<li><a href="https://support.enflame-tech.com/onlinedoc_dev_2.5.115/6-k8s/k8s/GCU-feature-discovery/content/source/index.html" target="_blank">GCU Feature Discovery</a>：给 GCU 节点添加设备属性标签。</li>
-<li>[third-party] <a href="https://support.enflame-tech.com/onlinedoc_dev_2.5.115/6-k8s/k8s/Node-feature-discovery/content/source/index.html" target="_blank">Node Feature Discovery</a>：给节点添加硬件属性标签的 Kubernetes 插件。</li>
-</ul>
+<li>Harbor 本地镜像仓库：
+<ol>
+<li>服务地址：harbor.example.cn</li>
+<li>Harbor 版本：v2.11.2</li>
+</ol>
 </li>
-<li>监控管理：
-<ul>
-<li><a href="https://support.enflame-tech.com/onlinedoc_dev_2.5.115/6-k8s/k8s/GCU-Exporter/content/source/index.html" target="_blank">GCU-Exporter</a>：采集 GCU 运行指标，并以 Prometheus metrics 形式暴露出来。</li>
-</ul>
+<li>准备镜像的节点 prepare-node：
+<ol>
+<li>OS：Ubuntu 22.04.5</li>
+<li>Kernel：5.15.0-126-generic</li>
+<li>docker：27.4.1</li>
+<li>ctr：1.7.24</li>
+<li>helm: v3.15.4</li>
+<li>ansible: core 2.16.14</li>
+</ol>
 </li>
-<li>部署运维：
-<ul>
-<li><a href="https://support.enflame-tech.com/onlinedoc_dev_2.5.115/6-k8s/k8s/GCU-operator/content/source/index.html" target="_blank">GCU-Operator</a>：可以自动化部署上述组件 + GCU 驱动的 Operator。</li>
-<li><a href="https://support.enflame-tech.com/onlinedoc_dev_2.5.115/6-k8s/k8s/KubeOne/content/source/index.html" target="_blank">KubeOne</a>：基于 sealer 进行定制二次开发的 K8s 集群部署工具。</li>
-</ul>
+</ol>
+<h2 id="安装-gcu-驱动"><a class="header" href="#安装-gcu-驱动">安装 GCU 驱动</a></h2>
+<h3 id="安装包"><a class="header" href="#安装包">安装包</a></h3>
+<p>安装包 TopsRider_i3x_3.3.20250314_deb_amd64.run 由燧原提供，存放在 <code>prepare-node:/data/enflame</code>。</p>
+<pre><code class="language-bash">(base) ubuntu@prepare-node:~$ ls /data/enflame/
+topscloud_3.3.20.tar.gz  TopsRider_i3x_3.2.203_deb_amd64.run  TopsRider_i3x_3.3.20250314_deb_amd64.run
+</code></pre>
+<h3 id="ansible-配置"><a class="header" href="#ansible-配置">ansible 配置</a></h3>
+<p>创建文件 inventory/gcu-update.ini，创建 group all 记录目标 GCU 节点，下面是一个操作示例：</p>
+<pre><code class="language-bash">(kubespray) ubuntu@prepare-node:~/ansible/qingyang$ vi inventory/gcu-update.ini
+(kubespray) ubuntu@prepare-node:~/ansible/qingyang$ cat inventory/gcu-update.ini 
+[all]
+worker-78 ansible_host=10.52.2.78
+worker-79 ansible_host=10.52.2.79
+</code></pre>
+<h3 id="拷贝-gcu-驱动安装包"><a class="header" href="#拷贝-gcu-驱动安装包">拷贝 GCU 驱动安装包</a></h3>
+<p>使用 ansible 将 GCU 驱动安装包拷贝到目标 GCU 节点。</p>
+<pre><code class="language-bash">(kubespray) ubuntu@prepare-node:~/ansible/qingyang$ ansible -i inventory/gcu-update.ini all -m shell -a &quot;uname -r&quot;  
+worker-79 | CHANGED | rc=0 &gt;&gt;
+5.15.0-130-generic
+worker-78 | CHANGED | rc=0 &gt;&gt;
+5.15.0-130-generic
+
+(kubespray) ubuntu@prepare-node:~/ansible/qingyang$ ansible -i inventory/gcu-update.ini all -m copy -a &quot;src=/data/enflame/TopsRider_i3x_3.3.20250314_deb_amd64.run dest=/home/ubuntu&quot; --become -K
+BECOME password: 
+worker-78 | CHANGED =&gt; {
+    &quot;changed&quot;: true,
+    &quot;checksum&quot;: &quot;804ea8c92d2aa662c6c58b47c5c37c81366efb08&quot;,
+    &quot;dest&quot;: &quot;/home/ubuntu/TopsRider_i3x_3.3.20250314_deb_amd64.run&quot;,
+    &quot;gid&quot;: 0,
+    &quot;group&quot;: &quot;root&quot;,
+    &quot;md5sum&quot;: &quot;3fcaa3bb55221dc73605a2da4ed4d798&quot;,
+    &quot;mode&quot;: &quot;0644&quot;,
+    &quot;owner&quot;: &quot;root&quot;,
+    &quot;size&quot;: 3929136495,
+    &quot;src&quot;: &quot;/home/ubuntu/.ansible/tmp/ansible-tmp-1742975581.3291142-3869069-188209929684094/source&quot;,
+    &quot;state&quot;: &quot;file&quot;,
+    &quot;uid&quot;: 0
+}
+…
+(kubespray) ubuntu@prepare-node:~/ansible/qingyang$ ansible -i inventory/gcu-update.ini all -m shell -a &quot;chmod +x TopsRider_i3x_3.3.20250314_deb_amd64.run&quot; --become -K
+BECOME password: 
+(kubespray) ubuntu@prepare-node:~/ansible/qingyang$ ansible -i inventory/gcu-update.ini all -m shell -a &quot;ls TopsRider_i3x_3.3.20250314_deb_amd64.run&quot;   
+worker-79 | CHANGED | rc=0 &gt;&gt;
+TopsRider_i3x_3.3.20250314_deb_amd64.run
+worker-78 | CHANGED | rc=0 &gt;&gt;
+TopsRider_i3x_3.3.20250314_deb_amd64.run
+</code></pre>
+<h3 id="安装-gcu-驱动-1"><a class="header" href="#安装-gcu-驱动-1">安装 GCU 驱动</a></h3>
+<p>运行下列命令在目标节点上安装 GCU 驱动：</p>
+<pre><code class="language-bash">(kubespray) ubuntu@prepare-node:~/ansible/qingyang$ ansible -i inventory/gcu-update.ini all -m shell -a &quot;./TopsRider_i3x_3.3.20250314_deb_amd64.run --silence&quot; --become -K
+BECOME password: 
+worker-78 | CHANGED | rc=0 &gt;&gt;
+Verifying archive integrity... All good.
+Uncompressing ENFLAME TOPSRIDER PACKAGE
+Logging file: /tmp/topsinstaller/TopsRider20250326-163331.log
+[1/3] Install TopsPlatform Package
+[2/3] Install Dockerfile to /usr/local/topsrider/dockerfile
+[3/3] Install Data Center Toolkit to /usr/local/topsrider/data_center_toolkit
+Install Finished. 3 installed.  100%   MD5 checksums are OK.  100%  
+worker-79 | CHANGED | rc=0 &gt;&gt;
+Verifying archive integrity... All good.
+Uncompressing ENFLAME TOPSRIDER PACKAGE
+Logging file: /tmp/topsinstaller/TopsRider20250326-163331.log
+[1/3] Install TopsPlatform Package
+[2/3] Install Dockerfile to /usr/local/topsrider/dockerfile
+[3/3] Install Data Center Toolkit to /usr/local/topsrider/data_center_toolkit
+Install Finished. 3 installed.  100%   MD5 checksums are OK.  100%  
+...
+</code></pre>
+<h3 id="验证-9"><a class="header" href="#验证-9">验证</a></h3>
+<p>运行下列命令，节点上有对应的 GCU 状态输出说明 GCU 驱动正常工作：</p>
+<pre><code class="language-bash">(kubespray) ubuntu@prepare-node:~/ansible/qingyang$ ansible -i inventory/gcu-update.ini all -m shell -a &quot;efsmi&quot;  
+worker-78 | CHANGED | rc=0 &gt;&gt;
+------------------------------------------------------------------------------
+-------------------- Enflame System Management Interface ---------------------
+--------- Enflame Tech, All Rights Reserved. 2024-2025 Copyright (C) ---------
+------------------------------------------------------------------------------
+                                                                              
++2025-03-31, 15:35:44 CST----------------------------------------------------+
+| EFSMI    1.4.0.3         Driver Ver: 1.4.0.3                               |
+|----------------------------------------------------------------------------|
+|----------------------------------------------------------------------------|
+| DEV    NAME                 | FW VER           | BUS-ID      ECC           |
+| TEMP   Dpm   Pwr(Usage/Cap) | Mem     GCU Virt | DUsed       SN            |
+|----------------------------------------------------------------------------|
+| 0      Enflame S60          | 33.6.5           | 00:23:00.0  Enable        |
+| 71℃    Sleep    118W / 300W | 42976MiB Disable | 0%          C807B40520388 |
++----------------------------------------------------------------------------+
+|----------------------------------------------------------------------------|
+| 1      Enflame S60          | 33.6.5           | 00:24:00.0  Enable        |
+| 74℃    Sleep    121W / 300W | 42976MiB Disable | 0%          C806S40510352 |
++----------------------------------------------------------------------------+
+|----------------------------------------------------------------------------|
+| 2      Enflame S60          | 33.6.5           | 00:25:00.0  Enable        |
+| 65℃    Sleep    113W / 300W | 42976MiB Disable | 0%          C807140510404 |
++----------------------------------------------------------------------------+
+|----------------------------------------------------------------------------|
+| 3      Enflame S60          | 33.6.5           | 00:26:00.0  Enable        |
+| 70℃    Sleep    113W / 300W | 42976MiB Disable | 0%          C807B40520524 |
++----------------------------------------------------------------------------+
+|----------------------------------------------------------------------------|
+| 4      Enflame S60          | 33.6.5           | 00:33:00.0  Enable        |
+| 66℃    Sleep    113W / 300W | 42976MiB Disable | 0%          C807140510017 |
++----------------------------------------------------------------------------+
+|----------------------------------------------------------------------------|
+| 5      Enflame S60          | 33.6.5           | 00:34:00.0  Enable        |
+| 68℃    Sleep    114W / 300W | 42976MiB Disable | 0%          C807B40520261 |
++----------------------------------------------------------------------------+
+|----------------------------------------------------------------------------|
+| 6      Enflame S60          | 33.6.5           | 00:35:00.0  Enable        |
+| 63℃    Sleep    109W / 300W | 42976MiB Disable | 0%          C807B40520523 |
++----------------------------------------------------------------------------+
+|----------------------------------------------------------------------------|
+| 7      Enflame S60          | 33.6.5           | 00:36:00.0  Enable        |
+| 66℃    Sleep    114W / 300W | 42976MiB Disable | 0%          C806S40510031 |
++----------------------------------------------------------------------------+
+...
+</code></pre>
+<h2 id="安装-gcu-operator"><a class="header" href="#安装-gcu-operator">安装 GCU Operator</a></h2>
+<h3 id="安装包-1"><a class="header" href="#安装包-1">安装包</a></h3>
+<p>安装包 topscloud_3.3.20 由燧原提供，存放在 <code>prepare-node:/data/enflame</code>。</p>
+<pre><code class="language-bash">(base) ubuntu@prepare-node:~$ ls /data/enflame/
+topscloud_3.3.20.tar.gz  TopsRider_i3x_3.2.203_deb_amd64.run  TopsRider_i3x_3.3.20250314_deb_amd64.run
+</code></pre>
+<p>运行下列命令解压安装包：</p>
+<pre><code class="language-bash">(base) ubuntu@prepare-node:~$ cd /data/enflame/
+(base) ubuntu@prepare-node:/data/enflame$ ls
+topscloud_3.3.20.tar.gz  TopsRider_i3x_3.2.203_deb_amd64.run  TopsRider_i3x_3.3.20250314_deb_amd64.run
+(base) ubuntu@prepare-node:/data/enflame$ tar -xzf topscloud_3.3.20.tar.gz 
+(base) ubuntu@prepare-node:/data/enflame$ ls
+topscloud_3.3.20  topscloud_3.3.20.tar.gz  TopsRider_i3x_3.2.203_deb_amd64.run  TopsRider_i3x_3.3.20250314_deb_amd64.run
+(base) ubuntu@prepare-node:/data/enflame$ cd topscloud_3.3.20/
+(base) ubuntu@prepare-node:/data/enflame/topscloud_3.3.20$ ls
+documents                         gcu-feature-discovery_1.3.20  gcushare_1.2.15           k8s-driver-manager_1.0.21  node-feature-discovery_1.2.20
+enflame-container-toolkit_2.0.48  gcu-monitor-examples_1.1.7    go-eflib_1.5.1            k8s-installer_1.1.7        node-problem-detector_1.0.18
+gcu-exporter_1.5.1                gcu-operator_2.4.6            k8s-device-plugin_2.0.30  node-exporter_1.0.22       README.md
+</code></pre>
+<h3 id="构建镜像"><a class="header" href="#构建镜像">构建镜像</a></h3>
+<h4 id="可选拷贝基础镜像"><a class="header" href="#可选拷贝基础镜像">[可选]拷贝基础镜像</a></h4>
+<aside class="note">
+<div class="title">注意</div>
+<p>当 prepare-node 可以访问外网时，跳过本步骤。</p>
+</aside>
+<p>制作镜像的 Dockerfile 使用的基础镜像来源于 dockerhub，当 prepare-node 无法连接外网时，需要：在能访问外网的机器下载基础镜像 -&gt; 保存为离线文件 -&gt; 离线文件上传到 prepare-node -&gt; prepare-node 从离线文件加载镜像。</p>
+<p>首先，在节点 prepare-node 上运行下列命令，查询所需的基础镜像：</p>
+<pre><code class="language-bash">(base) ubuntu@prepare-node:/data/enflame/topscloud_3.3.20$ cd gcu-operator_2.4.6/
+(base) ubuntu@prepare-node:/data/enflame/topscloud_3.3.20/gcu-operator_2.4.6$ ls
+build-component-image.sh  build-operator-image.sh  config.json              delete-operator.sh  dockerfiles        example             g_version.txt  tools
+build-image.conf          component-images         copy-and-load-images.sh  deploy-operator.sh  enflame-resources  gcu-operator-chart  manager
+(base) ubuntu@prepare-node:/data/enflame/topscloud_3.3.20/gcu-operator_2.4.6$ cat dockerfiles/Dockerfile.ubuntu | grep FROM
+FROM ubuntu:18.04
+(base) ubuntu@prepare-node:/data/enflame/topscloud_3.3.20/gcu-operator_2.4.6$ lsb_release -a
+No LSB modules are available.
+Distributor ID:	Ubuntu
+Description:	Ubuntu 22.04.5 LTS
+Release:	22.04
+Codename:	jammy
+(base) ubuntu@prepare-node:/data/enflame/topscloud_3.3.20/gcu-operator_2.4.6$ cat component-images/toolkit/dockerfiles/Dockerfile.ubuntu22.04 | grep FROM
+FROM ubuntu:22.04
+(base) ubuntu@prepare-node:/data/enflame/topscloud_3.3.20/gcu-operator_2.4.6$ cat ../gcu-exporter_1.5.1/dockerfiles/Dockerfile.ubuntu | grep FROM
+FROM ubuntu:18.04
+</code></pre>
+<p>在能访问外网的机器上下载镜像、保存离线文件、拷贝到节点 prepare-node：</p>
+<pre><code class="language-bash">$ docker pull ubuntu:18.04
+18.04: Pulling from library/ubuntu
+7c457f213c76: Already exists 
+Digest: sha256:152dc042452c496007f07ca9127571cb9c29697f42acbfad72324b2bb2e43c98
+Status: Downloaded newer image for ubuntu:18.04
+$ docker save -o ubuntu-18.04.tar ubuntu:18.04
+$ scp ubuntu-18.04.tar prepare-node:/data/image/
+ubuntu-18.04.tar                                                                                                             100%   63MB   5.6MB/s   00:11 
+
+$ docker pull ubuntu:22.04
+22.04: Pulling from library/ubuntu
+9cb31e2e37ea: Pull complete 
+Digest: sha256:ed1544e454989078f5dec1bfdabd8c5cc9c48e0705d07b678ab6ae3fb61952d2
+Status: Downloaded newer image for ubuntu:22.04
+$ docker save -o ubuntu-22.04.tar ubuntu:22.04
+$ scp ubuntu-22.04.tar prepare-node:/data/image/
+ubuntu-22.04.tar                                                                                         100%   77MB   5.8MB/s   00:13 
+</code></pre>
+<p>在节点 prepare-node 使用 docker 加载镜像：</p>
+<pre><code class="language-bash">(base) ubuntu@prepare-node:/data/image$ ls
+ubuntu-18.04.tar  ubuntu-22.04.tar
+(base) ubuntu@prepare-node:/data/image$ sudo docker load -i ubuntu-18.04.tar 
+548a79621a42: Loading layer [==================================================&gt;]  65.53MB/65.53MB
+Loaded image: ubuntu:18.04
+(base) ubuntu@prepare-node:/data/image$ sudo docker load -i ubuntu-22.04.tar 
+270a1170e7e3: Loading layer [==================================================&gt;]  80.41MB/80.41MB
+(base) ubuntu@prepare-node:~$ sudo docker images | grep ubuntu
+harbor.example.cn/topsrider/ubuntu                                     amd64-22.04-3.3.112   8bc60905e5fb   4 weeks ago     4.19GB
+ubuntu                                                                       22.04                 a24be041d957   8 weeks ago     77.9MB
+ubuntu                                                                       18.04                 f9a80a55f492   22 months ago   63.2MB
+</code></pre>
+<h4 id="制作-gcu-operator-镜像的准备工作"><a class="header" href="#制作-gcu-operator-镜像的准备工作">制作 GCU Operator 镜像的准备工作</a></h4>
+<p>将 Device Plugin DaemonSet YAML 的环境变量 CUSTOM_REGISTER_RESOURCE 的值修改为 <code>enflame.com/gcu</code>,<code>enflame.com/vgcu</code>：</p>
+<ol>
+<li>背景：
+<ol>
+<li>gcu device plugin 通过环境变量 CUSTOM_REGISTER_RESOURCE 设置要注册的扩展资源名称，默认值是 <code>enflame.com/gcu</code>,<code>enflame-tech.com/gcu</code>,<code>enflame.com/vgcu</code>。</li>
+<li>在非虚拟化环境下，Device Plugin 会在集群内创建两个扩展资源名称 <code>enflame.com/gcu</code>,<code>enflame-tech.com/gcu</code>。</li>
+<li>这两个扩展资源名称是等价的，即一个 GCU 硬件对应一个 <code>enflame.com/gcu</code> 和一个 <code>enflame-tech.com/gcu</code>。</li>
+</ol>
 </li>
-<li>二次开发库：
-<ul>
-<li><a href="https://support.enflame-tech.com/onlinedoc_dev_2.5.115/6-k8s/k8s/Go-eflib/content/source/index.html" target="_blank">Go-Eflib</a>：支持 GCU 设备管理的 Golang API</li>
-</ul>
+<li>修改目的：
+<ol>
+<li>T9k 希望集群内只有扩展资源 <code>enflame.com/gcu</code>。</li>
+<li>制作 GCU Operator 组件镜像前修改环境变量，可以使得部署 GCU Operator 时，无需额外配置，就能让集群内只产生扩展资源 <code>enflame.com/gcu</code>。</li>
+</ol>
 </li>
-<li>设备管理工具：
-<ul>
-<li><a href="https://support.enflame-tech.com/onlinedoc_dev_2.5.115/6-k8s/efml/EFSMI/content/source/index.html" target="_blank">EFSMI</a>：管理 GCU 设置的命令行工具。</li>
-</ul>
+<li>目标文件：下列文件设置了环境变量 <code>CUSTOM_REGISTER_RESOURCE=“enflame.com/gcu,enflame-tech.com/gcu,enflame.com/vgcu”</code>，需要对这些文件进行修改
+<ol>
+<li>enflame-resources/k8s-device-plugin/v2/base/enflame-device-plugin.yaml</li>
+<li>enflame-resources/k8s-device-plugin/v2/cdi/enflame-device-plugin-cdi.yaml</li>
+<li>enflame-resources/k8s-device-plugin/v2/cpu-manager/enflame-device-plugin-compat-with-cpumanager.yaml</li>
+</ol>
 </li>
-</ul>
-<h2 id="安装部署"><a class="header" href="#安装部署">安装部署</a></h2>
-<p>参考<a href="https://support.enflame-tech.com/onlinedoc_dev_2.5.115/6-k8s/k8s/GCU-operator/content/source/enflame_gcu_operator_2_0_user_guide.html#gcu-operator" target="_blank">燧原官方文档</a>，使用 GCU Operator 安装部署燧原驱动和 TopsCloud 产品。</p>
+</ol>
+<pre><code class="language-bash">(base) ubuntu@prepare-node:/data/enflame$ cd topscloud_3.3.20/
+(base) ubuntu@prepare-node:/data/enflame/topscloud_3.3.20$ cd gcu-operator_2.4.6/
+(base) ubuntu@prepare-node:/data/enflame/topscloud_3.3.20/gcu-operator_2.4.6$ ls
+build-component-image.sh  build-operator-image.sh  config.json              delete-operator.sh  dockerfiles        example             g_version.txt  tools
+build-image.conf          component-images         copy-and-load-images.sh  deploy-operator.sh  enflame-resources  gcu-operator-chart  manager
+(base) ubuntu@prepare-node:/data/enflame/topscloud_3.3.20/gcu-operator_2.4.6$ ls enflame-resources/
+container-toolkit  gcu-exporter           gcushare-config-manager  gcushare-scheduler-extender  k8s-driver-manager  node-feature-discovery
+driver             gcu-feature-discovery  gcushare-device-plugin   k8s-device-plugin            node-exporter
+(base) ubuntu@prepare-node:/data/enflame/topscloud_3.3.20/gcu-operator_2.4.6$ tree enflame-resources/k8s-device-plugin/
+Command 'tree' not found, but can be installed with:
+sudo snap install tree  # version 2.1.3+pkg-5852, or
+sudo apt  install tree  # version 2.0.2-1
+See 'snap info tree' for additional versions.
+(base) ubuntu@prepare-node:/data/enflame/topscloud_3.3.20/gcu-operator_2.4.6$ sudo apt  install tree
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+The following packages were automatically installed and are no longer required:
+  libflashrom1 libftdi1-2
+Use 'sudo apt autoremove' to remove them.
+The following NEW packages will be installed:
+  tree
+0 upgraded, 1 newly installed, 0 to remove and 6 not upgraded.
+Need to get 47.9 kB of archives.
+After this operation, 116 kB of additional disk space will be used.
+Get:1 http://mirrors.gsesgpucloud.com/ubuntu jammy/universe amd64 tree amd64 2.0.2-1 [47.9 kB]
+Fetched 47.9 kB in 0s (891 kB/s)
+Selecting previously unselected package tree.
+(Reading database ... 93735 files and directories currently installed.)
+Preparing to unpack .../tree_2.0.2-1_amd64.deb ...
+Unpacking tree (2.0.2-1) ...
+Setting up tree (2.0.2-1) ...
+Processing triggers for man-db (2.10.2-1) ...
+Scanning processes...                                                                                                                                                                            
+Scanning linux images...                                                                                                                                                                         
+No services need to be restarted.
+No containers need to be restarted.
+No user sessions are running outdated binaries.
+No VM guests are running outdated hypervisor (qemu) binaries on this host.
+(base) ubuntu@prepare-node:/data/enflame/topscloud_3.3.20/gcu-operator_2.4.6$ tree enflame-resources/k8s-device-plugin/
+enflame-resources/k8s-device-plugin/
+├── v1
+│   ├── base
+│   │   └── enflame-device-plugin.yaml
+│   └── pcie-switch
+│       ├── clusterrolebinding.yaml
+│       ├── clusterrole.yaml
+│       ├── daemonset.yaml
+│       └── serviceaccount.yaml
+└── v2
+    ├── base
+    │   └── enflame-device-plugin.yaml
+    ├── cdi
+    │   └── enflame-device-plugin-cdi.yaml
+    ├── cpu-manager
+    │   └── enflame-device-plugin-compat-with-cpumanager.yaml
+    └── pcie-switch
+        ├── clusterrolebinding.yaml
+        ├── clusterrole.yaml
+        ├── daemonset.yaml
+        └── serviceaccount.yaml
+8 directories, 12 files
+(base) ubuntu@prepare-node:/data/enflame/topscloud_3.3.20/gcu-operator_2.4.6$ sed -i 's/enflame\.com\/gcu,enflame-tech\.com\/gcu,enflame\.com\/vgcu/enflame\.com\/gcu,enflame\.com\/vgcu/g' enflame-resources/k8s-device-plugin/v2/base/enflame-device-plugin.yaml
+(base) ubuntu@prepare-node:/data/enflame/topscloud_3.3.20/gcu-operator_2.4.6$ sed -i 's/enflame\.com\/gcu,enflame-tech\.com\/gcu,enflame\.com\/vgcu/enflame\.com\/gcu,enflame\.com\/vgcu/g' enflame-resources/k8s-device-plugin/v2/cdi/enflame-device-plugin-cdi.yaml
+(base) ubuntu@prepare-node:/data/enflame/topscloud_3.3.20/gcu-operator_2.4.6$ sed -i 's/enflame\.com\/gcu,enflame-tech\.com\/gcu,enflame\.com\/vgcu/enflame\.com\/gcu,enflame\.com\/vgcu/g' enflame-resources/k8s-device-plugin/v2/cpu-manager/enflame-device-plugin-compat-with-cpumanager.yaml
+</code></pre>
+<h4 id="制作-gcu-operator-镜像"><a class="header" href="#制作-gcu-operator-镜像">制作 GCU Operator 镜像</a></h4>
+<p>运行下列命令构建 Operator 组件镜像：</p>
+<pre><code class="language-bash">(base) ubuntu@prepare-node:/data/enflame/topscloud_3.3.20/gcu-operator_2.4.6$ sudo ./build-operator-image.sh --cli ctr 
+################## config build-image.conf if need #####################
+ OS=ubuntu 
+ CLI_NAME=ctr 
+ REPO_NAME=artifact.enflame.cn/enflame_docker_images/enflame
+ IMAGE_NAME=gcu-operator 
+ TAG=latest 
+ NAMESPACE=k8s.io
+########################################################################
+Clear old image if exist.
+Building image: artifact.enflame.cn/enflame_docker_images/enflame/gcu-operator:latest start...
+[+] Building 1.0s (10/10) FINISHED                                                                                                                                                docker:default
+ =&gt; [internal] load build definition from Dockerfile.ubuntu                                                                                                                                 0.0s
+ =&gt; =&gt; transferring dockerfile: 335B                                                                                                                                                        0.0s
+ =&gt; [internal] load metadata for docker.io/library/ubuntu:18.04                                                                                                                             0.0s
+ =&gt; [internal] load .dockerignore                                                                                                                                                           0.0s
+ =&gt; =&gt; transferring context: 2B                                                                                                                                                             0.0s
+ =&gt; [internal] load build context                                                                                                                                                           0.2s
+ =&gt; =&gt; transferring context: 49.44MB                                                                                                                                                        0.2s
+ =&gt; [1/6] FROM docker.io/library/ubuntu:18.04                                                                                                                                               0.0s
+ =&gt; [2/6] COPY manager /                                                                                                                                                                    0.3s
+ =&gt; [3/6] RUN mkdir -p /opt/gcu-operator                                                                                                                                                    0.2s
+ =&gt; [4/6] COPY enflame-resources /opt/gcu-operator/                                                                                                                                         0.0s
+ =&gt; [5/6] COPY g_version.txt /tmp/                                                                                                                                                          0.1s
+ =&gt; exporting to image                                                                                                                                                                      0.1s
+ =&gt; =&gt; exporting layers                                                                                                                                                                     0.1s
+ =&gt; =&gt; writing image sha256:931aa3d67ca3fd96e4e3669312d9c95ee6ead339be182bf6ce07b5884147a04f                                                                                                0.0s
+ =&gt; =&gt; naming to artifact.enflame.cn/enflame_docker_images/enflame/gcu-operator:latest                                                                                                      0.0s
+The image built successfully.
+Save image package to ./images
+unpacking artifact.enflame.cn/enflame_docker_images/enflame/gcu-operator:latest (sha256:1f304a0a2f88f48d1c75239aece3e273a6986ae3844789787333fe0a5f050132)...done
+List images...
+artifact.enflame.cn/enflame_docker_images/enflame/gcu-operator:latest        application/vnd.oci.image.manifest.v1+json           sha256:1f304a0a2f88f48d1c75239aece3e273a6986ae3844789787333fe0a5f050132 109.7 MiB linux/amd64 - 
+</code></pre>
+<p>离线镜像文件保存在 gcu-operator.tar 中</p>
+<pre><code class="language-bash">(base) ubuntu@prepare-node:/data/enflame/topscloud_3.3.20/gcu-operator_2.4.6$ ls images/
+gcu-operator.tar
+</code></pre>
+<h4 id="制作其他组件镜像"><a class="header" href="#制作其他组件镜像">制作其他组件镜像</a></h4>
+<p>运行下列命令构建软件栈镜像：</p>
+<pre><code class="language-bash">(base) ubuntu@prepare-node:/data/enflame/topscloud_3.3.20/gcu-operator_2.4.6$ sudo ./build-component-image.sh --cli ctr build
+Building component images for system nameID: ubuntu22.04, arch: x86_64 start...
+./build-component-image.sh : cli=ctr, os=ubuntu
+###################### NFD ###########################
+clean node-feature-discovery building files...
+clean success
+Building artifact.enflame.cn/enflame_docker_images/enflame/node-feature-discovery:1.2.20 for system nameID: ubuntu22.04, arch: x86_64 start...
+################## config build-image.conf if need #####################
+ OS=ubuntu 
+ CLI_NAME=ctr 
+ REPO_NAME=artifact.enflame.cn/enflame_docker_images/enflame
+ IMAGE_NAME=node-feature-discovery 
+ TAG=1.2.20 
+ NAMESPACE=k8s.io
+########################################################################
+Clear old image if exist.
+Building image: artifact.enflame.cn/enflame_docker_images/enflame/node-feature-discovery:1.2.20 start...
+[+] Building 0.7s (9/9) FINISHED                                                                                                                                                  docker:default
+ =&gt; [internal] load build definition from Dockerfile.ubuntu                                                                                                                                 0.0s
+ =&gt; =&gt; transferring dockerfile: 354B                                                                                                                                                        0.0s
+ =&gt; WARN: WorkdirRelativePath: Relative workdir &quot;.&quot; can have unexpected results if the base image changes (line 8)                                                                          0.0s
+ =&gt; [internal] load metadata for docker.io/library/ubuntu:18.04                                                                                                                             0.0s
+ =&gt; [internal] load .dockerignore                                                                                                                                                           0.0s
+ =&gt; =&gt; transferring context: 2B                                                                                                                                                             0.0s
+ =&gt; CACHED [1/5] FROM docker.io/library/ubuntu:18.04                                                                                                                                        0.0s
+ =&gt; [internal] load build context                                                                                                                                                           0.3s
+ =&gt; =&gt; transferring context: 87.20MB                                                                                                                                                        0.3s
+ =&gt; [2/5] COPY ./bin/nfd-master /usr/bin/                                                                                                                                                   0.1s
+ =&gt; [3/5] COPY ./bin/nfd-topology-updater /usr/bin/                                                                                                                                         0.1s
+ =&gt; [4/5] COPY ./bin/nfd-worker /usr/bin/                                                                                                                                                   0.0s
+ =&gt; exporting to image                                                                                                                                                                      0.1s
+ =&gt; =&gt; exporting layers                                                                                                                                                                     0.1s
+ =&gt; =&gt; writing image sha256:2c22beb6bad1cad7f84258f87f3e8243d74ee8f6e2dc2d1728f4bcde56e042ce                                                                                                0.0s
+ =&gt; =&gt; naming to artifact.enflame.cn/enflame_docker_images/enflame/node-feature-discovery:1.2.20                                                                                            0.0s
+ 1 warning found (use docker --debug to expand):
+ - WorkdirRelativePath: Relative workdir &quot;.&quot; can have unexpected results if the base image changes (line 8)
+The image built successfully.
+Save image package to ./images
+unpacking artifact.enflame.cn/enflame_docker_images/enflame/node-feature-discovery:1.2.20 (sha256:2ea99a278937b89658559b24b5bd10b6a147c727fcbcd25a0d719efa5d2972ba)...done
+List images...
+artifact.enflame.cn/enflame_docker_images/enflame/node-feature-discovery:1.2.20 application/vnd.oci.image.manifest.v1+json           sha256:2ea99a278937b89658559b24b5bd10b6a147c727fcbcd25a0d719efa5d2972ba 145.6 MiB linux/amd64 -      
+/data/enflame/topscloud_3.3.20/gcu-operator_2.4.6/component-images/nfd
+/data/enflame/topscloud_3.3.20/gcu-operator_2.4.6
+################# CONTAINER TOOLKIT ##################
+clean container-toolkit building files...
+clean success
+Building artifact.enflame.cn/enflame_docker_images/enflame/container-toolkit:2.0.48 for system nameID: ubuntu22.04 start...
+docker build -t artifact.enflame.cn/enflame_docker_images/enflame/container-toolkit:2.0.48 --file dockerfiles/Dockerfile.ubuntu22.04 .
+[+] Building 1.3s (10/10) FINISHED                                                                                                                                                docker:default
+ =&gt; [internal] load build definition from Dockerfile.ubuntu22.04                                                                                                                            0.0s
+ =&gt; =&gt; transferring dockerfile: 300B                                                                                                                                                        0.0s
+ =&gt; [internal] load metadata for docker.io/library/ubuntu:22.04                                                                                                                             0.0s
+ =&gt; [internal] load .dockerignore                                                                                                                                                           0.0s
+ =&gt; =&gt; transferring context: 2B                                                                                                                                                             0.0s
+ =&gt; [1/5] FROM docker.io/library/ubuntu:22.04                                                                                                                                               0.0s
+ =&gt; [internal] load build context                                                                                                                                                           0.2s
+ =&gt; =&gt; transferring context: 47.30MB                                                                                                                                                        0.2s
+ =&gt; [2/5] COPY ./binary/enflame-toolkit /work/                                                                                                                                              0.6s
+ =&gt; [3/5] RUN chmod 755 /work/enflame-toolkit                                                                                                                                               0.3s
+ =&gt; [4/5] WORKDIR /work                                                                                                                                                                     0.0s
+ =&gt; [5/5] COPY ./enflame-container-toolkit_*.run /work/                                                                                                                                     0.1s
+ =&gt; exporting to image                                                                                                                                                                      0.1s
+ =&gt; =&gt; exporting layers                                                                                                                                                                     0.1s
+ =&gt; =&gt; writing image sha256:c0c8ed4565f05ebf2797ccf51c91b3982db44f533c6fe8a50d5b84b15191cbcb                                                                                                0.0s
+ =&gt; =&gt; naming to artifact.enflame.cn/enflame_docker_images/enflame/container-toolkit:2.0.48                                                                                                 0.0s
+unpacking artifact.enflame.cn/enflame_docker_images/enflame/container-toolkit:2.0.48 (sha256:ceb8afd006ff0120b1d68b0937a3fe12b0eef605fcec1c939d40e0958e6edb66)...done
+/data/enflame/topscloud_3.3.20/gcu-operator_2.4.6
+################# K8S PLUGIN ##################
+clean k8s-device-plugin building files...
+clean success
+Building artifact.enflame.cn/enflame_docker_images/enflame/k8s-device-plugin:2.0.30 for system nameID: ubuntu22.04, arch: x86_64 start...
+################## config build-image.conf if need #####################
+ OS=ubuntu 
+ CLI_NAME=ctr 
+ REPO_NAME=artifact.enflame.cn/enflame_docker_images/enflame
+ IMAGE_NAME=k8s-device-plugin 
+ TAG=2.0.30 
+ NAMESPACE=k8s.io
+########################################################################
+Clear old image if exist.
+Building image: artifact.enflame.cn/enflame_docker_images/enflame/k8s-device-plugin:2.0.30 start...
+[+] Building 1.9s (9/9) FINISHED                                                                                                                                                  docker:default
+ =&gt; [internal] load build definition from Dockerfile.ubuntu                                                                                                                                 0.0s
+ =&gt; =&gt; transferring dockerfile: 296B                                                                                                                                                        0.0s
+ =&gt; [internal] load metadata for docker.io/library/ubuntu:18.04                                                                                                                             0.0s
+ =&gt; [internal] load .dockerignore                                                                                                                                                           0.0s
+ =&gt; =&gt; transferring context: 2B                                                                                                                                                             0.0s
+ =&gt; [internal] load build context                                                                                                                                                           0.4s
+ =&gt; =&gt; transferring context: 114.68MB                                                                                                                                                       0.4s
+ =&gt; CACHED [1/4] FROM docker.io/library/ubuntu:18.04                                                                                                                                        0.0s
+ =&gt; [2/4] COPY bin/enflame-device-plugin /usr/bin/                                                                                                                                          0.8s
+ =&gt; [3/4] COPY bin/config-manager /usr/bin/                                                                                                                                                 0.2s
+ =&gt; [4/4] COPY bin/cdi-manager /usr/bin/                                                                                                                                                    0.3s
+ =&gt; exporting to image                                                                                                                                                                      0.1s
+ =&gt; =&gt; exporting layers                                                                                                                                                                     0.1s
+ =&gt; =&gt; writing image sha256:e4b9dc64c22a17ce2a594c534cca69fd7106b83261c93ab7912177d499a92f06                                                                                                0.0s
+ =&gt; =&gt; naming to artifact.enflame.cn/enflame_docker_images/enflame/k8s-device-plugin:2.0.30                                                                                                 0.0s
+The image built successfully.
+Save image package to ./images
+unpacking artifact.enflame.cn/enflame_docker_images/enflame/k8s-device-plugin:2.0.30 (sha256:c4757a310bf25e26ebbb2b051f2e382b3c767439a3dfbba379cd5b5ca00b3d01)...done
+List images...
+artifact.enflame.cn/enflame_docker_images/enflame/k8s-device-plugin:2.0.30      application/vnd.oci.image.manifest.v1+json           sha256:c4757a310bf25e26ebbb2b051f2e382b3c767439a3dfbba379cd5b5ca00b3d01 171.8 MiB linux/amd64 -      
+/data/enflame/topscloud_3.3.20/gcu-operator_2.4.6/component-images/plugin
+/data/enflame/topscloud_3.3.20/gcu-operator_2.4.6
+################# NODE EXPORTER ##################
+clean node-exporter building files...
+clean success
+Building artifact.enflame.cn/enflame_docker_images/enflame/node-exporter:1.0.22 for system nameID: ubuntu22.04, arch: x86_64 start...
+################## config build-image.conf if need #####################
+ OS=ubuntu 
+ CLI_NAME=ctr 
+ REPO_NAME=artifact.enflame.cn/enflame_docker_images/enflame
+ IMAGE_NAME=node-exporter 
+ TAG=1.0.22 
+ NAMESPACE=k8s.io
+########################################################################
+Clear old image if exist.
+Building image: artifact.enflame.cn/enflame_docker_images/enflame/node-exporter:1.0.22 start...
+[+] Building 0.7s (7/7) FINISHED                                                                                                                                                  docker:default
+ =&gt; [internal] load build definition from Dockerfile.ubuntu                                                                                                                                 0.0s
+ =&gt; =&gt; transferring dockerfile: 215B                                                                                                                                                        0.0s
+ =&gt; WARN: WorkdirRelativePath: Relative workdir &quot;.&quot; can have unexpected results if the base image changes (line 5)                                                                          0.0s
+ =&gt; [internal] load metadata for docker.io/library/ubuntu:18.04                                                                                                                             0.0s
+ =&gt; [internal] load .dockerignore                                                                                                                                                           0.0s
+ =&gt; =&gt; transferring context: 2B                                                                                                                                                             0.0s
+ =&gt; [internal] load build context                                                                                                                                                           0.1s
+ =&gt; =&gt; transferring context: 19.93MB                                                                                                                                                        0.1s
+ =&gt; CACHED [1/3] FROM docker.io/library/ubuntu:18.04                                                                                                                                        0.0s
+ =&gt; [2/3] COPY ./bin/node_exporter /usr/bin/                                                                                                                                                0.5s
+ =&gt; exporting to image                                                                                                                                                                      0.1s
+ =&gt; =&gt; exporting layers                                                                                                                                                                     0.1s
+ =&gt; =&gt; writing image sha256:18f5c04a825905ab9399b6a1af21f5285b96baf0e5c8a79f5db5b1ef67d65705                                                                                                0.0s
+ =&gt; =&gt; naming to artifact.enflame.cn/enflame_docker_images/enflame/node-exporter:1.0.22                                                                                                     0.0s
+ 1 warning found (use docker --debug to expand):
+ - WorkdirRelativePath: Relative workdir &quot;.&quot; can have unexpected results if the base image changes (line 5)
+The image built successfully.
+Save image package to ./images
+unpacking artifact.enflame.cn/enflame_docker_images/enflame/node-exporter:1.0.22 (sha256:501ada9c868be52cd4fe581d81b305719b55e14853432c4f46d2678dd07ca6b7)...done
+List images...
+artifact.enflame.cn/enflame_docker_images/enflame/node-exporter:1.0.22          application/vnd.oci.image.manifest.v1+json           sha256:501ada9c868be52cd4fe581d81b305719b55e14853432c4f46d2678dd07ca6b7 81.5 MiB  linux/amd64 -      
+/data/enflame/topscloud_3.3.20/gcu-operator_2.4.6/component-images/node-exporter
+/data/enflame/topscloud_3.3.20/gcu-operator_2.4.6
+################# GCU EXPORTER ##################
+clean gcu-exporter building files...
+clean success
+Building artifact.enflame.cn/enflame_docker_images/enflame/gcu-exporter:1.5.1 for system nameID: ubuntu22.04, arch: x86_64 start...
+################## config build-image.conf if need #####################
+ OS=ubuntu 
+ CLI_NAME=ctr 
+ REPO_NAME=artifact.enflame.cn/enflame_docker_images/enflame
+ IMAGE_NAME=gcu-exporter 
+ TAG=1.5.1 
+ NAMESPACE=k8s.io
+########################################################################
+Clear old image if exist.
+Building image: artifact.enflame.cn/enflame_docker_images/enflame/gcu-exporter:1.5.1 start...
+[+] Building 9.4s (8/8) FINISHED                                                                                                                                                  docker:default
+ =&gt; [internal] load build definition from Dockerfile.ubuntu                                                                                                                                 0.0s
+ =&gt; =&gt; transferring dockerfile: 248B                                                                                                                                                        0.0s
+ =&gt; [internal] load metadata for docker.io/library/ubuntu:18.04                                                                                                                             0.0s
+ =&gt; [internal] load .dockerignore                                                                                                                                                           0.0s
+ =&gt; =&gt; transferring context: 2B                                                                                                                                                             0.0s
+ =&gt; CACHED [1/3] FROM docker.io/library/ubuntu:18.04                                                                                                                                        0.0s
+ =&gt; [internal] load build context                                                                                                                                                           0.1s
+ =&gt; =&gt; transferring context: 19.45MB                                                                                                                                                        0.1s
+ =&gt; [2/3] RUN apt-get update &amp;&amp; apt-get install -y dmidecode                                                                                                                                9.1s
+ =&gt; [3/3] COPY gcu-exporter /usr/bin/                                                                                                                                                       0.1s
+ =&gt; exporting to image                                                                                                                                                                      0.1s 
+ =&gt; =&gt; exporting layers                                                                                                                                                                     0.1s 
+ =&gt; =&gt; writing image sha256:c2a84e6ac6c5d169e50fd38d274819fa8f8ffbb7ab3b3f040363926ec9d39653                                                                                                0.0s 
+ =&gt; =&gt; naming to artifact.enflame.cn/enflame_docker_images/enflame/gcu-exporter:1.5.1                                                                                                       0.0s 
+The image built successfully.                                                                                                                                                                    
+Save image package to ./images
+unpacking artifact.enflame.cn/enflame_docker_images/enflame/gcu-exporter:1.5.1 (sha256:6e000c82aba1cd15ed59c5a4bae32ea911b14c5c51e02928e01570677d772498)...done
+List images...
+artifact.enflame.cn/enflame_docker_images/enflame/gcu-exporter:1.5.1            application/vnd.oci.image.manifest.v1+json           sha256:6e000c82aba1cd15ed59c5a4bae32ea911b14c5c51e02928e01570677d772498 125.6 MiB linux/amd64 -      
+/data/enflame/topscloud_3.3.20/gcu-operator_2.4.6/component-images/gcu-exporter
+/data/enflame/topscloud_3.3.20/gcu-operator_2.4.6
+################## GFD ##########################
+clean gcu-feature-discovery building files...
+clean success
+Building artifact.enflame.cn/enflame_docker_images/enflame/gcu-feature-discovery:1.3.20 for system nameID: ubuntu22.04, arch: x86_64 start...
+################## config build-image.conf if need #####################
+ OS=ubuntu 
+ CLI_NAME=ctr 
+ REPO_NAME=artifact.enflame.cn/enflame_docker_images/enflame
+ IMAGE_NAME=gcu-feature-discovery 
+ TAG=1.3.20 
+ NAMESPACE=k8s.io
+########################################################################
+Clear old image if exist.
+Building image: artifact.enflame.cn/enflame_docker_images/enflame/gcu-feature-discovery:1.3.20 start...
+[+] Building 0.2s (9/9) FINISHED                                                                                                                                                  docker:default
+ =&gt; [internal] load build definition from Dockerfile.ubuntu                                                                                                                                 0.0s
+ =&gt; =&gt; transferring dockerfile: 301B                                                                                                                                                        0.0s
+ =&gt; [internal] load metadata for docker.io/library/ubuntu:18.04                                                                                                                             0.0s
+ =&gt; [internal] load .dockerignore                                                                                                                                                           0.0s
+ =&gt; =&gt; transferring context: 2B                                                                                                                                                             0.0s
+ =&gt; CACHED [1/4] FROM docker.io/library/ubuntu:18.04                                                                                                                                        0.0s
+ =&gt; [internal] load build context                                                                                                                                                           0.0s
+ =&gt; =&gt; transferring context: 2.37MB                                                                                                                                                         0.0s
+ =&gt; [2/4] COPY ./config/gfd.json /tmp/                                                                                                                                                      0.0s
+ =&gt; [3/4] COPY ./config/topscloud.json /tmp/                                                                                                                                                0.0s
+ =&gt; [4/4] COPY ./gcu-feature-discovery /usr/bin/                                                                                                                                            0.0s
+ =&gt; exporting to image                                                                                                                                                                      0.0s
+ =&gt; =&gt; exporting layers                                                                                                                                                                     0.0s
+ =&gt; =&gt; writing image sha256:b1447487dfdc4d476a1f6689ff76939b85f2a1d6a4439459ef2b0d38c1f171f5                                                                                                0.0s
+ =&gt; =&gt; naming to artifact.enflame.cn/enflame_docker_images/enflame/gcu-feature-discovery:1.3.20                                                                                             0.0s
+The image built successfully.
+Save image package to ./images
+unpacking artifact.enflame.cn/enflame_docker_images/enflame/gcu-feature-discovery:1.3.20 (sha256:fd5871556f382f36168edd5bf8bae082aefd569627793f2a3b50873a0c7141ef)...done
+List images...
+artifact.enflame.cn/enflame_docker_images/enflame/gcu-feature-discovery:1.3.20  application/vnd.oci.image.manifest.v1+json           sha256:fd5871556f382f36168edd5bf8bae082aefd569627793f2a3b50873a0c7141ef 64.8 MiB  linux/amd64 -      
+/data/enflame/topscloud_3.3.20/gcu-operator_2.4.6/component-images/gfd
+/data/enflame/topscloud_3.3.20/gcu-operator_2.4.6
+Build all images success!
+(base) ubuntu@prepare-node:/data/enflame/topscloud_3.3.20/gcu-operator_2.4.6$ ls -al images/
+total 840664
+drwxr-xr-x 2 root   root        4096 Mar 26 12:52 .
+drwxr-xr-x 9 ubuntu ubuntu      4096 Mar 26 12:29 ..
+-rw------- 1 root   root   127725568 Mar 26 12:52 container-toolkit.tar
+-rw------- 1 root   root   131739648 Mar 26 12:52 gcu-exporter.tar
+-rw------- 1 root   root    67921920 Mar 26 12:52 gcu-feature-discovery.tar
+-rw------- 1 root   root   115021824 Mar 26 12:29 gcu-operator.tar
+-rw------- 1 root   root   180206592 Mar 26 12:52 k8s-device-plugin.tar
+-rw------- 1 root   root    85471232 Mar 26 12:52 node-exporter.tar
+-rw------- 1 root   root   152738304 Mar 26 12:51 node-feature-discovery.tar
+</code></pre>
+<h4 id="上传镜像到本地镜像仓库"><a class="header" href="#上传镜像到本地镜像仓库">上传镜像到本地镜像仓库</a></h4>
+<p>在本地镜像仓库创建 Project enflame。</p>
+<p>登陆庆阳集群本地镜像仓库</p>
+<pre><code class="language-bash">(base) ubuntu@prepare-node:~$ sudo docker login harbor.example.cn
+</code></pre>
+<p>运行下列命令，将构建的镜像上传到本地镜像仓库：</p>
+<pre><code class="language-bash">(base) ubuntu@prepare-node:~/tmp$ sudo docker images | grep artifact.enflame.cn
+artifact.enflame.cn/enflame_docker_images/enflame/gcu-feature-discovery      1.3.20                b1447487dfdc   4 minutes ago    65.5MB
+artifact.enflame.cn/enflame_docker_images/enflame/gcu-exporter               1.5.1                 c2a84e6ac6c5   4 minutes ago    129MB
+artifact.enflame.cn/enflame_docker_images/enflame/node-exporter              1.0.22                18f5c04a8259   4 minutes ago    83.1MB
+artifact.enflame.cn/enflame_docker_images/enflame/k8s-device-plugin          2.0.30                e4b9dc64c22a   4 minutes ago    178MB
+artifact.enflame.cn/enflame_docker_images/enflame/container-toolkit          2.0.48                c0c8ed4565f0   4 minutes ago    167MB
+artifact.enflame.cn/enflame_docker_images/enflame/node-feature-discovery     1.2.20                2c22beb6bad1   5 minutes ago    150MB
+artifact.enflame.cn/enflame_docker_images/enflame/gcu-operator               latest                931aa3d67ca3   27 minutes ago   113MB
+(base) ubuntu@prepare-node:~/tmp$ sudo docker images | grep artifact.enflame.cn | awk '{print $1&quot;:&quot;$2}' &gt; images.txt
+(base) ubuntu@prepare-node:~/tmp$ cat images.txt 
+artifact.enflame.cn/enflame_docker_images/enflame/gcu-feature-discovery:1.3.20
+artifact.enflame.cn/enflame_docker_images/enflame/gcu-exporter:1.5.1
+artifact.enflame.cn/enflame_docker_images/enflame/node-exporter:1.0.22
+artifact.enflame.cn/enflame_docker_images/enflame/k8s-device-plugin:2.0.30
+artifact.enflame.cn/enflame_docker_images/enflame/container-toolkit:2.0.48
+artifact.enflame.cn/enflame_docker_images/enflame/node-feature-discovery:1.2.20
+artifact.enflame.cn/enflame_docker_images/enflame/gcu-operator:latest
+(base) ubuntu@prepare-node:~/tmp$ sudo docker login harbor.example.cn
+Authenticating with existing credentials...
+WARNING! Your password will be stored unencrypted in /root/.docker/config.json.
+Configure a credential helper to remove this warning. See
+https://docs.docker.com/engine/reference/commandline/login/#credential-stores
+Login Succeeded
+(base) ubuntu@prepare-node:~/tmp$ while read -r image; do 
+    new_image=$(echo &quot;$image&quot; | sed 's#artifact.enflame.cn/enflame_docker_images/enflame#harbor.example.cn/enflame#')
+    sudo docker tag &quot;$image&quot; &quot;$new_image&quot;
+    sudo docker push &quot;$new_image&quot;
+done &lt; images.txt
+The push refers to repository [harbor.example.cn/enflame/gcu-feature-discovery]
+5a182f63e4c7: Pushed 
+ccb6198e1066: Pushed 
+5921243a78b8: Pushed 
+548a79621a42: Pushed 
+1.3.20: digest: sha256:44da1863a915f432c3aac4eb6fb932f0a6720c2d43aaa871ac1d5d1f37a9c63f size: 1154
+The push refers to repository [harbor.example.cn/enflame/gcu-exporter]
+89976fc89a2d: Pushed 
+ef95026af328: Pushed 
+548a79621a42: Mounted from enflame/gcu-feature-discovery 
+1.5.1: digest: sha256:1f6eb8543c475be62dfed0c6a30cd6fa461614d75fcfed29de8e3af9081c2b49 size: 952
+The push refers to repository [harbor.example.cn/enflame/node-exporter]
+e2703f193497: Pushed 
+548a79621a42: Mounted from enflame/gcu-exporter 
+1.0.22: digest: sha256:b29cb6c817d0ab487a4fe281b9f33f617f6ae22d57b5551ceafd1ec2ba745c1f size: 741
+The push refers to repository [harbor.example.cn/enflame/k8s-device-plugin]
+cd9e0e9b0792: Pushed 
+e509e61c4fae: Pushed 
+4f008ac6f108: Pushed 
+548a79621a42: Mounted from enflame/node-exporter 
+2.0.30: digest: sha256:7039f62c6e8826f87b37c999124f65eb542fd4e03bbad61a93c375e54d950b49 size: 1165
+The push refers to repository [harbor.example.cn/enflame/container-toolkit]
+d82f41325aea: Pushed 
+5f70bf18a086: Mounted from t9k/homepage-web 
+854134f7112a: Pushed 
+270a1170e7e3: Pushed 
+2.0.48: digest: sha256:09e8d1d9274e60119e8f24f8c87fe90e4c58eb5460a78ba8f0ee14baa4814be9 size: 1370
+The push refers to repository [harbor.example.cn/enflame/node-feature-discovery]
+fd2051d0b25c: Pushed 
+040d07927a78: Pushed 
+156273f1b8ad: Pushed 
+548a79621a42: Mounted from enflame/k8s-device-plugin 
+1.2.20: digest: sha256:e954ea41b025eba7b0a6288f34c3002d63fa3dfcfce8d7a2a974c5a71a1f52b6 size: 1164
+The push refers to repository [harbor.example.cn/enflame/gcu-operator]
+949db88057e0: Pushed 
+c8e8c0389986: Pushed 
+0d07471934f3: Pushed 
+f59ac6f3091d: Pushed 
+548a79621a42: Mounted from enflame/node-feature-discovery 
+latest: digest: sha256:f6b7ba0e83dad3e3ffea4ad6cc9829f315ba6f56d2f909c610a465a7c9160a52 size: 1363
+</code></pre>
+<h3 id="安装部署"><a class="header" href="#安装部署">安装部署</a></h3>
+<h4 id="安装前准备"><a class="header" href="#安装前准备">安装前准备</a></h4>
+<h5 id="访问集群的权限"><a class="header" href="#访问集群的权限">访问集群的权限</a></h5>
+<p>在 prepare-node 节点上配置访问 K8s 集群的权限。</p>
+<h5 id="修改-chart-valuesyaml"><a class="header" href="#修改-chart-valuesyaml">修改 chart values.yaml</a></h5>
+<p>修改 gcu-operator-chart 的 values.yaml:将 repository 设置为 <code>harbor.example.cn/enflame</code></p>
+<pre><code class="language-bash">ubuntu@prepare-node:/data/enflame/topscloud_3.3.20/gcu-operator_2.4.6$ ls
+build-component-image.sh  build-operator-image.sh  config.json              delete-operator.sh  dockerfiles        example             g_version.txt  manager
+build-image.conf          component-images         copy-and-load-images.sh  deploy-operator.sh  enflame-resources  gcu-operator-chart  images         tools
+ubuntu@prepare-node:/data/enflame/topscloud_3.3.20/gcu-operator_2.4.6$ mkdir backup
+ubuntu@prepare-node:/data/enflame/topscloud_3.3.20/gcu-operator_2.4.6$ cp gcu-operator-chart/values.yaml backup/gcu-operator-chart-values.yaml
+ubuntu@prepare-node:/data/enflame/topscloud_3.3.20/gcu-operator_2.4.6$ vi gcu-operator-chart/values.yaml 
+ubuntu@prepare-node:/data/enflame/topscloud_3.3.20/gcu-operator_2.4.6$ diff -u --color backup/gcu-operator-chart-values.yaml gcu-operator-chart/values.yaml 
+--- backup/gcu-operator-chart-values.yaml	2025-03-26 16:42:55.859131569 +0800
++++ gcu-operator-chart/values.yaml	2025-03-26 16:43:44.985810738 +0800
+@@ -6,7 +6,7 @@
+ replicaCount: 1
+ 
+ image:
+-  repository: artifact.enflame.cn/enflame_docker_images/enflame
++  repository: harbor.example.cn/enflame
+   name: gcu-operator
+   pullPolicy: IfNotPresent
+   tag: latest
+</code></pre>
+<h5 id="修改-gcuresource"><a class="header" href="#修改-gcuresource">修改 GCUResource</a></h5>
+<p>5.2.2 修改 GCUResource
+修改 example/gcu-resource.json：</p>
+<ol>
+<li>将 image repository 修改为 <code>harbor.example.cn/enflame</code></li>
+<li>禁止安装 nodeExporter，原因如下：
+<ol>
+<li>与 T9k 安装的 node exporter 冲突</li>
+<li>没有发现 GCU Operator 其他组件依赖 nodeExporter</li>
+</ol>
+</li>
+<li>为部分组件添加 nodeSelector <code>&quot;node-role.kubernetes.io/compute&quot;: &quot;&quot;</code>，使得这些组件只运行在 worker 节点上。</li>
+<li>为部分组件添加 nodeSelector <code>&quot;t9k.enflame.com/driver.installed&quot;: &quot;true&quot;</code>，避免组件在 driver 未安装之前就运行在节点上。</li>
+</ol>
+<pre><code class="language-bash">ubuntu@prepare-node:/data/enflame/topscloud_3.3.20/gcu-operator_2.4.6$ mv example/gcu-resource.json backup/gcu-resource.json
+ubuntu@prepare-node:/data/enflame/topscloud_3.3.20/gcu-operator_2.4.6$ vi example/gcu-resource.json
+ubuntu@prepare-node:/data/enflame/topscloud_3.3.20/gcu-operator_2.4.6$ diff -u --color backup/gcu-resource.json example/gcu-resource.json 
+--- backup/gcu-resource.json	2025-03-26 16:32:21.820178761 +0800
++++ example/gcu-resource.json	2025-03-26 16:58:28.742050722 +0800
+@@ -13,13 +13,13 @@
+ 				&quot;image&quot;: &quot;node-feature-discovery&quot;,
+ 				&quot;version&quot;: &quot;default&quot;,
+ 				&quot;imagePullPolicy&quot;: &quot;IfNotPresent&quot;,
+-				&quot;repository&quot;: &quot;artifact.enflame.cn/enflame_docker_images/enflame&quot;
++				&quot;repository&quot;: &quot;harbor.example.cn/enflame&quot;
+ 			},
+ 			&quot;worker&quot;: {
+ 				&quot;image&quot;: &quot;node-feature-discovery&quot;,
+ 				&quot;version&quot;: &quot;default&quot;,
+ 				&quot;imagePullPolicy&quot;: &quot;IfNotPresent&quot;,
+-				&quot;repository&quot;: &quot;artifact.enflame.cn/enflame_docker_images/enflame&quot;
++				&quot;repository&quot;: &quot;harbor.example.cn/enflame&quot;
+ 			}
+ 		},
+ 		&quot;driver&quot;: {
+@@ -40,9 +40,10 @@
+ 			&quot;namespace&quot;: &quot;kube-system&quot;,
+ 			&quot;imagePullPolicy&quot;: &quot;IfNotPresent&quot;,
+ 			&quot;nodeSelector&quot;: {
++                &quot;node-role.kubernetes.io/compute&quot;: &quot;&quot;,
+ 				&quot;enflame.com/gcu.present&quot;: &quot;true&quot;
+ 			},
+-			&quot;repository&quot;: &quot;artifact.enflame.cn/enflame_docker_images/enflame&quot;
++			&quot;repository&quot;: &quot;harbor.example.cn/enflame&quot;
+ 		},
+ 		&quot;containerToolkit&quot;: {
+ 			&quot;env&quot;: [
+@@ -69,9 +70,11 @@
+ 			&quot;namespace&quot;: &quot;kube-system&quot;,
+ 			&quot;imagePullPolicy&quot;: &quot;IfNotPresent&quot;,
+ 			&quot;nodeSelector&quot;: {
++                &quot;t9k.enflame.com/driver.installed&quot;: &quot;true&quot;,
++                &quot;node-role.kubernetes.io/compute&quot;: &quot;&quot;,
+ 				&quot;enflame.com/gcu.present&quot;: &quot;true&quot;
+ 			},
+-			&quot;repository&quot;: &quot;artifact.enflame.cn/enflame_docker_images/enflame&quot;
++			&quot;repository&quot;: &quot;harbor.example.cn/enflame&quot;
+ 		},
+ 		&quot;devicePlugin&quot;: {
+ 			&quot;image&quot;: &quot;k8s-device-plugin&quot;,
+@@ -80,11 +83,13 @@
+ 			&quot;namespace&quot;: &quot;kube-system&quot;,
+ 			&quot;imagePullPolicy&quot;: &quot;IfNotPresent&quot;,
+ 			&quot;nodeSelector&quot;: {
++                &quot;t9k.enflame.com/driver.installed&quot;: &quot;true&quot;,
++                &quot;node-role.kubernetes.io/compute&quot;: &quot;&quot;,
+ 				&quot;enflame.com/gcu.present&quot;: &quot;true&quot;
+ 			},
+ 			&quot;command&quot;: [&quot;/usr/bin/enflame-device-plugin&quot;],
+ 			&quot;args&quot;: [],
+-			&quot;repository&quot;: &quot;artifact.enflame.cn/enflame_docker_images/enflame&quot;
++			&quot;repository&quot;: &quot;harbor.example.cn/enflame&quot;
+ 		},
+ 		&quot;gcuExporter&quot;: {
+ 			&quot;notDeploy&quot;: false,
+@@ -94,12 +99,14 @@
+ 			&quot;namespace&quot;: &quot;kube-system&quot;,
+ 			&quot;imagePullPolicy&quot;: &quot;IfNotPresent&quot;,
+ 			&quot;nodeSelector&quot;: {
++                &quot;t9k.enflame.com/driver.installed&quot;: &quot;true&quot;,
++                &quot;node-role.kubernetes.io/compute&quot;: &quot;&quot;,
+ 				&quot;enflame.com/gcu.present&quot;: &quot;true&quot;
+ 			},
+-			&quot;repository&quot;: &quot;artifact.enflame.cn/enflame_docker_images/enflame&quot;
++			&quot;repository&quot;: &quot;harbor.example.cn/enflame&quot;
+ 		},
+ 		&quot;nodeExporter&quot;: {
+-			&quot;notDeploy&quot;: false,
++			&quot;notDeploy&quot;: true,
+ 			&quot;image&quot;: &quot;node-exporter&quot;,
+ 			&quot;version&quot;: &quot;default&quot;,
+ 			&quot;name&quot;: &quot;enflame-node-exporter&quot;,
+@@ -108,7 +115,7 @@
+ 			&quot;nodeSelector&quot;: {
+ 				&quot;enflame.com/gcu.present&quot;: &quot;true&quot;
+ 			},
+-			&quot;repository&quot;: &quot;artifact.enflame.cn/enflame_docker_images/enflame&quot;
++			&quot;repository&quot;: &quot;harbor.example.cn/enflame&quot;
+ 		},
+ 		&quot;gfd&quot;: {
+ 			&quot;image&quot;: &quot;gcu-feature-discovery&quot;,
+@@ -117,9 +124,11 @@
+ 			&quot;namespace&quot;: &quot;kube-system&quot;,
+ 			&quot;imagePullPolicy&quot;: &quot;IfNotPresent&quot;,
+ 			&quot;nodeSelector&quot;: {
++                &quot;t9k.enflame.com/driver.installed&quot;: &quot;true&quot;,
++                &quot;node-role.kubernetes.io/compute&quot;: &quot;&quot;,
+ 				&quot;enflame.com/gcu.present&quot;: &quot;true&quot;
+ 			},
+-			&quot;repository&quot;: &quot;artifact.enflame.cn/enflame_docker_images/enflame&quot;
++			&quot;repository&quot;: &quot;harbor.example.cn/enflame&quot;
+ 		},
+ 		&quot;gcusharePlugin&quot;: {
+ 			&quot;notDeploy&quot;: true,
+@@ -129,11 +138,13 @@
+ 			&quot;namespace&quot;: &quot;kube-system&quot;,
+ 			&quot;imagePullPolicy&quot;: &quot;IfNotPresent&quot;,
+ 			&quot;nodeSelector&quot;: {
++                &quot;t9k.enflame.com/driver.installed&quot;: &quot;true&quot;,
++                &quot;node-role.kubernetes.io/compute&quot;: &quot;&quot;,
+ 				&quot;enflame.com/gcu.present&quot;: &quot;true&quot;
+ 			},
+ 			&quot;memoryUnit&quot;: &quot;1&quot;,
+ 			&quot;gcushareNodes&quot;: [],
+-			&quot;repository&quot;: &quot;artifact.enflame.cn/enflame_docker_images/enflame&quot;
++			&quot;repository&quot;: &quot;harbor.example.cn/enflame&quot;
+ 		},
+ 		&quot;gcushareScheduler&quot;: {
+ 			&quot;notDeploy&quot;: true,
+@@ -143,9 +154,11 @@
+ 			&quot;namespace&quot;: &quot;kube-system&quot;,
+ 			&quot;imagePullPolicy&quot;: &quot;IfNotPresent&quot;,
+ 			&quot;nodeSelector&quot;: {
++                &quot;t9k.enflame.com/driver.installed&quot;: &quot;true&quot;,
++                &quot;node-role.kubernetes.io/compute&quot;: &quot;&quot;,
+ 				&quot;enflame.com/gcu.present&quot;: &quot;true&quot;
+ 			},
+-			&quot;repository&quot;: &quot;artifact.enflame.cn/enflame_docker_images/enflame&quot;
++			&quot;repository&quot;: &quot;harbor.example.cn/enflame&quot;
+ 		},
+ 		&quot;gcushareConfigManager&quot;: {
+ 			&quot;notDeploy&quot;: true,
+@@ -154,7 +167,7 @@
+ 			&quot;version&quot;: &quot;default&quot;,
+ 			&quot;namespace&quot;: &quot;kube-system&quot;,
+ 			&quot;imagePullPolicy&quot;: &quot;IfNotPresent&quot;,
+-			&quot;repository&quot;: &quot;artifact.enflame.cn/enflame_docker_images/enflame&quot;
++			&quot;repository&quot;: &quot;harbor.example.cn/enflame&quot;
+ 		},
+ 		&quot;k8sDriverManager&quot;: {
+ 			&quot;notDeploy&quot;: true,
+@@ -164,9 +177,11 @@
+ 			&quot;namespace&quot;: &quot;kube-system&quot;,
+ 			&quot;imagePullPolicy&quot;: &quot;IfNotPresent&quot;,
+ 			&quot;nodeSelector&quot;: {
++                &quot;t9k.enflame.com/driver.installed&quot;: &quot;true&quot;,
++                &quot;node-role.kubernetes.io/compute&quot;: &quot;&quot;,
+ 				&quot;enflame.com/gcu.present&quot;: &quot;true&quot;
+ 			},
+-			&quot;repository&quot;: &quot;artifact.enflame.cn/enflame_docker_images/enflame&quot;
++			&quot;repository&quot;: &quot;harbor.example.cn/enflame&quot;
+ 		}
+ 	}
+ }
+</code></pre>
+<h5 id="gcu-节点添加标签"><a class="header" href="#gcu-节点添加标签">GCU 节点添加标签</a></h5>
+<p>为 GCU 节点添加标签 <code>t9k.enflame.com/driver.installed=&quot;true&quot;</code>。</p>
+<p>如果所有的 Compute 节点都是 GCU 节点，可以参考下列命令为节点添加标签：</p>
+<pre><code>$ kubectl get node -l node-role.kubernetes.io/compute=&quot;&quot;
+NAME         STATUS   ROLES     AGE   VERSION
+worker-78    Ready    compute   25d   v1.30.4
+worker-79    Ready    compute   25d   v1.30.4
+$ kubectl label node $(k get node -l node-role.kubernetes.io/compute=&quot;&quot; | awk 'NR&gt;1 {print $1}') t9k.enflame.com/driver.installed=&quot;true&quot;
+node/worker-78 labeled
+node/worker-79 labeled
+</code></pre>
+<h4 id="安装-gcu-operator-1"><a class="header" href="#安装-gcu-operator-1">安装 GCU Operator</a></h4>
+<p>运行下列命令安装 GCU Operator</p>
+<pre><code class="language-bash">ubuntu@prepare-node:/data/enflame/topscloud_3.3.20/gcu-operator_2.4.6$ ./deploy-operator.sh 
+WARN: It is detected that KMD is not installed on the system, the following information is useful for you:
+#####################
+1. It is recommended that you install KMD on all GCU nodes in the k8s cluster before deploying gcu-operator
+2. You can also use gcu-operator to automatically install KMD for all GCU nodes in the cluster, then you need to do two things:
+            1) The gcu-resource.yaml file and gcu-resrouce.json file provided by gcu-operator do not install drivers by default. 
+                * If you deploy gcuResource together with gcu-operator(values.gcuResource.deploy=true), make sure 'gcuResource.driver.notDeploy=false' in values.yaml;
+                * If you deploy gcuResource after installing gcu-operator(values.gcuResource.deploy=false), make sure 'spec.driver.notDeploy=false' in example/gcu-resource.json;
+            2) Specify the absolute path to your driver package via fields: driver.path and set driver.build=true in config.json,
+                the driver path can usually be found in the topsrider package. This path usually contains the following:
+                # ll &lt;your-path&gt;/x86_64-linux-rel/lib/TopsPlatform_*-*_deb_amd64/driver/
+                drwxr-xr-x  2 root     root         4096 Mar 13 11:30 ./
+                drwx------ 10 root     root         4096 Mar 13 11:31 ../
+                -rwxr--r--  1 ci_build ci_build   197547 Mar 11 16:16 enflame_peer_mem-x86_64-gcc-*.run
+                -rwxr--r--  1 ci_build ci_build   259268 Mar 11 16:16 enflame_virt-x86_64-gcc-*.run
+                -rwxr--r--  1 ci_build ci_build 72207575 Mar 11 16:16 enflame-x86_64-gcc-*.run
+            Next, you can build the driver image according to the user guide.
+#####################
+Deploy gcu-operator release start...
+NAME: gcu-operator
+LAST DEPLOYED: Wed Mar 26 16:59:55 2025
+NAMESPACE: kube-system
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+Do you want to create gcu-resource now?(y/yes, n/no)?
+n
+exit
+note: you can execute command 'kubectl create -f ./example/gcu-resource.json' manually to create gcu resource
+$ kubectl -n kube-system get pod  | grep gcu
+gcu-operator-64b5c879cf-mjn6c          1/1     Running            0                66s
+$ kubectl -n kube-system logs gcu-operator-64b5c879cf-mjn6c
+I0326 08:59:58.292964       1 request.go:601] Waited for 1.044248505s due to client-side throttling, not priority and fairness, request: GET:https://10.233.0.1:443/apis/longhorn.io/v1beta2?timeout=32s
+1.742979599145102e+09	INFO	controller-runtime.metrics	Metrics server is starting to listen	{&quot;addr&quot;: &quot;:8080&quot;}
+W0326 08:59:59.145419       1 client_config.go:617] Neither --kubeconfig nor --master was specified.  Using the inClusterConfig.  This might not work.
+I0326 08:59:59.145794       1 leaderelection.go:248] attempting to acquire leader lease kube-system/4d4668d3.enflame.com...
+1.742979599145801e+09	INFO	Starting server	{&quot;kind&quot;: &quot;health probe&quot;, &quot;addr&quot;: &quot;[::]:8081&quot;}
+1.7429795991458006e+09	INFO	Starting server	{&quot;path&quot;: &quot;/metrics&quot;, &quot;kind&quot;: &quot;metrics&quot;, &quot;addr&quot;: &quot;[::]:8080&quot;}
+I0326 09:00:18.231462       1 leaderelection.go:258] successfully acquired lease kube-system/4d4668d3.enflame.com
+1.7429796182316618e+09	INFO	Starting EventSource	{&quot;controller&quot;: &quot;gcuresource&quot;, &quot;controllerGroup&quot;: &quot;topscloud.enflame.com&quot;, &quot;controllerKind&quot;: &quot;GcuResource&quot;, &quot;source&quot;: &quot;kind source: *v1.GcuResource&quot;}
+1.742979618231728e+09	INFO	Starting Controller	{&quot;controller&quot;: &quot;gcuresource&quot;, &quot;controllerGroup&quot;: &quot;topscloud.enflame.com&quot;, &quot;controllerKind&quot;: &quot;GcuResource&quot;}
+1.7429796182316408e+09	DEBUG	events	Normal	{&quot;object&quot;: {&quot;kind&quot;:&quot;Lease&quot;,&quot;namespace&quot;:&quot;kube-system&quot;,&quot;name&quot;:&quot;4d4668d3.enflame.com&quot;,&quot;uid&quot;:&quot;7d974ffa-bd10-4fbc-9cb0-4c40b404eef5&quot;,&quot;apiVersion&quot;:&quot;coordination.k8s.io/v1&quot;,&quot;resourceVersion&quot;:&quot;159563644&quot;}, &quot;reason&quot;: &quot;LeaderElection&quot;, &quot;message&quot;: &quot;master-3_0387706f-f0fc-40ad-9315-6a3fd049baa6 became leader&quot;}
+1.7429796183326051e+09	INFO	Starting workers	{&quot;controller&quot;: &quot;gcuresource&quot;, &quot;controllerGroup&quot;: &quot;topscloud.enflame.com&quot;, &quot;controllerKind&quot;: &quot;GcuResource&quot;, &quot;worker count&quot;: 1}
+</code></pre>
+<p>运行下列命令，创建 GCUResource，配置 GCU Operator 部署组件：</p>
+<pre><code class="language-bash">ubuntu@prepare-node:/data/enflame/topscloud_3.3.20/gcu-operator_2.4.6$ kubectl create -f example/gcu-resource.json 
+gcuresource.topscloud.enflame.com/enflame-gcu-resource created
+</code></pre>
+<p>稍等一会，查看 GCU Operator 组件运行情况：</p>
+<pre><code class="language-bash">$ kubectl -n kube-system get pod -o wide | grep enflame
+enflame-container-toolkit-8bspz        1/1     Running            0                7m43s   10.233.78.69    worker-78    &lt;none&gt;           &lt;none&gt;
+enflame-container-toolkit-lp2jk        1/1     Running            0                7m43s   10.233.86.237   worker-79    &lt;none&gt;           &lt;none&gt;
+enflame-gcu-exporter-62ml7             1/1     Running            0                7m19s   10.52.2.78      worker-78    &lt;none&gt;           &lt;none&gt;
+enflame-gcu-exporter-cw8vn             1/1     Running            0                7m19s   10.52.2.79      worker-79    &lt;none&gt;           &lt;none&gt;
+enflame-gcu-feature-discovery-7w2n7    1/1     Running            0                5m6s    10.233.78.11    worker-78    &lt;none&gt;           &lt;none&gt;
+enflame-gcu-feature-discovery-tmdrn    1/1     Running            0                5m6s    10.233.86.28    worker-79    &lt;none&gt;           &lt;none&gt;
+enflame-k8s-device-plugin-25cs2        1/1     Running            0                7m25s   10.233.78.70    worker-78    &lt;none&gt;           &lt;none&gt;
+enflame-k8s-device-plugin-lkr4m        1/1     Running            0                7m25s   10.233.86.87    worker-79    &lt;none&gt;           &lt;none&gt;
+enflame-node-feature-discovery-5j62g   2/2     Running            0                7m46s   10.233.86.158   worker-79    &lt;none&gt;           &lt;none&gt;
+enflame-node-feature-discovery-5nd2d   2/2     Running            0                7m46s   10.233.64.9     ingress-3    &lt;none&gt;           &lt;none&gt;
+enflame-node-feature-discovery-6vs4j   2/2     Running            0                7m46s   10.233.78.19    worker-78    &lt;none&gt;           &lt;none&gt;
+enflame-node-feature-discovery-726kv   2/2     Running            0                7m46s   10.233.72.83    master-3     &lt;none&gt;           &lt;none&gt;
+enflame-node-feature-discovery-96h9q   2/2     Running            0                7m46s   10.233.67.241   master-1     &lt;none&gt;           &lt;none&gt;
+enflame-node-feature-discovery-hjqxg   2/2     Running            0                7m46s   10.233.68.201   ingress-1    &lt;none&gt;           &lt;none&gt;
+enflame-node-feature-discovery-spwgt   2/2     Running            0                7m46s   10.233.66.44    ingress-2    &lt;none&gt;           &lt;none&gt;
+enflame-node-feature-discovery-w67dt   2/2     Running            0                7m46s   10.233.69.107   master-2     &lt;none&gt;           &lt;none&gt;
+$ kubectl -n kube-system get node -o json | jq .items[].status.allocatable | grep enflame
+  &quot;enflame.com/gcu&quot;: &quot;8&quot;,
+  &quot;enflame.com/gcu&quot;: &quot;8&quot;,
+</code></pre>
+<h4 id="安装后配置-3"><a class="header" href="#安装后配置-3">安装后配置</a></h4>
+<h5 id="配置-systemdcgroup"><a class="header" href="#配置-systemdcgroup">配置 systemdCgroup</a></h5>
+<p>当 kubelet 的 cgroup 配置与容器运行时的 cgroup 配置不一致时，需要修改 containerd 配置 systemdCgroup。</p>
+<p>下面是配置 systemdCgroup 的示例：</p>
+<p>查看集群 kubelet 的 cgroup 配置：cgroup 驱动使用 systemd</p>
+<pre><code class="language-bash">$ kubectl -n kube-system get cm kubelet-config  -o yaml | grep cgroupDriver
+    cgroupDriver: systemd
+</code></pre>
+<p>对比 container toolkit 对 containerd 的配置：<code>[plugins.&quot;io.containerd.grpc.v1.cri&quot;.containerd.runtimes.enflame.options]</code> 未设置 <code>systemdCgroup = true</code>，containred 使用的 cgroup 驱动是 cgroupfs，与 kubelet cgroup 配置不一致。</p>
+<pre><code class="language-bash">ubuntu@worker-78:~$ sudo cat /etc/containerd/config.toml
+oom_score = 0
+root = &quot;/var/lib/containerd&quot;
+state = &quot;/run/containerd&quot;
+version = 2
+[debug]
+  address = &quot;&quot;
+  format = &quot;&quot;
+  gid = 0
+  level = &quot;info&quot;
+  uid = 0
+[grpc]
+  max_recv_message_size = 16777216
+  max_send_message_size = 16777216
+[metrics]
+  address = &quot;&quot;
+  grpc_histogram = false
+[plugins]
+  [plugins.&quot;io.containerd.grpc.v1.cri&quot;]
+    disable_apparmor = false
+    disable_hugetlb_controller = true
+    enable_selinux = false
+    enable_unprivileged_icmp = false
+    enable_unprivileged_ports = false
+    image_pull_progress_timeout = &quot;5m&quot;
+    max_container_log_line_size = -1
+    sandbox_image = &quot;registry.cn-hangzhou.aliyuncs.com/t9k/pause:3.9&quot;
+    tolerate_missing_hugetlb_controller = true
+    [plugins.&quot;io.containerd.grpc.v1.cri&quot;.containerd]
+      default_runtime_name = &quot;enflame&quot;
+      discard_unpacked_layers = true
+      snapshotter = &quot;overlayfs&quot;
+      [plugins.&quot;io.containerd.grpc.v1.cri&quot;.containerd.runtimes]
+        [plugins.&quot;io.containerd.grpc.v1.cri&quot;.containerd.runtimes.enflame]
+          privileged_without_host_devices = false
+          runtime_engine = &quot;&quot;
+          runtime_root = &quot;&quot;
+          runtime_type = &quot;io.containerd.runc.v2&quot;
+          [plugins.&quot;io.containerd.grpc.v1.cri&quot;.containerd.runtimes.enflame.options]
+            BinaryName = &quot;/usr/bin/enflame-container-runtime&quot;
+        [plugins.&quot;io.containerd.grpc.v1.cri&quot;.containerd.runtimes.runc]
+          base_runtime_spec = &quot;/etc/containerd/cri-base.json&quot;
+          runtime_engine = &quot;&quot;
+          runtime_root = &quot;&quot;
+          runtime_type = &quot;io.containerd.runc.v2&quot;
+          [plugins.&quot;io.containerd.grpc.v1.cri&quot;.containerd.runtimes.runc.options]
+            binaryName = &quot;/usr/local/bin/runc&quot;
+            systemdCgroup = true
+</code></pre>
+<p>在上述情况下，需要修改所有 GCU 节点的 containerd 配置：为 <code>[plugins.&quot;io.containerd.grpc.v1.cri&quot;.containerd.runtimes.enflame.options]</code> 添加参数 systemdCgroup = true</p>
+<p>运行下列命令，使用 ansible 修改所有 GCU 节点的 containerd 配置：</p>
+<pre><code class="language-bash">(kubespray) ubuntu@prepare-node:~/ansible/qingyang$ ansible -i inventory/gcu-update.ini all -m shell -a &quot;sudo sed -i 's/^\(\s*\)\(\[plugins\.\&quot;io\.containerd\.grpc\.v1\.cri\&quot;\.containerd\.runtimes\.enflame\.options\]\)/\1\2\n\1  systemdCgroup = true/' /etc/containerd/config.toml&quot; -b -K
+BECOME password: 
+(kubespray) ubuntu@prepare-node:~/ansible/qingyang$ ansible -i inventory/gcu-update.ini all -m shell -a &quot;systemctl daemon-reload&quot;  --become 
+(kubespray) ubuntu@prepare-node:~/ansible/qingyang$ ansible -i inventory/gcu-update.ini all -m shell -a &quot;systemctl restart containerd.service&quot;  --become 
+</code></pre>
+<h4 id="验证-10"><a class="header" href="#验证-10">验证</a></h4>
+<p>运行下列命令，验证 GCU Operator 是否正常运行，需要确保：</p>
+<ol>
+<li>组件正常运行</li>
+<li>GCU 节点的 node <code>status.allocatable</code> 含有扩展资源 <code>enflame.com/gcu</code>，并且扩展资源的数量与节点上的 GCU 数量一致。</li>
+</ol>
+<pre><code class="language-bash">$ kubectl -n kube-system get pod -o wide | grep enflame
+enflame-container-toolkit-8bspz        1/1     Running   0                4d21h   10.233.78.69    worker-78    &lt;none&gt;           &lt;none&gt;
+enflame-container-toolkit-lp2jk        1/1     Running   0                4d21h   10.233.86.237   worker-79    &lt;none&gt;           &lt;none&gt;
+enflame-gcu-exporter-62ml7             1/1     Running   0                4d21h   10.52.2.78      worker-78    &lt;none&gt;           &lt;none&gt;
+enflame-gcu-exporter-cw8vn             1/1     Running   0                4d21h   10.52.2.79      worker-79    &lt;none&gt;           &lt;none&gt;
+enflame-gcu-feature-discovery-7w2n7    1/1     Running   0                4d21h   10.233.78.11    worker-78    &lt;none&gt;           &lt;none&gt;
+enflame-gcu-feature-discovery-tmdrn    1/1     Running   0                4d21h   10.233.86.28    worker-79    &lt;none&gt;           &lt;none&gt;
+enflame-k8s-device-plugin-25cs2        1/1     Running   0                4d21h   10.233.78.70    worker-78    &lt;none&gt;           &lt;none&gt;
+enflame-k8s-device-plugin-lkr4m        1/1     Running   0                4d21h   10.233.86.87    worker-79    &lt;none&gt;           &lt;none&gt;
+enflame-node-feature-discovery-5j62g   2/2     Running   0                4d21h   10.233.86.158   worker-79    &lt;none&gt;           &lt;none&gt;
+enflame-node-feature-discovery-5nd2d   2/2     Running   0                4d21h   10.233.64.9     ingress-3    &lt;none&gt;           &lt;none&gt;
+enflame-node-feature-discovery-6vs4j   2/2     Running   0                4d21h   10.233.78.19    worker-78    &lt;none&gt;           &lt;none&gt;
+enflame-node-feature-discovery-726kv   2/2     Running   0                4d21h   10.233.72.83    master-3     &lt;none&gt;           &lt;none&gt;
+enflame-node-feature-discovery-96h9q   2/2     Running   0                4d21h   10.233.67.241   master-1     &lt;none&gt;           &lt;none&gt;
+enflame-node-feature-discovery-hjqxg   2/2     Running   0                4d21h   10.233.68.201   ingress-1    &lt;none&gt;           &lt;none&gt;
+enflame-node-feature-discovery-spwgt   2/2     Running   0                4d21h   10.233.66.44    ingress-2    &lt;none&gt;           &lt;none&gt;
+enflame-node-feature-discovery-w67dt   2/2     Running   0                4d21h   10.233.69.107   master-2     &lt;none&gt;           &lt;none&gt;
+$ kubectl get node -l t9k.enflame.com/driver.installed=&quot;true&quot; -o json | jq .items[].status.allocatable 
+{
+  &quot;cpu&quot;: &quot;119900m&quot;,
+  &quot;enflame.com/gcu&quot;: &quot;8&quot;,
+  &quot;ephemeral-storage&quot;: &quot;456449947712&quot;,
+  &quot;hugepages-1Gi&quot;: &quot;0&quot;,
+  &quot;hugepages-2Mi&quot;: &quot;0&quot;,
+  &quot;memory&quot;: &quot;469376488Ki&quot;,
+  &quot;pods&quot;: &quot;110&quot;
+}
+...
+</code></pre>
+<h2 id="监控配置"><a class="header" href="#监控配置">监控配置</a></h2>
+<p>安装下列 T9k 产品时，需要启用对 Enflame GCU 的监控配置。</p>
+<h3 id="t9k-monitoring"><a class="header" href="#t9k-monitoring">T9k Monitoring</a></h3>
+<p>在安装 T9k Monitoring 时，可通过 Helm values.yaml 中的 <code>global.t9k.monitoring.gpu.enflame</code> 字段配置针对 Enflame GCU 的监控设置。启用 Enflame GCU 监控后：</p>
+<ol>
+<li>T9k Monitoring 部署的 Prometheus 服务将自动收集 Enflame GCU Exporter 生成的监控数据</li>
+<li>在 T9k Monitoring 部署的 Grafana 中，可以通过 Dashboard 查看 Enflame GCU 的监控图表。</li>
+</ol>
+<p>下面是一个配置示例：</p>
+<pre><code class="language-yaml">global:
+  t9k:
+    monitoring:
+      gpu:
+        enflame:
+          enabled: true
+          serviceMonitor:
+            # namespace where service gcu-exporter is located
+            namespaceMatchName: kube-system
+            # port in service gcu-exporter to expose metrics
+            port: exporterport
+            # labels to match service gcu-exporter
+            selector:
+              matchLabels:
+                app.kubernetes.io/instance: gcuExporter
+</code></pre>
+<h3 id="cluster-admin"><a class="header" href="#cluster-admin">Cluster Admin</a></h3>
+<p>在安装 Cluster Admin 时，可通过 Helm values.yaml 中的 <code>global.t9k.clusterAdminWeb.gpuMonitoring.enflame</code> 字段配置 Enflame GCU 的监控设置。启用 Enflame GCU 监控后：</p>
+<ol>
+<li>管理员可以在 Cluster Admin Web 的工作负载详情页面查看 Enflame GCU 的资源监控图表。</li>
+<li>管理员可以在节点详情页面查看节点上的 Enflame GCU 信息。</li>
+</ol>
+<p>下面是一个配置示例，配置的字段说明请参考 <a target="_blank" rel="noopener noreferrer" href="https://github.com/t9k/admin-manuals/blob/master/src/cluster-admin-ui/config.md#gpu-%E7%9B%91%E6%8E%A7%E9%85%8D%E7%BD%AE">管理员文档</a>：</p>
+<pre><code class="language-yaml">global:
+  t9k:
+    clusterAdminWeb:
+      gpuMonitoring:
+        enflame:
+          charts:
+          - legend: '{{uuid}}'
+            promQLFormat: avg(label_replace(label_replace(enflame_gcu_memory_used_bytes{job=&quot;gcuExporter&quot;,pod_namespace=&quot;${namespace}&quot;,pod_name=~&quot;${pods}&quot;,pod_name!=&quot;&quot;},&quot;pod&quot;,&quot;$1&quot;,&quot;pod_name&quot;,&quot;(.+)&quot;),&quot;namespace&quot;,&quot;$1&quot;,&quot;pod_namespace&quot;,&quot;(.+)&quot;)    *
+              on(namespace,pod) group_left t9k_pod_resources_allocated) by(uuid)
+            title:
+              en: GPU Memory Used
+              zh: &quot;GPU 已用显存&quot;
+            unit: B
+          - legend: '{{uuid}}'
+            promQLFormat: avg(label_replace(label_replace(enflame_gcu_memory_usage{job=&quot;gcuExporter&quot;,pod_namespace=&quot;${namespace}&quot;,pod_name=~&quot;${pods}&quot;,pod_name!=&quot;&quot;},&quot;pod&quot;,&quot;$1&quot;,&quot;pod_name&quot;,&quot;(.+)&quot;),&quot;namespace&quot;,&quot;$1&quot;,&quot;pod_namespace&quot;,&quot;(.+)&quot;)    *
+              on(namespace,pod) group_left t9k_pod_resources_allocated) by(uuid) * 100
+            title:
+              en: GPU Memory Usage
+              zh: GPU 显存使用率
+            unit: '%'
+          - legend: '{{uuid}}'
+            promQLFormat: avg(label_replace(label_replace(enflame_gcu_power_usage{job=&quot;gcuExporter&quot;,pod_namespace=&quot;${namespace}&quot;,pod_name=~&quot;${pods}&quot;,pod_name!=&quot;&quot;},&quot;pod&quot;,&quot;$1&quot;,&quot;pod_name&quot;,&quot;(.+)&quot;),&quot;namespace&quot;,&quot;$1&quot;,&quot;pod_namespace&quot;,&quot;(.+)&quot;)    *
+              on(namespace,pod) group_left t9k_pod_resources_allocated) by(uuid)
+            title:
+              en: GPU Power Usage
+              zh: GPU 功率使用率
+            unit: '%'
+          - legend: '{{uuid}}'
+            promQLFormat: avg(label_replace(label_replace(enflame_gcu_power_consumption{job=&quot;gcuExporter&quot;,pod_namespace=&quot;${namespace}&quot;,pod_name=~&quot;${pods}&quot;,pod_name!=&quot;&quot;},&quot;pod&quot;,&quot;$1&quot;,&quot;pod_name&quot;,&quot;(.+)&quot;),&quot;namespace&quot;,&quot;$1&quot;,&quot;pod_namespace&quot;,&quot;(.+)&quot;)    *
+              on(namespace,pod) group_left t9k_pod_resources_allocated) by(uuid)
+            title:
+              en: GPU Power
+              zh: GPU 功率
+            unit: W
+          - legend: '{{uuid}}'
+            promQLFormat: avg(label_replace(label_replace(enflame_gcu_temperatures{job=&quot;gcuExporter&quot;,pod_namespace=&quot;${namespace}&quot;,pod_name=~&quot;${pods}&quot;,pod_name!=&quot;&quot;},&quot;pod&quot;,&quot;$1&quot;,&quot;pod_name&quot;,&quot;(.+)&quot;),&quot;namespace&quot;,&quot;$1&quot;,&quot;pod_namespace&quot;,&quot;(.+)&quot;)    *
+              on(namespace,pod) group_left t9k_pod_resources_allocated) by(uuid)
+            title:
+              en: GPU Temperature
+              zh: GPU 温度
+            unit: °C
+          - legend: '{{uuid}}'
+            promQLFormat: avg(label_replace(label_replace(enflame_gcu_usage{job=&quot;gcuExporter&quot;,pod_namespace=&quot;${namespace}&quot;,pod_name=~&quot;${pods}&quot;,pod_name!=&quot;&quot;},&quot;pod&quot;,&quot;$1&quot;,&quot;pod_name&quot;,&quot;(.+)&quot;),&quot;namespace&quot;,&quot;$1&quot;,&quot;pod_namespace&quot;,&quot;(.+)&quot;)    *
+              on(namespace,pod) group_left t9k_pod_resources_allocated) by(uuid)
+            title:
+              en: GPU Usage
+              zh: GPU 使用率
+            unit: '%'
+          info:
+            attributes:
+              count: .metadata.labels.'enflame.com/gcu.count'
+              memory:
+                key: .metadata.labels.'enflame.com/gcu.memory'
+                unit: MiB
+              product: .metadata.labels.'enflame.com/gcu.model'
+            source: node_yaml
+          resource:
+            names:
+            - enflame.com/gcu
+            - enflame-tech.com/gcu
+</code></pre>
+<h3 id="core"><a class="header" href="#core">Core</a></h3>
+<p>在安装 Core 时，可通过 Helm values.yaml 中的 <code>global.t9k.k8sResourceServer.gpuCharts.config.enflame</code> 字段配置 Enflame GCU 的监控设置。启用 Enflame GCU 监控后，普通用户可以在 Job Manager 和 Service Manager 中查看到 Enflame GCU 的资源监控图表。</p>
+<p>下面是一个配置示例，配置的字段说明请参考<a target="_blank" rel="noopener noreferrer" href="https://github.com/t9k/admin-manuals/blob/0455c009ae0d91fa7c3aced89ad4c329b2eeb308/src/others/k8s-resource-server.md#%E9%85%8D%E7%BD%AE%E6%A0%BC%E5%BC%8F">管理员文档</a>:</p>
+<pre><code class="language-yaml">global:
+  t9k:
+    k8sResourceServer:
+      gpuCharts:
+        config:
+          enflame:
+            charts:
+              memory_used:
+                legend: '{{uuid}}'
+                promQLFormat: avg(label_replace(label_replace(enflame_gcu_memory_used_bytes{job=&quot;gcuExporter&quot;,pod_namespace=&quot;%s&quot;,pod_name=~&quot;%s&quot;,pod_name!=&quot;&quot;},&quot;pod&quot;,&quot;$1&quot;,&quot;pod_name&quot;,&quot;(.+)&quot;),&quot;namespace&quot;,&quot;$1&quot;,&quot;pod_namespace&quot;,&quot;(.+)&quot;)    *
+                  on(namespace,pod) group_left t9k_pod_resources_allocated) by(uuid)
+                title:
+                  en: GPU Memory Used
+                  zh: GPU 已用显存
+                unit: B
+              memory_usage:
+                legend: '{{uuid}}'
+                promQLFormat: avg(label_replace(label_replace(enflame_gcu_memory_usage{job=&quot;gcuExporter&quot;,pod_namespace=&quot;%s&quot;,pod_name=~&quot;%s&quot;,pod_name!=&quot;&quot;},&quot;pod&quot;,&quot;$1&quot;,&quot;pod_name&quot;,&quot;(.+)&quot;),&quot;namespace&quot;,&quot;$1&quot;,&quot;pod_namespace&quot;,&quot;(.+)&quot;)    *
+                  on(namespace,pod) group_left t9k_pod_resources_allocated) by(uuid) * 100
+                title:
+                  en: GPU Memory Usage
+                  zh: GPU 显存使用率
+                unit: '%'
+              power_usage:
+                legend: '{{uuid}}'
+                promQLFormat: avg(label_replace(label_replace(enflame_gcu_power_usage{job=&quot;gcuExporter&quot;,pod_namespace=&quot;%s&quot;,pod_name=~&quot;%s&quot;,pod_name!=&quot;&quot;},&quot;pod&quot;,&quot;$1&quot;,&quot;pod_name&quot;,&quot;(.+)&quot;),&quot;namespace&quot;,&quot;$1&quot;,&quot;pod_namespace&quot;,&quot;(.+)&quot;)    *
+                  on(namespace,pod) group_left t9k_pod_resources_allocated) by(uuid)
+                title:
+                  en: GPU Power Usage
+                  zh: GPU 功率使用率
+                unit: '%'
+              power:
+                legend: '{{uuid}}'
+                promQLFormat: avg(label_replace(label_replace(enflame_gcu_power_consumption{job=&quot;gcuExporter&quot;,pod_namespace=&quot;%s&quot;,pod_name=~&quot;%s&quot;,pod_name!=&quot;&quot;},&quot;pod&quot;,&quot;$1&quot;,&quot;pod_name&quot;,&quot;(.+)&quot;),&quot;namespace&quot;,&quot;$1&quot;,&quot;pod_namespace&quot;,&quot;(.+)&quot;)    *
+                  on(namespace,pod) group_left t9k_pod_resources_allocated) by(uuid)
+                title:
+                  en: GPU Power
+                  zh: GPU 功率
+                unit: W
+              temperature:
+                legend: '{{uuid}}'
+                promQLFormat: avg(label_replace(label_replace(enflame_gcu_temperatures{job=&quot;gcuExporter&quot;,pod_namespace=&quot;%s&quot;,pod_name=~&quot;%s&quot;,pod_name!=&quot;&quot;},&quot;pod&quot;,&quot;$1&quot;,&quot;pod_name&quot;,&quot;(.+)&quot;),&quot;namespace&quot;,&quot;$1&quot;,&quot;pod_namespace&quot;,&quot;(.+)&quot;)    *
+                  on(namespace,pod) group_left t9k_pod_resources_allocated) by(uuid)
+                title:
+                  en: GPU Temperature
+                  zh: GPU 温度
+                unit: °C
+              usage:
+                legend: '{{uuid}}'
+                promQLFormat: avg(label_replace(label_replace(enflame_gcu_usage{job=&quot;gcuExporter&quot;,pod_namespace=&quot;%s&quot;,pod_name=~&quot;%s&quot;,pod_name!=&quot;&quot;},&quot;pod&quot;,&quot;$1&quot;,&quot;pod_name&quot;,&quot;(.+)&quot;),&quot;namespace&quot;,&quot;$1&quot;,&quot;pod_namespace&quot;,&quot;(.+)&quot;)    *
+                  on(namespace,pod) group_left t9k_pod_resources_allocated) by(uuid)
+                title:
+                  en: GPU Usage
+                  zh: GPU 使用率
+                unit: '%'
+            resource:
+              names:
+              - enflame.com/gcu
+              - enflame-tech.com/gcu
+</code></pre>
 <h2 id="参考-19"><a class="header" href="#参考-19">参考</a></h2>
-<p><a href="https://support.enflame-tech.com/onlinedoc_dev_2.5.115/6-k8s/index.html">TopsCloud 用户使用指南</a></p>
+<p>[1] <a target="_blank" rel="noopener noreferrer" href="https://support.enflame-tech.com/onlinedoc_dev_3.3/2-install/sw_install/content/source/installation.html#id7 ">TopsRider 软件栈安装手册</a></p>
+<p>[2] <a target="_blank" rel="noopener noreferrer" href="https://support.enflame-tech.com/onlinedoc_dev_topscloud3.3.20/topscloud/gcu_operator_2_0_user_guide/content/source/enflame_gcu_operator_2_0_user_guide.html#id6">GPU Operator 用户使用手册</a></p>
 <div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
 <h1 id="海光-dcu"><a class="header" href="#海光-dcu">海光 DCU</a></h1>
 <h2 id="参考-20"><a class="header" href="#参考-20">参考</a></h2>
@@ -3751,9 +4906,1106 @@ pod &quot;rdma-gpu-test-pod-2&quot; deleted
 <p><a href="https://www.iluvatar.com/docs/">https://www.iluvatar.com/docs/</a></p>
 <div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
 <h1 id="沐曦"><a class="header" href="#沐曦">沐曦</a></h1>
-<blockquote>
-<p>MetaX 的驱动和软件栈目前没有公开发布，需要注册其支持账户，从其它渠道获得。</p>
-</blockquote>
+<h2 id="总览-1"><a class="header" href="#总览-1">总览</a></h2>
+<p>本文是沐曦 GPU 云原生组件的安装文档，以支持在 Kubernetes 中使用沐曦 GPU。沐曦 GPU 云原生组件的产品版本：</p>
+<ol>
+<li>GPU Operator
+<ol>
+<li>Helm Chart 版本 0.9.2</li>
+<li>安装包 metax-gpu-k8s-package.0.9.2.tar.gz</li>
+<li>组件版本：
+<ol>
+<li>Maca: 2.29.0.7-ubuntu22.04-amd64</li>
+<li>GPU 驱动: 2.29.0.13-amd64</li>
+<li>其他组件: 0.9.2</li>
+</ol>
+</li>
+</ol>
+</li>
+<li>MX Exporter：
+<ol>
+<li>Helm Chart 版本 0.5.0</li>
+<li>安装包 mx-exporter.0.9.2.tgz</li>
+</ol>
+</li>
+</ol>
+<p>安装步骤分为三步：</p>
+<ol>
+<li>安装 GPU Operator。</li>
+<li>安装 MX Exporter。</li>
+<li>[安装后]监控配置：完成上述步骤后，后续安装 T9k 产品时，需要设置针对 Metax GPU 资源的监控配置。</li>
+</ol>
+<p>注：安装包来源于<a href="hardware/metax/index.html#%E5%8F%82%E8%80%83">沐曦下载中心</a>。</p>
+<h2 id="环境-1"><a class="header" href="#环境-1">环境</a></h2>
+<p>下面是经过验证的环境：</p>
+<ol>
+<li>K8s 版本：v1.30.4</li>
+<li>集群 GPU 节点：
+<ol>
+<li>OS：Ubuntu 22.04</li>
+<li>Kernel： 5.15.0-25-generic </li>
+<li>容器运行时：containerd://1.7.21</li>
+</ol>
+</li>
+<li>Harbor 本地镜像仓库：
+<ol>
+<li>Harbor 版本：v2.7.3-252a0b7c</li>
+<li>服务地址：https://harbor.example.cn</li>
+</ol>
+</li>
+<li>准备镜像和 Helm Chart 的节点：
+<ol>
+<li>OS：Ubuntu 22.04</li>
+<li>Kernel： 5.15.0-25-generic </li>
+<li>Docker：20.10.20</li>
+<li>Helm：v3.17.2</li>
+</ol>
+</li>
+</ol>
+<h2 id="安装-gpu-operator"><a class="header" href="#安装-gpu-operator">安装 GPU Operator</a></h2>
+<h3 id="准备工作"><a class="header" href="#准备工作">准备工作</a></h3>
+<h4 id="下载安装包"><a class="header" href="#下载安装包">下载安装包</a></h4>
+<p>从 <a href="https://developer.metax-tech.com/softnova/index">https://developer.metax-tech.com/softnova/index</a> 下载驱动、镜像、k8s 安装包：</p>
+<pre><code class="language-bash">root@mx-5500g6:~/tensorstack# tree .
+.
+├── driver
+│   ├── k8s-driver-image.2.29.0.13-x86_64.run
+│   └── metax-driver-mxc500-2.29.0.13-deb-x86_64.run
+├── history.log
+├── image
+│   ├── mxc500-maca-2.29.0.7-ubuntu22.04-amd64.container.xz
+│   ├── mxc500-torch2.1-py310-mc2.29.0.7-ubuntu22.04-amd64.container.xz
+│   └── pulled_images
+└── k8s
+    └── 0.9.2
+        ├── metax-gpu-extensions-0.9.2.tgz
+        ├── metax-gpu-k8s-package.0.9.2.tar.gz
+        ├── metax-k8s-images.0.9.2.run
+        └── metax-operator-0.9.2.tgz
+
+5 directories, 14 files
+</code></pre>
+<h4 id="gpu-operator-镜像和-helm-chart"><a class="header" href="#gpu-operator-镜像和-helm-chart">GPU Operator 镜像和 Helm Chart</a></h4>
+<p>在 Harbor 本地仓库中创建 Project mximages、mxcharts 来存储镜像和 helm charts。</p>
+<p>解压 metax-gpu-k8s-package，并按照下列步骤将 image、helm chart 上传到 Harbor：</p>
+<pre><code class="language-bash">root@mx-5500g6:~/tensorstack/k8s/0.9.2# tar -xvzf metax-gpu-k8s-package.0.9.2.tar.gz
+metax-k8s-images.0.9.2.run
+metax-operator-0.9.2.tgz
+metax-gpu-extensions-0.9.2.tgz
+root@mx-5500g6:~/tensorstack/k8s/0.9.2# ls
+metax-gpu-extensions-0.9.2.tgz  metax-gpu-k8s-package.0.9.2.tar.gz  metax-k8s-images.0.9.2.run  metax-operator-0.9.2.tgz
+root@mx-5500g6:~/tensorstack/k8s/0.9.2# docker login harbor.example.cn
+root@mx-5500g6:~/tensorstack/k8s/0.9.2# sudo ./metax-k8s-images.0.9.2.run push harbor.example.cn/mximages
+Verifying archive integrity...  100%   MD5 checksums are OK. All good.
+Uncompressing Metax Kubernetes Solution Images -- 0.9.2  100%
+metax-topo-master-image.0.9.2-amd64.xz
+metax-topo-master-image.0.9.2-arm64.xz
+metax-operator-controller-image.0.9.2-amd64.xz
+metax-operator-controller-image.0.9.2-arm64.xz
+Loaded image: cr.metax-tech.com/cloud/gpu-label:0.9.2-amd64
+Loaded image: cr.metax-tech.com/cloud/gpu-label:0.9.2-arm64
+The push refers to repository [harbor.example.cn/mximages/gpu-label]
+492d5ea47e39: Pushed
+46a6cc483b01: Pushed
+256d88da4185: Pushed
+0.9.2-amd64: digest: sha256:b09b4cb6e8e00abf8c2a94cd0c0a36efbdf82f846e690585bfdbe2440929fd3a size: 953
+The push refers to repository [harbor.example.cn/mximages/gpu-label]
+9f77591b69ae: Pushed
+a9cd3f1ed9f2: Pushed
+d2d3127fc3d3: Pushed
+0.9.2-arm64: digest: sha256:03c2f158f553bb60bca17641d995937fa9ac8608c0060137f96c0b9559cb96ef size: 953
+Created manifest list harbor.example.cn/mximages/gpu-label:0.9.2
+sha256:7c887b9343c3efcca8d39a71b3a1ef4f3c2080901c1333069e817722e1a14138
+Loaded image: cr.metax-tech.com/cloud/gpu-device:0.9.2-amd64
+Loaded image: cr.metax-tech.com/cloud/gpu-device:0.9.2-arm64
+The push refers to repository [harbor.example.cn/mximages/gpu-device]
+e97c45b0e05b: Pushed
+888d617d1351: Pushed
+bc0a9d4e16d0: Pushed
+0.9.2-amd64: digest: sha256:b43d9065b7b357df8b3429e79bdbe63817f6dbfaa80d08ed8eb501bbd15c10e9 size: 950
+The push refers to repository [harbor.example.cn/mximages/gpu-device]
+6b99339aa709: Pushed
+397e92eedb3b: Pushed
+31551975770e: Pushed
+0.9.2-arm64: digest: sha256:dc86926e11e9c5a3a3c3ab126e26655be4ed6bd0ece61458333eaf89e4938d87 size: 950
+Created manifest list harbor.example.cn/mximages/gpu-device:0.9.2
+sha256:52bb1acb6cfda75ed71a2b0c2a4962cb8df097e13753d8bee16470c4986f21c2
+Loaded image: cr.metax-tech.com/cloud/gpu-aware:0.9.2-amd64
+Loaded image: cr.metax-tech.com/cloud/gpu-aware:0.9.2-arm64
+The push refers to repository [harbor.example.cn/mximages/gpu-aware]
+32309a873245: Pushed
+5d8a0b31f182: Pushed
+3acfa1f41375: Pushed
+21d4a257c8e9: Pushed
+fb64dc64f869: Pushed
+bc0a9d4e16d0: Mounted from mximages/gpu-device
+0.9.2-amd64: digest: sha256:ccd00e9bb9742a5038499dc60ef182c76ee59972a8604c49de8e4713a2708322 size: 1576
+The push refers to repository [harbor.example.cn/mximages/gpu-aware]
+d30fd0f71d25: Pushed
+8393540c163d: Pushed
+ce1cff40131f: Pushed
+1509646e108b: Pushed
+f2df1485560f: Pushed
+31551975770e: Mounted from mximages/gpu-device
+0.9.2-arm64: digest: sha256:ebb3c747bac77c721d70d460d9ba1f92216c382a442613938c175f632d566469 size: 1575
+Created manifest list harbor.example.cn/mximages/gpu-aware:0.9.2
+sha256:3f004e5c83c6990923aa24031c7d4573b7823289b93a70a3a867de75e7bf0a1c
+Loaded image: cr.metax-tech.com/cloud/topo-master:0.9.2-amd64
+Loaded image: cr.metax-tech.com/cloud/topo-master:0.9.2-arm64
+The push refers to repository [harbor.example.cn/mximages/topo-master]
+cb0b32e2e00d: Pushed
+b48c0c323027: Pushed
+7d9e050d7143: Pushed
+73e4afdeae23: Pushed
+256d88da4185: Mounted from mximages/gpu-label
+0.9.2-amd64: digest: sha256:18ff2be7bf1708560a21306035b1f5472d1a521201cd27fb8f3291051a52c959 size: 1367
+The push refers to repository [harbor.example.cn/mximages/topo-master]
+4c50f362ca1e: Pushed
+8fa8d3328bce: Pushed
+a16ea9098e7c: Pushed
+e744b29d50a8: Pushed
+d2d3127fc3d3: Mounted from mximages/gpu-label
+0.9.2-arm64: digest: sha256:3849990a1c345c4a14dc2ced82d089d68ba8ee5f7f94891741abd7440e033dec size: 1367
+Created manifest list harbor.example.cn/mximages/topo-master:0.9.2
+sha256:70787c5c6c444deb7d0dc5102b891f414be42b3c942ea9d3a1c200c05e712433
+Loaded image: cr.metax-tech.com/cloud/topo-worker:0.9.2-amd64
+Loaded image: cr.metax-tech.com/cloud/topo-worker:0.9.2-arm64
+The push refers to repository [harbor.example.cn/mximages/topo-worker]
+00735b63658e: Pushed
+02f5773ed5c6: Pushed
+256d88da4185: Mounted from mximages/topo-master
+0.9.2-amd64: digest: sha256:359aeb289f276ef23122855de394bef5e63f89418ef5580b84d30d407190ba0f size: 948
+The push refers to repository [harbor.example.cn/mximages/topo-worker]
+2bccb57b878e: Pushed
+58dae86f2df5: Pushed
+d2d3127fc3d3: Mounted from mximages/topo-master
+0.9.2-arm64: digest: sha256:cd6f6c90ea1571e2d52024d7c07ea7e74ea8c7496cc190e43e0dc7a1ebfc31fc size: 948
+Created manifest list harbor.example.cn/mximages/topo-worker:0.9.2
+sha256:87d4b5e2f7192e6efb7b50f2e879703fdacebfed897843cac36f6f509a3ef212
+Loaded image: cr.metax-tech.com/cloud/operator-controller:0.9.2-amd64
+Loaded image: cr.metax-tech.com/cloud/operator-controller:0.9.2-arm64
+The push refers to repository [harbor.example.cn/mximages/operator-controller]
+4f0934cba5ea: Pushed
+ec5aa7fec606: Pushed
+c3284807f35f: Pushed
+54304229b5bd: Pushed
+3acfa1f41375: Mounted from mximages/gpu-aware
+21d4a257c8e9: Mounted from mximages/gpu-aware
+fb64dc64f869: Mounted from mximages/gpu-aware
+bc0a9d4e16d0: Mounted from mximages/gpu-aware
+0.9.2-amd64: digest: sha256:7f4c017ab5e070fb27d5de19a7d2065dedd901472b8409d947a30f567ec1f24d size: 1991
+The push refers to repository [harbor.example.cn/mximages/operator-controller]
+296b1014f52e: Pushed
+35ba35ab39ec: Pushed
+265a2f17c0de: Pushed
+a43a98588d4b: Pushed
+ce1cff40131f: Mounted from mximages/gpu-aware
+1509646e108b: Mounted from mximages/gpu-aware
+f2df1485560f: Mounted from mximages/gpu-aware
+31551975770e: Mounted from mximages/gpu-aware
+0.9.2-arm64: digest: sha256:fb5ea56376ff8268614c207bb0c6b2a36201c42ab5900625cf7693b12ea7d4dc size: 1991
+Created manifest list harbor.example.cn/mximages/operator-controller:0.9.2
+sha256:6216bd3ac6bd74694a7df2e9e61c343401de5ee8fcf26c55e7b5aaf712a508bc
+Loaded image: cr.metax-tech.com/cloud/container-runtime:0.9.2-amd64
+Loaded image: cr.metax-tech.com/cloud/container-runtime:0.9.2-arm64
+The push refers to repository [harbor.example.cn/mximages/container-runtime]
+3eb0b4c97cb4: Pushed
+d37425073504: Pushed
+52cdb0f94f4b: Pushed
+dd6fd41e8771: Pushed
+db0fa08f8efa: Pushed
+5314a0bfa158: Pushed
+fb64dc64f869: Mounted from mximages/operator-controller
+bc0a9d4e16d0: Mounted from mximages/operator-controller
+0.9.2-amd64: digest: sha256:008171ae23622255ac62f7bdaf844d4cdf1534a311a6aac5f45f7e1331fcac9e size: 1996
+The push refers to repository [harbor.example.cn/mximages/container-runtime]
+3eb0b4c97cb4: Layer already exists
+6d3750a3af81: Pushed
+8991a48747da: Pushed
+bf3cbf1d7cda: Pushed
+f9c79905bc38: Pushed
+ee05d175e11b: Pushed
+f2df1485560f: Mounted from mximages/operator-controller
+31551975770e: Mounted from mximages/operator-controller
+0.9.2-arm64: digest: sha256:195cf6196ebe024a3ed6fcd5c6ff70a39e12521eb30ba65283e3a690cc3c7a9a size: 1996
+Created manifest list harbor.example.cn/mximages/container-runtime:0.9.2
+sha256:378587b62419218b839a94b87b24d6ce1dc20d21319de43f5f95e440d1f92243
+Loaded image: cr.metax-tech.com/cloud/driver-manager:0.9.2-amd64
+Loaded image: cr.metax-tech.com/cloud/driver-manager:0.9.2-arm64
+The push refers to repository [harbor.example.cn/mximages/driver-manager]
+f1952629bb15: Pushed
+da3fb242a023: Pushed
+55d1ae7246f4: Pushed
+3a60332c3b1e: Pushed
+256d88da4185: Mounted from mximages/topo-worker
+0.9.2-amd64: digest: sha256:6fc5d7a31ceeb67b637d54f7d5f18b3c4976bb758376a58962d0514c212eb3c1 size: 1368
+The push refers to repository [harbor.example.cn/mximages/driver-manager]
+3d378964d77a: Pushed
+2ab7689a6e9f: Pushed
+2e38ef8aa37c: Pushed
+0f1ed02714f2: Pushed
+d2d3127fc3d3: Mounted from mximages/topo-worker
+0.9.2-arm64: digest: sha256:62eca88d73a32eef86e969d345671cf3b388800c16db33f595142602e9577fed size: 1368
+Created manifest list harbor.example.cn/mximages/driver-manager:0.9.2
+sha256:1ff19be10b7cc0bb944cf97ccc61d96bcba0f0b96a61339afeb47b96af6cb682
+Loaded image: cr.metax-tech.com/cloud/vfio-manager:0.9.2-amd64
+Loaded image: cr.metax-tech.com/cloud/vfio-manager:0.9.2-arm64
+The push refers to repository [harbor.example.cn/mximages/vfio-manager]
+ba6596c7cc2c: Pushed
+256d88da4185: Mounted from mximages/driver-manager
+0.9.2-amd64: digest: sha256:19d3689b5ab958306e1655be592e1a323d6d585de4777a0fead46ab8107e710b size: 741
+The push refers to repository [harbor.example.cn/mximages/vfio-manager]
+fefc9c701286: Pushed
+d2d3127fc3d3: Mounted from mximages/driver-manager
+0.9.2-arm64: digest: sha256:b0afea734229de2b791e0ebee799f7c7f0b26988bb6b4aaebe3cca27cf9628ad size: 740
+Created manifest list harbor.example.cn/mximages/vfio-manager:0.9.2
+sha256:082e945db4648aa0bea5d9367ef5dc202c40eb2bb83b54728dc995cf25e5170f
+
+root@mx-5500g6:~/tensorstack/k8s/0.9.2# helm registry login harbor.example.cn
+root@mx-5500g6:~/tensorstack/k8s/0.9.2# helm push ./metax-gpu-extensions-0.9.2.tgz oci://harbor.example.cn/mxcharts
+Pushed: harbor.example.cn/mxcharts/metax-gpu-extensions:0.9.2
+Digest: sha256:35aff8352564d9a5af435f70c7088ec05c3d7c6f26a41278a54001777c14ba56
+root@mx-5500g6:~/tensorstack/k8s/0.9.2# helm push ./metax-operator-0.9.2.tgz oci://harbor.example.cn/mxcharts
+Pushed: harbor.example.cn/mxcharts/metax-operator:0.9.2
+Digest: sha256:3a469b0f125088422d2cc5bf8aa53b82561726ce374f00d4d7fbd8d497365e97
+</code></pre>
+<h4 id="mxmaca-容器镜像"><a class="header" href="#mxmaca-容器镜像">MXMACA 容器镜像</a></h4>
+<p>上传 MXMACA 容器镜像：</p>
+<pre><code class="language-bash">root@mx-5500g6:~/tensorstack/image# ls
+mxc500-maca-2.29.0.7-ubuntu22.04-amd64.container.xz  mxc500-torch2.1-py310-mc2.29.0.7-ubuntu22.04-amd64.container.xz  pulled_images
+root@mx-5500g6:~/tensorstack/image# docker load &lt; mxc500-maca-2.29.0.7-ubuntu22.04-amd64.container.xz
+Loaded image: mxc500-maca:2.29.0.7-ubuntu22.04-amd64
+root@mx-5500g6:~/tensorstack/image# docker tag mxc500-maca:2.29.0.7-ubuntu22.04-amd64 harbor.example.cn/mximages/mxc500-maca:2.29.0.7-ubuntu22.04-amd64
+root@mx-5500g6:~/tensorstack/image# docker push harbor.example.cn/mximages/mxc500-maca:2.29.0.7-ubuntu22.04-amd64
+The push refers to repository [harbor.example.cn/mximages/mxc500-maca]
+63a131e7b7d3: Pushed
+9c13cbd5d65b: Pushed
+f7edaed339f5: Pushed
+00c7399cdccf: Pushed
+bf28bea77f92: Pushed
+256d88da4185: Mounted from mximages/vfio-manager
+2.29.0.7-ubuntu22.04-amd64: digest: sha256:5ee1eaeaa8686d9a7b7d99ae658f6c6214302d1d36ba70b00673ed549725e348 size: 1583
+</code></pre>
+<h4 id="内核驱动容器镜像"><a class="header" href="#内核驱动容器镜像">内核驱动容器镜像</a></h4>
+<p>上传GPU 内核驱动容器镜像：</p>
+<pre><code class="language-bash">root@mx-5500g6:~/tensorstack/driver# ls
+k8s-driver-image.2.29.0.13-x86_64.run  metax-driver-mxc500-2.29.0.13-deb-x86_64.run
+root@mx-5500g6:~/tensorstack/driver# ./k8s-driver-image.2.29.0.13-x86_64.run push harbor.example.cn/mximages
+Verifying archive integrity...  100%   MD5 checksums are OK. All good.
+Uncompressing Metax Docker installer 2.29.0.13  100%
+d4fc045c9e3a: Loading layer [==================================================&gt;]  7.667MB/7.667MB
+a1e3173b0b8d: Loading layer [==================================================&gt;]  445.6MB/445.6MB
+27082316a453: Loading layer [==================================================&gt;]   18.9MB/18.9MB
+1322be161d1c: Loading layer [==================================================&gt;]  57.03MB/57.03MB
+8a11a9368729: Loading layer [==================================================&gt;]  3.072kB/3.072kB
+Loaded image: cr.metax-tech.com/cloud/driver-image:2.29.0.13-amd64
+The push refers to repository [harbor.example.cn/mximages/driver-image]
+8a11a9368729: Pushed
+1322be161d1c: Pushed
+27082316a453: Pushed
+a1e3173b0b8d: Pushed
+d4fc045c9e3a: Pushed
+2.29.0.13-amd64: digest: sha256:767f18eb4259d775d92658f56d8421ac350de22f1a29c021fed4bb2314dce5e6 size: 1369
+Created manifest list harbor.example.cn/mximages/driver-image:2.29.0.13
+sha256:163f54838cae7e297dd9e6fa8d19147eca121b859be1f89b3d01c413479d9842
+</code></pre>
+<h3 id="安装-helm-chart"><a class="header" href="#安装-helm-chart">安装 Helm Chart</a></h3>
+<p>在可以访问 Kubernetes 集群的节点上，运行下列命令安装 helm chart：</p>
+<pre><code class="language-bash">(base) t9k@master01:~$ helm install oci://harbor.example.cn/mxcharts/metax-operator \
+--create-namespace -n metax-operator \
+--generate-name \
+--wait \
+--set registry=harbor.example.cn/mximages \
+--set driver.payload.version=2.29.0.13 \
+--set maca.payload.registry=harbor.example.cn/mximages \
+--set maca.payload.images={mxc500-maca:2.29.0.7-ubuntu22.04-amd64}
+Pulled: harbor.example.cn/mxcharts/metax-operator:0.9.2
+Digest: sha256:3a469b0f125088422d2cc5bf8aa53b82561726ce374f00d4d7fbd8d497365e97
+W0401 17:48:19.093624 4031913 warnings.go:70] metadata.finalizers: &quot;gpu.metax-tech.com&quot;: prefer a domain-qualified finalizer name to avoid accidental conflicts with other finalizer writers
+NAME: metax-operator-1743500897
+LAST DEPLOYED: Tue Apr  1 17:48:17 2025
+NAMESPACE: metax-operator
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+</code></pre>
+<p>运行下列命令，修改 clusteroperator，不安装 vfioManager（需要虚拟化 GPU 时，再安装这个组件）：</p>
+<pre><code class="language-bash">(base) t9k@master01:~$ kubectl patch clusteroperator cluster-operator -n metax-operator --type=merge -p '{&quot;spec&quot;:{&quot;vfioManager&quot;:{&quot;deploy&quot;:false}}}'
+clusteroperator.gpu.metax-tech.com/cluster-operator patched
+
+GPU Operator 使用 ClusterOperator cluster-operator 存储全局配置，运行下列命令查看全局配置：
+(base) t9k@master01:~$ k get ClusterOperator cluster-operator  -o yaml
+apiVersion: gpu.metax-tech.com/v1alpha1
+kind: ClusterOperator
+metadata:
+  annotations:
+    meta.helm.sh/release-name: metax-operator-1743500897
+    meta.helm.sh/release-namespace: metax-operator
+  creationTimestamp: &quot;2025-04-01T09:48:19Z&quot;
+  finalizers:
+  - gpu.metax-tech.com
+  generation: 2
+  labels:
+    app.kubernetes.io/component: metax-operator
+    app.kubernetes.io/instance: metax-operator-1743500897
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: metax-operator
+    app.kubernetes.io/version: 0.9.2
+    helm.sh/chart: metax-operator-0.9.2
+  name: cluster-operator
+  resourceVersion: &quot;15711453&quot;
+  uid: 9f5bbddb-e114-4053-a330-79548d019f05
+spec:
+  dataExporter:
+    deploy: false
+    image:
+      name: mx-exporter
+      pullPolicy: IfNotPresent
+      registry: harbor.example.cn/mximages
+      version: 0.9.2
+    service:
+      port: 30445
+      type: ClusterIP
+  devicePlugin:
+    healthyInterval: 5
+    image:
+      name: gpu-device
+      pullPolicy: IfNotPresent
+      registry: harbor.example.cn/mximages
+      version: 0.9.2
+    log:
+      dir: /var/log/metax
+      format: json
+      level: info
+      maxAge: 26w
+      rotationTime: 1w
+  driver:
+    deployPolicy: PreferCloud
+    fwEffectPolicy: NextReboot
+    fwEnableVirt: false
+    fwUpgradePolicy: Never
+    image:
+      name: driver-manager
+      pullPolicy: IfNotPresent
+      registry: harbor.example.cn/mximages
+      version: 0.9.2
+    log:
+      dir: /var/log/metax
+      format: json
+      level: info
+      maxAge: 26w
+      rotationTime: 1w
+    payload:
+      name: driver-image
+      pullPolicy: IfNotPresent
+      registry: harbor.example.cn/mximages
+      version: 2.29.0.13
+    upgradePolicy:
+      enableRollout: false
+      fallback: pause
+      maxFailureThreshold: 5
+      maxParallel: 100%
+      maxUnavailable: 0%
+      pause: false
+      upgradeSteps:
+      - pauseDuration: 30000
+        replicas: 1
+      - pauseDuration: 0
+        replicas: 100%
+  labelgen:
+    image:
+      name: gpu-label
+      pullPolicy: IfNotPresent
+      registry: harbor.example.cn/mximages
+      version: 0.9.2
+    log:
+      dir: /var/log/metax
+      format: json
+      level: info
+      maxAge: 26w
+      rotationTime: 1w
+  maca:
+    image:
+      name: driver-manager
+      pullPolicy: IfNotPresent
+      registry: harbor.example.cn/mximages
+      version: 0.9.2
+    log:
+      dir: /var/log/metax
+      format: json
+      level: info
+      maxAge: 26w
+      rotationTime: 1w
+    payload:
+      images:
+      - mxc500-maca:2.29.0.7-ubuntu22.04-amd64
+      pullPolicy: IfNotPresent
+      registry: harbor.example.cn/mximages
+    resources:
+      limits:
+        memory: 10Gi
+      requests:
+        memory: 1Gi
+  runtime:
+    image:
+      name: container-runtime
+      pullPolicy: IfNotPresent
+      registry: harbor.example.cn/mximages
+      version: 0.9.2
+    log:
+      dir: /var/log/metax
+      format: json
+      level: info
+      maxAge: 26w
+      rotationTime: 1w
+  vfioManager:
+    deploy: false
+    image:
+      name: vfio-manager
+      pullPolicy: IfNotPresent
+      registry: harbor.example.cn/mximages
+      version: 0.9.2
+    log:
+      dir: /var/log/metax
+      format: json
+      level: info
+      maxAge: 26w
+      rotationTime: 1w
+</code></pre>
+<p>等待一段时间后，查看 GPU Operator 组件 Pods 状态：</p>
+<pre><code class="language-bash">(base) t9k@master01:~$ k -n metax-operator get pod
+NAME                                         READY   STATUS             RESTARTS      AGE
+metax-container-runtime-vzgww                1/1     Running            0             106s
+metax-driver-5p6pv                           1/1     Running            0             98s
+metax-gpu-device-shdr5                       1/1     Running            0             22s
+metax-gpu-label-64sk2                        1/1     Running            0             108s
+metax-gpu-label-rcp9x                        1/1     Running            0             108s
+metax-maca-d4r9f                             1/1     Running            0             98s
+metax-operator-1743500897-7bd9f64956-5t7v7   1/1     Running            0             2m15s
+metax-vfio-manager-27nqj                     0/1     CrashLoopBackOff   4 (18s ago)   106s
+(base) t9k@master01:~$ k -n metax-operator describe pod metax-vfio-manager-fhr28
+Name:             metax-vfio-manager-fhr28
+Namespace:        metax-operator
+...
+Events:
+  Type     Reason         Age                   From               Message
+  ----     ------         ----                  ----               -------
+  Normal   Scheduled      5m29s                 default-scheduler  Successfully assigned metax-operator/metax-vfio-manager-fhr28 to mx-5500g6
+  Warning  IOMMUDisabled  5m28s                 vfio-manager       IOMMU support is missing on node mx-5500g6. Please ensure that IOMMU is enabled on the node
+  Warning  IOMMUDisabled  5m27s                 vfio-manager       IOMMU support is missing on node mx-5500g6. Please ensure that IOMMU is enabled on the node
+  Warning  IOMMUDisabled  5m11s                 vfio-manager       IOMMU support is missing on node mx-5500g6. Please ensure that IOMMU is enabled on the node
+  Warning  IOMMUDisabled  4m43s                 vfio-manager       IOMMU support is missing on node mx-5500g6. Please ensure that IOMMU is enabled on the node
+  Normal   Pulled         4m2s (x5 over 5m28s)  kubelet            Container image &quot;harbor.example.cn/mximages/vfio-manager:0.9.2&quot; already present on machine
+  Warning  IOMMUDisabled  4m1s                  vfio-manager       IOMMU support is missing on node mx-5500g6. Please ensure that IOMMU is enabled on the node
+  Normal   Created        4m1s (x5 over 5m28s)  kubelet            Created container vfio-manager-container
+  Normal   Started        4m1s (x5 over 5m28s)  kubelet            Started container vfio-manager-container
+  Warning  IOMMUDisabled  2m39s                 vfio-manager       IOMMU support is missing on node mx-5500g6. Please ensure that IOMMU is enabled on the node
+  Warning  BackOff        19s (x22 over 5m26s)  kubelet            Back-off restarting failed container vfio-manager-container in pod metax-vfio-manager-fhr28_metax-operator(3c9da45a-796d-42f9-b888-4b9bccd51e5f)
+(base) t9k@master01:~$ k -n metax-operator logs metax-vfio-manager-fhr28
+{&quot;level&quot;:&quot;fatal&quot;,&quot;msg&quot;:&quot;iommu is not enabled, progress quit now&quot;,&quot;time&quot;:&quot;2025-04-01T08:46:41Z&quot;}
+</code></pre>
+<p>删除 DaemonSet metax-vfio-manager：</p>
+<pre><code class="language-bash">(base) t9k@master01:~$ k -n metax-operator get ds
+NAME                      DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR                                                                                        AGE
+metax-container-runtime   1         1         1       1            1           metax-tech.com/gpu.installed=true                                                                    3m14s
+metax-driver              1         1         1       1            1           metax-tech.com/gpu.installed=true,metax-tech.com/runtime.ready=true                                  3m14s
+metax-gpu-device          1         1         1       1            1           metax-tech.com/gpu.installed=true,metax-tech.com/maca.ready=true,metax-tech.com/runtime.ready=true   3m14s
+metax-gpu-label           2         2         2       2            2           &lt;none&gt;                                                                                               3m14s
+metax-maca                1         1         1       1            1           metax-tech.com/gpu.installed=true,metax-tech.com/runtime.ready=true                                  3m14s
+metax-vfio-manager        1         1         0       1            0           metax-tech.com/gpu.installed=true                                                                    3m13s
+(base) t9k@master01:~$ k -n metax-operator delete ds metax-vfio-manager
+daemonset.apps &quot;metax-vfio-manager&quot; deleted
+</code></pre>
+<h3 id="验证-11"><a class="header" href="#验证-11">验证</a></h3>
+<h4 id="gpu-扩展资源"><a class="header" href="#gpu-扩展资源">GPU 扩展资源</a></h4>
+<p>查看 GPU 节点上是否有 GPU 扩展资源：</p>
+<ol>
+<li>有扩展资源 <code>metax-tech.com/gpu</code>。</li>
+<li>扩展资源数量与节点上 GPU 硬件数量一致。</li>
+</ol>
+<pre><code class="language-bash">(base) t9k@master01:~$ k get node mx-5500g6 -o json | jq .status.allocatable
+{
+  &quot;cpu&quot;: &quot;191900m&quot;,
+  &quot;ephemeral-storage&quot;: &quot;379445965811&quot;,
+  &quot;hugepages-1Gi&quot;: &quot;0&quot;,
+  &quot;hugepages-2Mi&quot;: &quot;0&quot;,
+  &quot;memory&quot;: &quot;1056124912Ki&quot;,
+  &quot;metax-tech.com/gpu&quot;: &quot;8&quot;,
+  &quot;metax-tech.com/vfio-gpu&quot;: &quot;0&quot;,
+  &quot;pods&quot;: &quot;110&quot;
+}
+</code></pre>
+<h4 id="gpu-节点标签"><a class="header" href="#gpu-节点标签">GPU 节点标签</a></h4>
+<p>查看 GPU 节点标签，节点标签包含 metax GPU 信息：</p>
+<pre><code class="language-bash">(base) t9k@master01:~$ k get node mx-5500g6 -o yaml
+apiVersion: v1
+kind: Node
+metadata:
+  creationTimestamp: &quot;2025-03-31T08:40:44Z&quot;
+  labels:
+    beta.kubernetes.io/arch: amd64
+    beta.kubernetes.io/fluentd-ds-ready: &quot;true&quot;
+    beta.kubernetes.io/os: linux
+    kubernetes.io/arch: amd64
+    kubernetes.io/hostname: mx-5500g6
+    kubernetes.io/os: linux
+    metax-tech.com/driver.ready: &quot;true&quot;
+    metax-tech.com/gpu.driver.major: &quot;2&quot;
+    metax-tech.com/gpu.driver.minor: &quot;12&quot;
+    metax-tech.com/gpu.driver.mode: cloud
+    metax-tech.com/gpu.driver.patch: &quot;13&quot;
+    metax-tech.com/gpu.family: MXC
+    metax-tech.com/gpu.installed: &quot;true&quot;
+    metax-tech.com/gpu.memory: 64GB
+    metax-tech.com/gpu.product: MXC550
+    metax-tech.com/gpu.sriov: forbidden
+    metax-tech.com/maca.ready: &quot;true&quot;
+    metax-tech.com/runtime.ready: &quot;true&quot;
+    node-role.kubernetes.io/compute: &quot;&quot;
+  name: mx-5500g6
+</code></pre>
+<h4 id="containerd-配置"><a class="header" href="#containerd-配置">Containerd 配置</a></h4>
+<p>查看 GPU 节点的 containerd 配置：</p>
+<ol>
+<li>已被注入 [plugins.&quot;io.containerd.grpc.v1.cri&quot;.containerd.runtimes.metax]</li>
+<li>default runtime 被设置为 metax</li>
+</ol>
+<pre><code class="language-bash">root@mx-5500g6:~# cat /etc/containerd/config.toml
+oom_score = 0
+root = &quot;/var/lib/containerd&quot;
+state = &quot;/run/containerd&quot;
+version = 2
+
+[debug]
+  address = &quot;&quot;
+  format = &quot;&quot;
+  gid = 0
+  level = &quot;info&quot;
+  uid = 0
+
+[grpc]
+  max_recv_message_size = 16777216
+  max_send_message_size = 16777216
+
+[metrics]
+  address = &quot;&quot;
+  grpc_histogram = false
+
+[plugins]
+
+  [plugins.&quot;io.containerd.grpc.v1.cri&quot;]
+    disable_apparmor = false
+    disable_hugetlb_controller = true
+    enable_selinux = false
+    enable_unprivileged_icmp = false
+    enable_unprivileged_ports = false
+    image_pull_progress_timeout = &quot;5m&quot;
+    max_container_log_line_size = -1
+    sandbox_image = &quot;registry.cn-hangzhou.aliyuncs.com/t9k/pause:3.9&quot;
+    tolerate_missing_hugetlb_controller = true
+
+    [plugins.&quot;io.containerd.grpc.v1.cri&quot;.containerd]
+      default_runtime_name = &quot;metax&quot;
+      discard_unpacked_layers = true
+      snapshotter = &quot;overlayfs&quot;
+
+      [plugins.&quot;io.containerd.grpc.v1.cri&quot;.containerd.runtimes]
+
+        [plugins.&quot;io.containerd.grpc.v1.cri&quot;.containerd.runtimes.metax]
+          base_runtime_spec = &quot;/etc/containerd/cri-base.json&quot;
+          runtime_engine = &quot;&quot;
+          runtime_root = &quot;&quot;
+          runtime_type = &quot;io.containerd.runc.v2&quot;
+
+          [plugins.&quot;io.containerd.grpc.v1.cri&quot;.containerd.runtimes.metax.options]
+            BinaryName = &quot;/var/lib/metax/tools/usr/bin/mx-container-runtime&quot;
+            binaryName = &quot;/usr/local/bin/runc&quot;
+            systemdCgroup = true
+
+        [plugins.&quot;io.containerd.grpc.v1.cri&quot;.containerd.runtimes.runc]
+          base_runtime_spec = &quot;/etc/containerd/cri-base.json&quot;
+          runtime_engine = &quot;&quot;
+          runtime_root = &quot;&quot;
+          runtime_type = &quot;io.containerd.runc.v2&quot;
+
+          [plugins.&quot;io.containerd.grpc.v1.cri&quot;.containerd.runtimes.runc.options]
+            binaryName = &quot;/usr/local/bin/runc&quot;
+            systemdCgroup = true
+
+    [plugins.&quot;io.containerd.grpc.v1.cri&quot;.registry]
+
+      [plugins.&quot;io.containerd.grpc.v1.cri&quot;.registry.mirrors]
+
+        [plugins.&quot;io.containerd.grpc.v1.cri&quot;.registry.mirrors.&quot;docker.io&quot;]
+          endpoint = [&quot;https://registry.dockermirror.com&quot;]
+</code></pre>
+<h4 id="创建-pod-测试用例"><a class="header" href="#创建-pod-测试用例">创建 Pod 测试用例</a></h4>
+<p>创建使用 GPU 的 Pod，并在 Pod 容器中查看 metax 相关配置：</p>
+<pre><code class="language-bash">(base) t9k@master01:~$ k create -f - &lt;&lt; EOF
+&gt; apiVersion: v1
+kind: Pod
+metadata:
+  name: ubuntu
+spec:
+  containers:
+  - image: registry.cn-hangzhou.aliyuncs.com/t9k/ubuntu:22.04
+    name: hey
+    tty: true
+    resources:
+      limits:
+        metax-tech.com/gpu: 1
+        cpu: 100m
+        memory: 100Mi
+EOF
+pod/ubuntu created
+(base) t9k@master01:~$ k get pod
+NAME     READY   STATUS    RESTARTS   AGE
+ubuntu   1/1     Running   0          23s
+(base) t9k@master01:~$ k exec -ti ubuntu -- bash
+root@ubuntu:/# mx-smi
+mx-smi  version: 2.1.12
+
+=================== MetaX System Management Interface Log ===================
+Timestamp                                         : Tue Apr  1 10:10:23 2025
+
+Attached GPUs                                     : 1
++---------------------------------------------------------------------------------+
+| MX-SMI 2.1.12                       Kernel Mode Driver Version: 2.12.13         |
+| MACA Version: unknown               BIOS Version: 1.13.4.0                      |
+|------------------------------------+---------------------+----------------------+
+| GPU         NAME                   | Bus-id              | GPU-Util             |
+| Temp        Pwr:Usage/Cap          | Memory-Usage        |                      |
+|====================================+=====================+======================|
+| 0           MetaX C550             | 0000:2a:00.0        | 0%                   |
+| 34C         97W / NA               | 858/65536 MiB       |                      |
++------------------------------------+---------------------+----------------------+
+
++---------------------------------------------------------------------------------+
+| Process:                                                                        |
+|  GPU                    PID         Process Name                 GPU Memory     |
+|                                                                  Usage(MiB)     |
+|=================================================================================|
+|  no process found                                                               |
++---------------------------------------------------------------------------------+
+
+End of Log
+# 输入 mx，然后按 tab 键，可以查看到下列 binary
+root@ubuntu:/# mx
+mx-diagease            mx-report              mx-smi                 mxcc                   mxcc-ocl               mxfortran              mxfortran.py           mxmaca-sdk-install.sh
+root@ubuntu:/# ls /opt/
+maca  maca-2.29.0.19  mxdriver
+</code></pre>
+<p>作为对比，创建一个不使用 GPU 的 Pod ubuntu-nogpu：</p>
+<pre><code class="language-bash">(base) t9k@master01:~$ k create -f - &lt;&lt; EOF
+&gt; apiVersion: v1
+kind: Pod
+metadata:
+  name: ubuntu-nogpu
+spec:
+  containers:
+  - image: registry.cn-hangzhou.aliyuncs.com/t9k/ubuntu:22.04
+    name: hey
+    tty: true
+    resources:
+      limits:
+        cpu: 100m
+        memory: 100Mi
+EOF
+pod/ubuntu-nogpu created
+(base) t9k@master01:~$ k get pod
+NAME           READY   STATUS    RESTARTS   AGE
+ubuntu         1/1     Running   0          3m39s
+ubuntu-nogpu   1/1     Running   0          6s
+(base) t9k@master01:~$ k exec -ti ubuntu-nogpu -- bash
+root@ubuntu-nogpu:/# mx-smi
+bash: mx-smi: command not found
+root@ubuntu-nogpu:/# ls /opt/
+</code></pre>
+<p>删除测试 pods：</p>
+<pre><code class="language-bash">(base) t9k@master01:~$ k delete pod ubuntu ubuntu-nogpu
+pod &quot;ubuntu&quot; deleted
+pod &quot;ubuntu-nogpu&quot; deleted
+</code></pre>
+<h2 id="安装-mx-exporter"><a class="header" href="#安装-mx-exporter">安装 MX Exporter</a></h2>
+<h3 id="准备工作-1"><a class="header" href="#准备工作-1">准备工作</a></h3>
+<h4 id="下载安装包-1"><a class="header" href="#下载安装包-1">下载安装包</a></h4>
+<p>从 <a href="https://developer.metax-tech.com/softnova/index">https://developer.metax-tech.com/softnova/index</a> 找到安装包下载命令，运行下列命令下载 mx-exporter 安装包：</p>
+<pre><code class="language-bash">root@mx-5500g6:~$ wget -O mx-exporter.0.9.2.tgz &quot;https://metax-pub.oss-cn-shanghai.aliyuncs.com/mxmaca2.0/2.28.0.x/binary/x86_64/cloud/mx-exporter.0.9.2.tgz?OSSAccessKeyId=LTAI5t8HeoJo71RpDsrCMZbQ&amp;Expires=1743530864&amp;Signature=Nm949ZAzFqOqF7fJ9bl2ZU4TaKQ%3D&quot;
+--2025-04-01 18:07:47--  https://metax-pub.oss-cn-shanghai.aliyuncs.com/mxmaca2.0/2.28.0.x/binary/x86_64/cloud/mx-exporter.0.9.2.tgz?OSSAccessKeyId=LTAI5t8HeoJo71RpDsrCMZbQ&amp;Expires=1743530864&amp;Signature=Nm949ZAzFqOqF7fJ9bl2ZU4TaKQ%3D
+Resolving metax-pub.oss-cn-shanghai.aliyuncs.com (metax-pub.oss-cn-shanghai.aliyuncs.com)... 222.73.156.23
+Connecting to metax-pub.oss-cn-shanghai.aliyuncs.com (metax-pub.oss-cn-shanghai.aliyuncs.com)|222.73.156.23|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 184856654 (176M) [application/octet-stream]
+Saving to: ‘mx-exporter.0.9.2.tgz’
+
+mx-exporter.0.9.2.tgz                               100%[=================================================================================================================&gt;] 176.29M  75.6MB/s    in 2.3s
+
+2025-04-01 18:07:50 (75.6 MB/s) - ‘mx-exporter.0.9.2.tgz’ saved [184856654/184856654]
+root@mx-5500g6:~$ ls mx-exporter.0.9.2.tgz
+mx-exporter.0.9.2.tgz
+root@mx-5500g6:~$ tar -xzf mx-exporter.0.9.2.tgz
+root@mx-5500g6:~$ cd mx-exporter/
+root@mx-5500g6:~/mx-exporter$ ls
+config  deployment  DOCKER.md  mx-exporter-0.9.2-amd64.xz  mx-exporter-0.9.2-arm64.xz
+root@mx-5500g6:~/mx-exporter$ tree .
+.
+├── config
+│   └── default-counters.csv
+├── deployment
+│   ├── grafana
+│   │   ├── deployment.yaml
+│   │   ├── grafana-datasource-config.yaml
+│   │   └── service.yaml
+│   ├── grafana-dashboard
+│   │   ├── Metax-Alerts.json
+│   │   ├── MetaX-Data-Center-GPU-Usage-Overview.json
+│   │   └── MetaX-GPU-C500.json
+│   ├── mx-exporter
+│   │   ├── helm
+│   │   │   └── mx-exporter
+│   │   │       ├── Chart.yaml
+│   │   │       ├── templates
+│   │   │       │   ├── daemonset.yaml
+│   │   │       │   ├── _helpers.tpl
+│   │   │       │   ├── hpa.yaml
+│   │   │       │   ├── ingress.yaml
+│   │   │       │   ├── metrics-configmap.yaml
+│   │   │       │   ├── NOTES.txt
+│   │   │       │   ├── serviceaccount.yaml
+│   │   │       │   └── service.yaml
+│   │   │       └── values.yaml
+│   │   └── mx-exporter-daemonset.yaml
+│   ├── namespace.yaml
+│   └── prometheus
+│       ├── clusterRole.yaml
+│       ├── config-map.yaml
+│       ├── prometheus-deployment.yaml
+│       └── prometheus-service.yaml
+├── DOCKER.md
+├── mx-exporter-0.9.2-amd64.xz
+└── mx-exporter-0.9.2-arm64.xz
+
+root@mx-5500g6:~/mx-exporter$ cat deployment/mx-exporter/helm/mx-exporter/Chart.yaml
+apiVersion: v2
+name: mx-exporter
+description: A Helm chart for MetaX GPU metrics exporter
+
+# A chart can be either an 'application' or a 'library' chart.
+#
+# Application charts are a collection of templates that can be packaged into versioned archives
+# to be deployed.
+#
+# Library charts provide useful utilities or functions for the chart developer. They're included as
+# a dependency of application charts to inject those utilities and functions into the rendering
+# pipeline. Library charts do not define any templates and therefore cannot be deployed.
+type: application
+
+# This is the chart version. This version number should be incremented each time you make changes
+# to the chart and its templates, including the app version.
+# Versions are expected to follow Semantic Versioning (https://semver.org/)
+version: 0.5.0
+
+# This is the version number of the application being deployed. This version number should be
+# incremented each time you make changes to the application. Versions are not expected to
+# follow Semantic Versioning. They should reflect the version the application is using.
+# It is recommended to use it with quotes.
+appVersion: &quot;2.1.10&quot;
+
+keywords:
+  - gpu
+  - compute
+  - monitoring
+  - telemetry
+</code></pre>
+<h4 id="mx-exporter-镜像和-helm-chart"><a class="header" href="#mx-exporter-镜像和-helm-chart">MX Exporter 镜像和 Helm Chart</a></h4>
+<p>从安装包加载镜像，并上传到 harbor.example.cn</p>
+<pre><code class="language-bash">root@mx-5500g6:~/mx-exporter$ docker load -i mx-exporter-0.9.2-amd64.xz
+548a79621a42: Loading layer [==================================================&gt;]  65.53MB/65.53MB
+a6f5a4db20b6: Loading layer [==================================================&gt;]  235.9MB/235.9MB
+1dd18676a0da: Loading layer [==================================================&gt;]   14.8MB/14.8MB
+e89ea7416e05: Loading layer [==================================================&gt;]  14.41MB/14.41MB
+b87ee5e66685: Loading layer [==================================================&gt;]  2.048kB/2.048kB
+e56417dbe59d: Loading layer [==================================================&gt;]  2.129MB/2.129MB
+Loaded image: cr.metax-tech.com/cloud/mx-exporter:0.9.2
+root@mx-5500g6:~/mx-exporter$ docker tag  cr.metax-tech.com/cloud/mx-exporter:0.9.2 harbor.example.cn/mximages/mx-exporter:0.9.2
+root@mx-5500g6:~/mx-exporter$ docker push harbor.example.cn/mximages/mx-exporter:0.9.2
+The push refers to repository [harbor.example.cn/mximages/mx-exporter]
+e56417dbe59d: Pushed
+b87ee5e66685: Pushed
+e89ea7416e05: Pushed
+1dd18676a0da: Pushed
+a6f5a4db20b6: Pushed
+548a79621a42: Pushed
+0.9.2: digest: sha256:a64c6f193b0892e71a91ac6f72d3b206b91f83063fb21404ba63d1fe37675124 size: 1580
+</code></pre>
+<p>将 Helm Chart 上传到 harbor.example.cn</p>
+<pre><code class="language-bash">root@mx-5500g6:~/mx-exporter$ ls deployment/mx-exporter/helm/mx-exporter/
+Chart.yaml  templates  values.yaml
+root@mx-5500g6:~/mx-exporter$ helm package deployment/mx-exporter/helm/mx-exporter
+Successfully packaged chart and saved it to: /home/t9k/mx-exporter/mx-exporter-0.5.0.tgz
+root@mx-5500g6:~/mx-exporter$ helm push mx-exporter-0.5.0.tgz  oci://harbor.example.cn/mxcharts
+Pushed: harbor.example.cn/mxcharts/mx-exporter:0.5.0
+Digest: sha256:366ab5faf6f9e047617ef6b17a622fe9e961b4972f02666b1e67dba2abbe7337
+</code></pre>
+<h3 id="安装-helm-chart-1"><a class="header" href="#安装-helm-chart-1">安装 Helm Chart</a></h3>
+<p>在可以访问 Kubernetes 集群的节点上，运行下列命令安装 helm chart</p>
+<pre><code class="language-bash">(base) t9k@master01:~/mx-exporter$ helm install mx-exporter oci://harbor.example.cn/mxcharts/mx-exporter --create-namespace -n metax-monitor --wait --set image.repository=harbor.example.cn/mximages/mx-exporter --set image.tag=0.9.2 --set-string nodeSelector.&quot;metax-tech\.com/gpu\.installed&quot;=true
+Pulled: harbor.example.cn/mxcharts/mx-exporter:0.5.0
+Digest: sha256:366ab5faf6f9e047617ef6b17a622fe9e961b4972f02666b1e67dba2abbe7337
+NAME: mx-exporter
+LAST DEPLOYED: Wed Apr  2 10:59:35 2025
+NAMESPACE: metax-monitor
+STATUS: deployed
+REVISION: 1
+TEST SUITE: None
+NOTES:
+1. Get the application URL by running these commands:
+  export POD_NAME=$(kubectl get pods --namespace metax-monitor -l &quot;app.kubernetes.io/name=mx-exporter,app.kubernetes.io/instance=mx-exporter&quot; -o jsonpath=&quot;{.items[0].metadata.name}&quot;)
+  export CONTAINER_PORT=$(kubectl get pod --namespace metax-monitor $POD_NAME -o jsonpath=&quot;{.spec.containers[0].ports[0].containerPort}&quot;)
+  echo &quot;Visit http://127.0.0.1:8080 to use your application&quot;
+  kubectl --namespace metax-monitor port-forward $POD_NAME 8080:$CONTAINER_PORT
+</code></pre>
+<h3 id="验证问题"><a class="header" href="#验证问题">验证&amp;问题</a></h3>
+<p>查看 Pod 状态:</p>
+<ol>
+<li>mx-exporter pod 正常运行在 GPU 节点上</li>
+<li>mx-exporter pod 日志输出错误 <code>GpuMonitor mxSmlGetCurrentClocksThrottleReason failed: Sysfs error</code> （目前认为是 metax 产品 bug）。</li>
+</ol>
+<pre><code class="language-bash">(base) t9k@master01:~/mx-exporter$ k -n metax-monitor  get pod -o wide
+NAME                READY   STATUS    RESTARTS   AGE   IP              NODE        NOMINATED NODE   READINESS GATES
+mx-exporter-lrh44   1/1     Running   0          34s   10.233.65.227   mx-5500g6   &lt;none&gt;           &lt;none&gt;
+(base) t9k@master01:~/mx-exporter$ k -n metax-monitor  logs mx-exporter-lrh44
+Using lib from /opt/mxexporter/mx_exporter/libmxsml.so
+Namespace(config_file='/etc/config/metrics', ib_monitor=0, interval=10000, log_monitor=0, mode=1, mount_point='/', port=8000)
+Config file: /etc/config/metrics
+2025-04-02 02:59:37.092945 GpuMonitor first mxSmlInit success
+2025-04-02 02:59:37.092984 GpuMonitor Device number1: 8
+2025-04-02 03:00:07.149238 GpuMonitor second mxSmlInit success
+2025-04-02 03:00:07.149345 GpuMonitor Device number2: 8
+2025-04-02 03:00:07.149363 GpuMonitor initialize success
+2025-04-02 03:00:07.149384 GpuMonitor mxSmlGetDeviceCount number: 8
+2025-04-02 03:00:07.149448 GpuMonitor mxSmlGetDeviceInfo for GPU#0 device name: MXC550
+2025-04-02 03:00:07.149777 GpuMonitor mxSmlGetDeviceInfo for GPU#1 device name: MXC550
+2025-04-02 03:00:07.150025 GpuMonitor mxSmlGetDeviceInfo for GPU#2 device name: MXC550
+2025-04-02 03:00:07.150246 GpuMonitor mxSmlGetDeviceInfo for GPU#3 device name: MXC550
+2025-04-02 03:00:07.150457 GpuMonitor mxSmlGetDeviceInfo for GPU#4 device name: MXC550
+2025-04-02 03:00:07.150666 GpuMonitor mxSmlGetDeviceInfo for GPU#5 device name: MXC550
+2025-04-02 03:00:07.150985 GpuMonitor mxSmlGetDeviceInfo for GPU#6 device name: MXC550
+2025-04-02 03:00:07.151192 GpuMonitor mxSmlGetDeviceInfo for GPU#7 device name: MXC550
+2025-04-02 03:00:07.151428 GpuMonitor mxSmlGetPfDeviceCount number: 0
+2025-04-02 03:00:07.152206 MxCollector [&quot;# The line begins with '#' is a comment line.&quot;]
+2025-04-02 03:00:07.152251 MxCollector Skip comment line
+2025-04-02 03:00:07.152274 MxCollector ['# Format: metric id', 'metric type', 'metric name', 'metric description', 'label1', 'label2', '...']
+2025-04-02 03:00:07.152300 MxCollector Skip comment line
+2025-04-02 03:00:07.152316 MxCollector ['# metric name', ' metric description and labels name can be modified as your need']
+...
+2025-04-02 03:00:07.155851 MxCollector Skip comment line
+2025-04-02 03:00:07.155871 MxCollector ['gpu_state', 'Gauge', 'mx_gpu_state', 'GPU state: 0(not available) 1(available)', 'deviceId', 'uuid', 'exported_pod', 'exported_namespace', 'exported_container', 'Hostname', 'driver_version', 'bios_version', 'modelName']
+2025-04-02 03:00:07.155935 MxCollector []
+2025-04-02 03:00:07.155951 MxCollector Skip empty line
+2025-04-02 03:00:07.155965 MxCollector ['# MXC specific current gpu clock throttle reason']
+2025-04-02 03:00:07.155981 MxCollector Skip comment line
+2025-04-02 03:00:07.156001 MxCollector ['clk_thr', 'Gauge', 'mx_clk_thr', 'Current gpu clock throttling reason', 'deviceId', 'uuid', 'exported_pod', 'exported_namespace', 'exported_container', 'Hostname', 'driver_version', 'bios_version', 'modelName']
+2025-04-02 03:00:07.156646 GpuMonitor Get data GPU#0
+2025-04-02 03:00:07.166124 GpuMonitor mxSmlGetOpticalModuleStatus failed: Operation not support in target device
+2025-04-02 03:00:07.166167 GpuMonitor Remove not supported metric optical_module_temp
+2025-04-02 03:00:07.256227 GpuMonitor mxSmlGetCurrentClocksThrottleReason failed: Sysfs error
+2025-04-02 03:00:07.256280 GpuMonitor Get data GPU#1
+2025-04-02 03:00:07.351904 GpuMonitor mxSmlGetCurrentClocksThrottleReason failed: Sysfs error
+2025-04-02 03:00:07.351967 GpuMonitor Get data GPU#2
+2025-04-02 03:00:07.447818 GpuMonitor mxSmlGetCurrentClocksThrottleReason failed: Sysfs error
+2025-04-02 03:00:07.447888 GpuMonitor Get data GPU#3
+2025-04-02 03:00:07.543754 GpuMonitor mxSmlGetCurrentClocksThrottleReason failed: Sysfs error
+2025-04-02 03:00:07.543825 GpuMonitor Get data GPU#4
+2025-04-02 03:00:07.639940 GpuMonitor mxSmlGetCurrentClocksThrottleReason failed: Sysfs error
+2025-04-02 03:00:07.639995 GpuMonitor Get data GPU#5
+2025-04-02 03:00:07.736289 GpuMonitor mxSmlGetCurrentClocksThrottleReason failed: Sysfs error
+2025-04-02 03:00:07.736356 GpuMonitor Get data GPU#6
+2025-04-02 03:00:07.831746 GpuMonitor mxSmlGetCurrentClocksThrottleReason failed: Sysfs error
+2025-04-02 03:00:07.831816 GpuMonitor Get data GPU#7
+2025-04-02 03:00:07.927858 GpuMonitor mxSmlGetCurrentClocksThrottleReason failed: Sysfs error
+2025-04-02 03:00:17.937977 GpuMonitor Get data GPU#0
+2025-04-02 03:00:18.035451 GpuMonitor mxSmlGetCurrentClocksThrottleReason failed: Sysfs error
+2025-04-02 03:00:18.035524 GpuMonitor Get data GPU#1
+2025-04-02 03:00:18.131583 GpuMonitor mxSmlGetCurrentClocksThrottleReason failed: Sysfs error
+</code></pre>
+<p>查看 mx-exporter 提供的 metrics：无 metric mx_clk_thr 数据，与 Pod 日志输出的错误信息（mxSmlGetCurrentClocksThrottleReason failed）一致。</p>
+<pre><code class="language-bash">(base) t9k@master01:~$ k -n metax-monitor port-forward mx-exporter-lrh44 8000
+Forwarding from 127.0.0.1:8000 -&gt; 8000
+Forwarding from [::1]:8000 -&gt; 8000
+Handling connection for 8000
+(base) t9k@master01:~/mx-exporter$ curl localhost:8000/metrics
+# HELP mx_device_type Device type
+# TYPE mx_device_type gauge
+mx_device_type{deviceId=&quot;0&quot;,deviceType=&quot;MXC550&quot;,uuid=&quot;GPU-87ba9f62-d02e-0528-f19e-1936f082e738&quot;} 1.0
+mx_device_type{deviceId=&quot;1&quot;,deviceType=&quot;MXC550&quot;,uuid=&quot;GPU-9cea8405-18ff-28ff-44ee-ace7e8b938b9&quot;} 1.0
+mx_device_type{deviceId=&quot;2&quot;,deviceType=&quot;MXC550&quot;,uuid=&quot;GPU-c56e8f62-3a2c-3d23-a742-a9361e146f3d&quot;} 1.0
+mx_device_type{deviceId=&quot;3&quot;,deviceType=&quot;MXC550&quot;,uuid=&quot;GPU-bb19f045-15b4-532c-5523-9027577c2d14&quot;} 1.0
+mx_device_type{deviceId=&quot;4&quot;,deviceType=&quot;MXC550&quot;,uuid=&quot;GPU-43387c13-822c-0e21-9d88-64ed1614e2ab&quot;} 1.0
+mx_device_type{deviceId=&quot;5&quot;,deviceType=&quot;MXC550&quot;,uuid=&quot;GPU-5168627d-2d56-447d-bbf8-36afdfcaecaf&quot;} 1.0
+mx_device_type{deviceId=&quot;6&quot;,deviceType=&quot;MXC550&quot;,uuid=&quot;GPU-6887400c-2ddd-fc03-f8f1-c074df4fe45d&quot;} 1.0
+mx_device_type{deviceId=&quot;7&quot;,deviceType=&quot;MXC550&quot;,uuid=&quot;GPU-76b9c484-c749-d7b4-aac3-6cac3153817c&quot;} 1.0
+...
+# HELP mx_clk_thr Current gpu clock throttling reason
+# TYPE mx_clk_thr gauge
+</code></pre>
+<h2 id="监控配置-1"><a class="header" href="#监控配置-1">监控配置</a></h2>
+<h3 id="t9k-monitoring-1"><a class="header" href="#t9k-monitoring-1">T9k Monitoring</a></h3>
+<p>在安装 T9k Monitoring 时，可通过 Helm values.yaml 中的 <code>global.t9k.monitoring.gpu.metax</code> 字段配置针对 MetaX GPU 的监控设置。启用 Metax GPU 监控后：</p>
+<ol>
+<li>T9k Monitoring 部署的 Prometheus 服务将自动收集 MX Exporter 生成的监控数据。</li>
+<li>在 T9k Monitoring 部署的 Grafana 中，可以通过 Dashboard 查看 MetaX GPU 的监控图表。</li>
+</ol>
+<p>下面是一个配置示例：</p>
+<pre><code class="language-yaml">global:
+  t9k:
+    monitoring:
+      gpu:
+        metax:
+          enabled: false
+          serviceMonitor:
+            # namespace where service mx-exporter is located
+            namespaceMatchName: metax-monitor
+            # port in service mx-exporter to expose metrics
+            port: metrics
+            # labels to match service mx-exporter
+            selector:      
+              matchLabels:
+                app.kubernetes.io/name: mx-exporter
+</code></pre>
+<h3 id="cluster-admin-1"><a class="header" href="#cluster-admin-1">Cluster Admin</a></h3>
+<p>在安装 Cluster Admin 时，可通过 Helm values.yaml 中的 <code>global.t9k.clusterAdminWeb.gpuMonitoring.metax</code> 字段配置针对 MetaX GPU 的监控设置。启用 MetaX GPU 监控后：</p>
+<ol>
+<li>管理员可以在 Cluster Admin Web 的工作负载详情页面查看 MetaX GPU 的资源监控图表。</li>
+<li>管理员可以在节点详情页面查看节点上的 MetaX GPU 信息。</li>
+</ol>
+<p>下面是一个配置示例，配置的字段说明请参考<a target="_blank" rel="noopener noreferrer" href="https://github.com/t9k/admin-manuals/blob/master/src/cluster-admin-ui/config.md#gpu-%E7%9B%91%E6%8E%A7%E9%85%8D%E7%BD%AE">管理员文档</a>：</p>
+<pre><code class="language-yaml">global:
+  t9k:
+    clusterAdminWeb:
+      gpuMonitoring:
+        metax:
+          charts:
+          - legend: '{{uuid}}'
+            promQLFormat: avg(label_replace(label_replace(mx_memory_used{job=&quot;metax-exporter&quot;,type=&quot;vram&quot;,exported_namespace=&quot;${namespace}&quot;,exported_pod=~&quot;${pods}&quot;,exported_pod!=&quot;&quot;},&quot;pod&quot;,&quot;$1&quot;,&quot;exported_pod&quot;,&quot;(.+)&quot;),&quot;namespace&quot;,&quot;$1&quot;,&quot;exported_namespace&quot;,&quot;(.+)&quot;)    *
+              on(namespace,pod) group_left t9k_pod_resources_allocated) by(uuid)
+            title:
+              en: GPU Memory Used
+              zh: GPU 已用显存
+            unit: KB
+          - legend: '{{uuid}}'
+            promQLFormat: avg(label_replace(label_replace(mx_memory_usage{job=&quot;metax-exporter&quot;,type=&quot;vram&quot;,exported_namespace=&quot;${namespace}&quot;,exported_pod=~&quot;${pods}&quot;,exported_pod!=&quot;&quot;},&quot;pod&quot;,&quot;$1&quot;,&quot;exported_pod&quot;,&quot;(.+)&quot;),&quot;namespace&quot;,&quot;$1&quot;,&quot;exported_namespace&quot;,&quot;(.+)&quot;)    *
+              on(namespace,pod) group_left t9k_pod_resources_allocated) by(uuid)
+            title:
+              en: GPU Memory Usage
+              zh: GPU 显存使用率
+            unit: '%'
+          - legend: '{{uuid}}'
+            promQLFormat: avg(label_replace(label_replace(mx_board_power{job=&quot;metax-exporter&quot;,exported_namespace=&quot;${namespace}&quot;,exported_pod=~&quot;${pods}&quot;,exported_pod!=&quot;&quot;},&quot;pod&quot;,&quot;$1&quot;,&quot;exported_pod&quot;,&quot;(.+)&quot;),&quot;namespace&quot;,&quot;$1&quot;,&quot;exported_namespace&quot;,&quot;(.+)&quot;)    *
+              on(namespace,pod) group_left t9k_pod_resources_allocated) by(uuid)
+            title:
+              en: GPU Power
+              zh: GPU 功率
+            unit: mW
+          - legend: '{{uuid}}'
+            promQLFormat: avg(label_replace(label_replace(mx_chip_hotspot_temp{job=&quot;metax-exporter&quot;,exported_namespace=&quot;${namespace}&quot;,exported_pod=~&quot;${pods}&quot;,exported_pod!=&quot;&quot;},&quot;pod&quot;,&quot;$1&quot;,&quot;exported_pod&quot;,&quot;(.+)&quot;),&quot;namespace&quot;,&quot;$1&quot;,&quot;exported_namespace&quot;,&quot;(.+)&quot;)    *
+              on(namespace,pod) group_left t9k_pod_resources_allocated) by(uuid)
+            title:
+              en: Chip Hotspot Temperature
+              zh: 芯片热点温度
+            unit: '°C'
+          - legend: '{{uuid}}'
+            promQLFormat: avg(label_replace(label_replace(mx_board_core_temp{job=&quot;metax-exporter&quot;,exported_namespace=&quot;${namespace}&quot;,exported_pod=~&quot;${pods}&quot;,exported_pod!=&quot;&quot;},&quot;pod&quot;,&quot;$1&quot;,&quot;exported_pod&quot;,&quot;(.+)&quot;),&quot;namespace&quot;,&quot;$1&quot;,&quot;exported_namespace&quot;,&quot;(.+)&quot;)    *
+              on(namespace,pod) group_left t9k_pod_resources_allocated) by(uuid)
+            title:
+              en: Board CORE Temperature
+              zh: 主板核心温度
+            unit: '°C'
+          - legend: '{{uuid}}'
+            promQLFormat: avg(label_replace(label_replace(mx_gpu_usage{job=&quot;metax-exporter&quot;,exported_namespace=&quot;${namespace}&quot;,exported_pod=~&quot;${pods}&quot;,exported_pod!=&quot;&quot;},&quot;pod&quot;,&quot;$1&quot;,&quot;exported_pod&quot;,&quot;(.+)&quot;),&quot;namespace&quot;,&quot;$1&quot;,&quot;exported_namespace&quot;,&quot;(.+)&quot;)    *
+              on(namespace,pod) group_left t9k_pod_resources_allocated) by(uuid)
+            title:
+              en: GPU Usage
+              zh: GPU 使用率
+            unit: '%'
+          info:
+            attributes:
+              count: .status.allocatable.'metax-tech.com/gpu'
+              memory:
+                key: .metadata.labels.'metax-tech.com/gpu.memory'
+              product: .metadata.labels.'metax-tech.com/gpu.product'
+            source: node_yaml
+          resource:
+            names:
+            - metax-tech.com/gpu
+</code></pre>
+<h3 id="core-1"><a class="header" href="#core-1">Core</a></h3>
+<p>在安装 Core 时，可通过 Helm values.yaml 中的 <code>global.t9k.k8sResourceServer.gpuCharts.config.metax</code> 字段设置针对  MetaX GPU 的监控配置。启用 MetaX GPU 监控后，普通用户可以在 Job Manager 和 Service Manager 中查看到 MetaX GPU 的资源监控图表。</p>
+<p>下面是一个配置示例，配置的字段说明请参考<a target="_blank" rel="noopener noreferrer" href="https://github.com/t9k/admin-manuals/blob/0455c009ae0d91fa7c3aced89ad4c329b2eeb308/src/others/k8s-resource-server.md#%E9%85%8D%E7%BD%AE%E6%A0%BC%E5%BC%8F">管理员文档</a>：</p>
+<pre><code class="language-yaml">global:
+  t9k:
+    k8sResourceServer:
+      gpuCharts:
+        config:
+          metax:
+            charts:
+              memory_used:
+                legend: '{{uuid}}'
+                promQLFormat: avg(label_replace(label_replace(mx_memory_used{job=&quot;metax-exporter&quot;,type=&quot;vram&quot;,exported_namespace=&quot;%s&quot;,exported_pod=~&quot;%s&quot;,exported_pod!=&quot;&quot;},&quot;pod&quot;,&quot;$1&quot;,&quot;exported_pod&quot;,&quot;(.+)&quot;),&quot;namespace&quot;,&quot;$1&quot;,&quot;exported_namespace&quot;,&quot;(.+)&quot;)    *
+                  on(namespace,pod) group_left t9k_pod_resources_allocated) by(uuid)
+                title:
+                  en: GPU Memory Used
+                  zh: GPU 已用显存
+                unit: KB
+              memory_usage:
+                legend: '{{uuid}}'
+                promQLFormat: avg(label_replace(label_replace(mx_memory_usage{job=&quot;metax-exporter&quot;,type=&quot;vram&quot;,exported_namespace=&quot;%s&quot;,exported_pod=~&quot;%s&quot;,exported_pod!=&quot;&quot;},&quot;pod&quot;,&quot;$1&quot;,&quot;exported_pod&quot;,&quot;(.+)&quot;),&quot;namespace&quot;,&quot;$1&quot;,&quot;exported_namespace&quot;,&quot;(.+)&quot;)    *
+                  on(namespace,pod) group_left t9k_pod_resources_allocated) by(uuid)
+                title:
+                  en: GPU Memory Usage
+                  zh: GPU 显存使用率
+                unit: '%'
+              power:
+                legend: '{{uuid}}'
+                promQLFormat: avg(label_replace(label_replace(mx_board_power{job=&quot;metax-exporter&quot;,exported_namespace=&quot;%s&quot;,exported_pod=~&quot;%s&quot;,exported_pod!=&quot;&quot;},&quot;pod&quot;,&quot;$1&quot;,&quot;exported_pod&quot;,&quot;(.+)&quot;),&quot;namespace&quot;,&quot;$1&quot;,&quot;exported_namespace&quot;,&quot;(.+)&quot;)    *
+                  on(namespace,pod) group_left t9k_pod_resources_allocated) by(uuid)
+                title:
+                  en: GPU Power
+                  zh: GPU 功率
+                unit: mW
+              chip_temperature:
+                legend: '{{uuid}}'
+                promQLFormat: avg(label_replace(label_replace(mx_chip_hotspot_temp{job=&quot;metax-exporter&quot;,exported_namespace=&quot;%s&quot;,exported_pod=~&quot;%s&quot;,exported_pod!=&quot;&quot;},&quot;pod&quot;,&quot;$1&quot;,&quot;exported_pod&quot;,&quot;(.+)&quot;),&quot;namespace&quot;,&quot;$1&quot;,&quot;exported_namespace&quot;,&quot;(.+)&quot;)    *
+                  on(namespace,pod) group_left t9k_pod_resources_allocated) by(uuid)
+                title:
+                  en: Chip Hotspot Temperature
+                  zh: 芯片热点温度
+                unit: °C
+              board_temperature:
+                legend: '{{uuid}}'
+                promQLFormat: avg(label_replace(label_replace(mx_board_core_temp{job=&quot;metax-exporter&quot;,exported_namespace=&quot;%s&quot;,exported_pod=~&quot;%s&quot;,exported_pod!=&quot;&quot;},&quot;pod&quot;,&quot;$1&quot;,&quot;exported_pod&quot;,&quot;(.+)&quot;),&quot;namespace&quot;,&quot;$1&quot;,&quot;exported_namespace&quot;,&quot;(.+)&quot;)    *
+                  on(namespace,pod) group_left t9k_pod_resources_allocated) by(uuid)
+                title:
+                  en: Board CORE Temperature
+                  zh: 主板核心温度
+                unit: °C
+              usage:
+                legend: '{{uuid}}'
+                promQLFormat: avg(label_replace(label_replace(mx_gpu_usage{job=&quot;metax-exporter&quot;,exported_namespace=&quot;%s&quot;,exported_pod=~&quot;%s&quot;,exported_pod!=&quot;&quot;},&quot;pod&quot;,&quot;$1&quot;,&quot;exported_pod&quot;,&quot;(.+)&quot;),&quot;namespace&quot;,&quot;$1&quot;,&quot;exported_namespace&quot;,&quot;(.+)&quot;)    *
+                  on(namespace,pod) group_left t9k_pod_resources_allocated) by(uuid)
+                title:
+                  en: GPU Usage
+                  zh: GPU 使用率
+                unit: '%'
+            resource:
+              names:
+              - metax-tech.com/gpu
+</code></pre>
+<h2 id="参考-23"><a class="header" href="#参考-23">参考</a></h2>
+<p>[1] <a target="_blank" rel="noopener noreferrer" href="https://developer.metax-tech.com/doc/128">曦云系列_通用计算GPU_云原生参考手册_CN_V10</a></p>
+<p>[2] <a target="_blank" rel="noopener noreferrer" href="https://developer.metax-tech.com/doc/126">曦云系列_通用计算GPU_mx-exporterKubernetes集群监控部署手册_CN_V03</a> </p>
+<p>[3] <a target="_blank" rel="noopener noreferrer" href="https://developer.metax-tech.com/softnova/index">沐曦下载中心</a> </p>
+<p>[4] <a target="_blank" rel="noopener noreferrer" href="https://developer.metax-tech.com/doc/index">沐曦文档</a> </p>
 <div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
 <h1 id="安装-tensorstack-ai-计算平台"><a class="header" href="#安装-tensorstack-ai-计算平台">安装 TensorStack AI 计算平台</a></h1>
 <p>安装 TensorStack AI 计算平台分为以下三个阶段：</p>
@@ -3763,7 +6015,7 @@ pod &quot;rdma-gpu-test-pod-2&quot; deleted
 <li><a href="online/products/./post-install.html">安装后的配置工作</a>以及<a href="online/products/./post-install-optional.html">安装后可选配置</a></li>
 </ol>
 <div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
-<h1 id="安装前准备"><a class="header" href="#安装前准备">安装前准备</a></h1>
+<h1 id="安装前准备-1"><a class="header" href="#安装前准备-1">安装前准备</a></h1>
 <h2 id="目的-10"><a class="header" href="#目的-10">目的</a></h2>
 <p>为安装 T9k 产品做安装前的准备工作，包括获取域名及证书、预先创建一些 K8s 资源等。</p>
 <h2 id="前提条件-4"><a class="header" href="#前提条件-4">前提条件</a></h2>
@@ -3931,7 +6183,7 @@ kubectl create secret tls cert.s3 \
 </blockquote>
 <h2 id="下一步-8"><a class="header" href="#下一步-8">下一步</a></h2>
 <p>完成本文档的准备工作后，可进行实际的 <a href="online/products/./install-uc-mode.html">产品安装</a>。</p>
-<h2 id="参考-23"><a class="header" href="#参考-23">参考</a></h2>
+<h2 id="参考-24"><a class="header" href="#参考-24">参考</a></h2>
 <p><a href="https://freessl.cn/">https://freessl.cn/</a></p>
 <p><a href="https://letsencrypt.org/">https://letsencrypt.org/</a></p>
 <p><a href="https://zerossl.com/">https://zerossl.com/</a></p>
@@ -4182,7 +6434,7 @@ t9k-build-console-api   	t9k-system    	2       	2024-07-21 17:18:05.392658 +080
 </details>
 <h2 id="下一步-9"><a class="header" href="#下一步-9">下一步</a></h2>
 <p>进行 <a href="online/products/./post-install.html">安装后配置</a>。</p>
-<h2 id="参考-24"><a class="header" href="#参考-24">参考</a></h2>
+<h2 id="参考-25"><a class="header" href="#参考-25">参考</a></h2>
 <p><a href="https://helm.sh/docs/">https://helm.sh/docs/</a></p>
 <div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
 <h1 id="注册-app"><a class="header" href="#注册-app">注册 APP</a></h1>
@@ -4235,7 +6487,7 @@ export API_KEY=&quot;&lt;admin-api-key&gt;&quot;
 <p>每个 APP 注册完成后，都会有一条注册成功的信息：</p>
 <pre><code class="language-console">I1 06/13 14:23:45 logr.go:280 app-server [register app successfully] 
 </code></pre>
-<h2 id="验证-9"><a class="header" href="#验证-9">验证</a></h2>
+<h2 id="验证-12"><a class="header" href="#验证-12">验证</a></h2>
 <p>在 User Console (<a href="https://home.sample.t9kcloud.cn/t9k/user-console/web/">https://home.sample.t9kcloud.cn/t9k/user-console/web/</a>) 中点击左侧导航菜单的 “应用”，点击右上角 “部署应用”，查看可选的应用项：</p>
 <figure class="screenshot">
   <img alt="manage-apikey" src="online/products/../../assets/online/product/list-apps.png" />
@@ -4489,10 +6741,10 @@ t9k-aistore                     t9k-system      3               2023-11-19 06:37
 </details>
 <h2 id="下一步-10"><a class="header" href="#下一步-10">下一步</a></h2>
 <p>进行 <a href="online/products/./post-install.html">安装后配置</a>。</p>
-<h2 id="参考-25"><a class="header" href="#参考-25">参考</a></h2>
+<h2 id="参考-26"><a class="header" href="#参考-26">参考</a></h2>
 <p><a href="https://helm.sh/docs/">https://helm.sh/docs/</a></p>
 <div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
-<h1 id="安装后配置-3"><a class="header" href="#安装后配置-3">安装后配置</a></h1>
+<h1 id="安装后配置-4"><a class="header" href="#安装后配置-4">安装后配置</a></h1>
 <h2 id="目的-13"><a class="header" href="#目的-13">目的</a></h2>
 <p>进行初次安装后的配置工作，包括报警发送方式、日志系统等。</p>
 <h2 id="前提条件-5"><a class="header" href="#前提条件-5">前提条件</a></h2>
@@ -4614,7 +6866,7 @@ kubectl get node -l node-role.kubernetes.io/ingress
 <h2 id="下一步-11"><a class="header" href="#下一步-11">下一步</a></h2>
 <p>运行<a target="_blank" rel="noopener noreferrer" href="https://t9k.github.io/user-manuals/latest/get-started/index.html">用户手册 &gt; 快速入门的例子</a>，检验产品的功能。</p>
 <p>执行 <a href="online/products/./post-install-optional.html">安装后可选配置</a>。</p>
-<h2 id="参考-26"><a class="header" href="#参考-26">参考</a></h2>
+<h2 id="参考-27"><a class="header" href="#参考-27">参考</a></h2>
 <p><a href="https://prometheus-operator.dev/docs/api-reference/api/#monitoring.coreos.com/v1alpha1.AlertmanagerConfig">https://prometheus-operator.dev/docs/api-reference/api/#monitoring.coreos.com/v1alpha1.AlertmanagerConfig</a></p>
 <div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
 <h1 id="安装后可选配置"><a class="header" href="#安装后可选配置">安装后可选配置</a></h1>
@@ -4650,7 +6902,7 @@ kubectl get node -l node-role.kubernetes.io/ingress
 <p>运行 <a target="_blank" rel="noopener noreferrer" href="https://t9k.github.io/user-manuals/latest/get-started/index.html"> 用户手册 &gt; 快速入门的例子 </a>，检验产品的功能。</p>
 <div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
 <h1 id="正确性检查-1"><a class="header" href="#正确性检查-1">正确性检查</a></h1>
-<h2 id="准备工作"><a class="header" href="#准备工作">准备工作</a></h2>
+<h2 id="准备工作-2"><a class="header" href="#准备工作-2">准备工作</a></h2>
 <p>我们通过运行一个 <a target="_blank" rel="noopener noreferrer" href="https://docs.ansible.com/ansible/latest/index.html">ansible</a> playbook 来检查安装的正确性，需要完成以下准备工作。</p>
 <h3 id="ansible-环境"><a class="header" href="#ansible-环境">ansible 环境</a></h3>
 <p>参考<a href="online/./prepare-nodes-and-install-k8s.html">准备节点与安装 K8s</a> 完成以下准备工作：</p>
@@ -5024,7 +7276,7 @@ sudo docker-compose log -f
 <pre><code class="language-bash"># 运行 SERVICE core 的 bash 以进行调试
 sudo docker-compose exec core bash
 </code></pre>
-<h2 id="参考-27"><a class="header" href="#参考-27">参考</a></h2>
+<h2 id="参考-28"><a class="header" href="#参考-28">参考</a></h2>
 <p><a href="https://goharbor.io/docs/">https://goharbor.io/docs/</a></p>
 <div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
 <h1 id="安装存储服务"><a class="header" href="#安装存储服务">安装存储服务</a></h1>
@@ -5156,7 +7408,7 @@ sudo rm -rf /data/minio
 <p>删除 minio user （如果该 user 是 group minio-user 的唯一成员，group 也会被一起删除）：</p>
 <pre><code class="language-bash">sudo userdel minio-user
 </code></pre>
-<h2 id="参考-28"><a class="header" href="#参考-28">参考</a></h2>
+<h2 id="参考-29"><a class="header" href="#参考-29">参考</a></h2>
 <p><a href="https://en.wikipedia.org/wiki/Amazon_S3">https://en.wikipedia.org/wiki/Amazon_S3</a></p>
 <p><a href="https://min.io/docs/">https://min.io/docs/</a></p>
 <p><a href="https://min.io/docs/minio/linux/operations/install-deploy-manage/deploy-minio-single-node-single-drive.html">https://min.io/docs/minio/linux/operations/install-deploy-manage/deploy-minio-single-node-single-drive.html</a></p>
@@ -5241,7 +7493,7 @@ ansible-playbook ../ks-clusters/t9k-playbooks/10-install-nfs.yml \
 </ol>
 </li>
 </ol>
-<h2 id="验证-10"><a class="header" href="#验证-10">验证</a></h2>
+<h2 id="验证-13"><a class="header" href="#验证-13">验证</a></h2>
 <p>安装过程的最后步骤包含了使用此 NFS 的测试案例，详情见上一小节。</p>
 <p>还可以运行如下步骤，手工验证安装的 pacakges 和服务。</p>
 <h3 id="检查-package"><a class="header" href="#检查-package">检查 Package</a></h3>
@@ -5313,20 +7565,20 @@ csi-nfs-node-xm94s   3/3     Running   261 (2d18h ago)   77d
 <pre><code class="language-console">NAME                PROVISIONER      RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
 nfs-csi (default)   nfs.csi.k8s.io   Delete          Immediate           false                  14d
 </code></pre>
-<h2 id="参考-29"><a class="header" href="#参考-29">参考</a></h2>
+<h2 id="参考-30"><a class="header" href="#参考-30">参考</a></h2>
 <p><a href="https://github.com/kubernetes-csi/csi-driver-nfs">https://github.com/kubernetes-csi/csi-driver-nfs</a></p>
 <div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
 <h1 id="ceph"><a class="header" href="#ceph">Ceph</a></h1>
 <p>请参阅： <a href="https://t9k.github.io/ceph-admin-docs/installation.html">https://t9k.github.io/ceph-admin-docs/installation.html</a>。</p>
 <div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
 <h1 id="lustre"><a class="header" href="#lustre">Lustre</a></h1>
-<h2 id="参考-30"><a class="header" href="#参考-30">参考</a></h2>
+<h2 id="参考-31"><a class="header" href="#参考-31">参考</a></h2>
 <p><a href="https://github.com/DDNStorage/exa-csi-driver">https://github.com/DDNStorage/exa-csi-driver</a></p>
 <p><a href="https://github.com/lustre/lustre-release">https://github.com/lustre/lustre-release</a></p>
 <p><a href="https://github.com/DDNStorage/LustrePerfMon">https://github.com/DDNStorage/LustrePerfMon</a></p>
 <div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
 <h1 id="gpfs"><a class="header" href="#gpfs">GPFS</a></h1>
-<h2 id="参考-31"><a class="header" href="#参考-31">参考</a></h2>
+<h2 id="参考-32"><a class="header" href="#参考-32">参考</a></h2>
 <p><a href="https://github.com/IBM/ibm-spectrum-scale-csi">https://github.com/IBM/ibm-spectrum-scale-csi</a></p>
 <p><a href="https://www.ibm.com/docs/it/scalecsi?topic=200-introduction-spectrum-scale-container-storage-interface-driver">https://www.ibm.com/docs/it/scalecsi?topic=200-introduction-spectrum-scale-container-storage-interface-driver</a></p>
 <div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
@@ -5435,7 +7687,7 @@ cat filelist/k8s-${K8S_VER}.list
 <pre><code class="language-bash">./manage-offline-container-images.sh --option create \
   --config imagelist/k8s-${K8S_VER}.list --dir container-images
 </code></pre>
-<h2 id="验证-11"><a class="header" href="#验证-11">验证</a></h2>
+<h2 id="验证-14"><a class="header" href="#验证-14">验证</a></h2>
 <div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
 <h1 id="k8s-组件离线安装准备"><a class="header" href="#k8s-组件离线安装准备">K8s 组件离线安装准备</a></h1>
 <pre><code>TODO:
@@ -5486,7 +7738,7 @@ wget https://dl.min.io/server/minio/release/linux-amd64/archive/minio_2023100715
 <pre><code class="language-bash">wget https://mirror.ghproxy.com/https://github.com/istio/istio/releases/download/1.15.2/istio-1.15.2-linux-amd64.tar.gz \
     -O misc/istio-1.15.2-linux-amd64.tar.gz
 </code></pre>
-<h2 id="验证-12"><a class="header" href="#验证-12">验证</a></h2>
+<h2 id="验证-15"><a class="header" href="#验证-15">验证</a></h2>
 <div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
 <h1 id="产品"><a class="header" href="#产品">产品</a></h1>
 <pre><code>TODO:
@@ -5552,7 +7804,7 @@ sudo docker save docker.io/t9kpublic/registry:offline-2023-09 \
 wget -O helm-v3.12.0-linux-amd64.tar.gz \
   https://get.helm.sh/helm-v3.12.0-linux-amd64.tar.gz 
 </code></pre>
-<h2 id="验证-13"><a class="header" href="#验证-13">验证</a></h2>
+<h2 id="验证-16"><a class="header" href="#验证-16">验证</a></h2>
 <div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
 <h1 id="安装-10"><a class="header" href="#安装-10">安装</a></h1>
 <h2 id="环境要求"><a class="header" href="#环境要求">环境要求</a></h2>
@@ -5907,7 +8159,7 @@ sudo docker pull &lt;registry&gt;/&lt;any-prefix&gt;/t9kpublic/registry:offline-
 <pre><code class="language-bash">docker pull &lt;hostname&gt;:5000/t9kpublic/landing-page-web:1.78.4
 </code></pre>
 <h2 id="安装-t9k-产品"><a class="header" href="#安装-t9k-产品">安装 T9k 产品</a></h2>
-<h3 id="安装前准备-1"><a class="header" href="#安装前准备-1">安装前准备</a></h3>
+<h3 id="安装前准备-2"><a class="header" href="#安装前准备-2">安装前准备</a></h3>
 <p>参考 <a href="offline/install/../../online/products/pre-install.html">安装前准备</a>。</p>
 <h4 id="tls-证书"><a class="header" href="#tls-证书">TLS 证书</a></h4>
 <p>域名证书位于 <code>certs/</code>，可以供测试使用。</p>
@@ -5986,7 +8238,7 @@ helm install t9k-monitoring \
   -f values.yaml \
   -n t9k-monitoring
 </code></pre>
-<h3 id="安装后配置-4"><a class="header" href="#安装后配置-4">安装后配置</a></h3>
+<h3 id="安装后配置-5"><a class="header" href="#安装后配置-5">安装后配置</a></h3>
 <p>参考 <a href="offline/install/../../online/products/post-install.html">安装后配置</a>。</p>
 <aside class="note">
 <div class="title">注意</div>
@@ -7109,7 +9361,7 @@ export HUAWEICLOUD_SECRET_KEY=&quot;&lt;your-secret-key&gt;&quot;
 <pre><code class="language-bash"># 命令要根据加密算法变化，ec 代表 ECDSA 算法
 openssl ec -txt -in &lt;private-key-file&gt;
 </code></pre>
-<h2 id="参考-32"><a class="header" href="#参考-32">参考</a></h2>
+<h2 id="参考-33"><a class="header" href="#参考-33">参考</a></h2>
 <p><a href="https://github.com/acmesh-official/acme.sh">https://github.com/acmesh-official/acme.sh</a></p>
 <div style="break-before: page; page-break-before: always;"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css">
 <h1 id="cri-命令行工具"><a class="header" href="#cri-命令行工具">CRI 命令行工具</a></h1>
@@ -7251,7 +9503,7 @@ ctr task rm &lt;task&gt;
 <p>取消挂载：</p>
 <pre><code class="language-bash">ctr image unmount ./mount
 </code></pre>
-<h2 id="参考-33"><a class="header" href="#参考-33">参考</a></h2>
+<h2 id="参考-34"><a class="header" href="#参考-34">参考</a></h2>
 <p><a href="https://github.com/kubernetes/cri-api">https://github.com/kubernetes/cri-api</a></p>
 <p><a href="https://github.com/kubernetes-sigs/cri-tools/blob/master/docs/crictl.md">https://github.com/kubernetes-sigs/cri-tools/blob/master/docs/crictl.md</a></p>
 <p><a href="https://github.com/containerd/nerdctl">https://github.com/containerd/nerdctl</a></p>
