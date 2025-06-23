@@ -78,8 +78,8 @@ cat server.crt | openssl x509 -noout -text \
 # 输出公钥证书所有内容：
 cat server.crt | openssl x509 -noout -text
 
-# 确认私钥的 RSA 格式正确：
-cat server.key | openssl rsa -check
+# 确认私钥的格式正确：
+cat server.key | openssl pkey -check
 ```
 
 ## 创建 K8s 资源
