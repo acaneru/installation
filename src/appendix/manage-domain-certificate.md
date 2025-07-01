@@ -26,8 +26,8 @@ cd ./acme.sh
 ```bash
 # acme.sh 需要的华为云环境变量
 export HUAWEICLOUD_DomainName="<your-account-name>"
-export HUAWEICLOUD_ACCESS_KEY="<your-access-key>"
-export HUAWEICLOUD_SECRET_KEY="<your-secret-key>"
+export HUAWEICLOUD_Username="<your-user-name>"
+export HUAWEICLOUD_Password="<your-password>"
 ```
 
 环境变量 `HUAWEICLOUD_DomainName` 对应华为云控制台的“账号名”或者“Account name”。
@@ -114,14 +114,13 @@ openssl x509 -noout -issuer -in <cert-file>
 查看证书详细信息：
 
 ```bash
-openssl x509 -txt -in <cert-file>
+openssl x509 -text -in <cert-file>
 ```
 
 检查私钥：
 
 ```bash
-# 命令要根据加密算法变化，ec 代表 ECDSA 算法
-openssl ec -txt -in <private-key-file>
+openssl pkey -check -in <private-key-file>
 ```
 
 ## 参考
