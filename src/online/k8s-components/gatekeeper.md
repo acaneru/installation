@@ -62,12 +62,12 @@ kubectl label ns  t9k-system kubernetes.io/metadata.name=t9k-system
     ```bash
     # offline install for K8s v1.24 or v1.25 
     helm -n t9k-system install t9k-gatekeeper \
-      ../ks-clusters/tools/offline-additionals/charts/gatekeeper-3.11.0.tgz \
+      ../ks-clusters/offline/additionals/charts/gatekeeper-3.11.0.tgz \
       -f ../ks-clusters/additionals/gatekeeper/values.yaml
 
     # offline install for K8s v1.22
     helm -n t9k-system install t9k-gatekeeper \
-      ../ks-clusters/tools/offline-additionals/charts/gatekeeper-3.11.0-1.tgz \
+      ../ks-clusters/offline/additionals/charts/gatekeeper-3.11.0-1.tgz \
       -f ../ks-clusters/additionals/gatekeeper/values.yaml
     ```
 

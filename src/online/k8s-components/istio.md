@@ -24,7 +24,7 @@ cd ~/ansible/$T9K_CLUSTER
 curl -LO https://github.com/istio/istio/releases/download/1.15.2/istio-1.15.2-linux-amd64.tar.gz
 
 # offline install, istio-1.15.2
-cp ../ks-clusters/tools/offline-additionals/misc/istio-1.15.2-linux-amd64.tar.gz ./
+cp ../ks-clusters/offline/additionals/misc/istio-1.15.2-linux-amd64.tar.gz ./
 
 tar zxvf istio-1.15.2-linux-amd64.tar.gz
 cd istio-1.15.2
@@ -41,7 +41,7 @@ cd ~/ansible/$T9K_CLUSTER
 curl -LO https://github.com/istio/istio/releases/download/1.20.6/istio-1.20.6-linux-amd64.tar.gz
 
 # offline install, istio-1.20.6
-cp ../ks-clusters/tools/offline-additionals/misc/istio-1.20.6-linux-amd64.tar.gz ./
+cp ../ks-clusters/offline/additionals/misc/istio-1.20.6-linux-amd64.tar.gz ./
 
 tar zxvf istio-1.20.6-linux-amd64.tar.gz
 cd istio-1.20.6

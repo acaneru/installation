@@ -2,7 +2,7 @@
 
 ## 检查安装包
 
-`ks-clusters/tools/offline-t9k` 中提前准备的离线文件一览：
+`ks-clusters/offline/t9k` 中提前准备的离线文件一览：
 
 | 内容             | 存放路径              |
 | -------------- | ----------------- |
@@ -18,7 +18,7 @@
 1）进入 offline-t9k 目录：
 
 ```bash
-cd ~/ansible/ks-clusters/tools/offline-t9k
+cd ~/ansible/ks-clusters/offline/t9k
 ```
 
 2）如果离线环境中不存在镜像仓库服务，或者仅存在 [运行 NGINX 和上传镜像](./k8s.md#运行-nginx-和上传镜像) 创建的镜像仓库。
@@ -180,9 +180,9 @@ sed -i "s|docker.io/t9kpublic|<control-node-ip>:5000/t9kpublic|g" \
 产品列表见：
 
 ```bash
-ls ~/ansible/ks-clusters/tools/offline-t9k/productlist
+ls ~/ansible/ks-clusters/offline/t9k/productlist
 
-cat ~/ansible/ks-clusters/tools/offline-t9k/productlist/t9k-2023-12-20.list 
+cat ~/ansible/ks-clusters/offline/t9k/productlist/t9k-2023-12-20.list 
 ```
 
 安装产品：
@@ -190,19 +190,19 @@ cat ~/ansible/ks-clusters/tools/offline-t9k/productlist/t9k-2023-12-20.list
 ```bash
 # 安装命令
 helm install <product> \
-  ../ks-clusters/tools/offline-t9k/charts/<product>-<version.tgz> \
+  ../ks-clusters/offline/t9k/charts/<product>-<version.tgz> \
   -f values.yaml \
   -n t9k-system
 
 # 以安装 t9k-core 为例
 helm install t9k-core \
-  ../ks-clusters/tools/offline-t9k/charts/t9k-core-1.78.4.tgz \
+  ../ks-clusters/offline/t9k/charts/t9k-core-1.78.4.tgz \
   -f values.yaml \
   -n t9k-system
 
 # t9k-monitoring 的 namespace 与其他产品不同
 helm install t9k-monitoring \
-  ../ks-clusters/tools/offline-t9k/charts/t9k-monitoring \
+  ../ks-clusters/offline/t9k/charts/t9k-monitoring \
   -f values.yaml \
   -n t9k-monitoring
 ```

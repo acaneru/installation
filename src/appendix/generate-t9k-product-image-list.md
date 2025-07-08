@@ -1,9 +1,9 @@
 # 生成 T9k 产品镜像列表
 
-这里的操作在 ks-clusters/tools/offline-t9k 中进行：
+这里的操作在 ks-clusters/offline/t9k 中进行：
 
 ```bash
-$ cd ~/ansible/ks-clusters/tools/offline-t9k
+$ cd ~/ansible/ks-clusters/offline/t9k
 ```
 
 1）确认您完成了[下载 Helm Chart](../offline/prepare-offline-packages/k8s-components.md#下载-helm-chart)。

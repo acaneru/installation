@@ -199,7 +199,7 @@ kubectl create secret tls cert.s3 \
 2. 减少 Pod 因为其依赖项尚未就绪，导致 Pod 出错、重启的风险；
 3. 可以较快地判断已经部署的产品是否正常运行，并及时处理潜在的错误。
 
-从 github 上获取与产品对应的<a target="_blank" rel="noopener noreferrer" href="https://github.com/t9k/ks-clusters/tree/master/tools/offline-t9k/imagelist">镜像列表</a>，保存到本地，然后运行以下命令拉取列表中的镜像：
+从 github 上获取与产品对应的<a target="_blank" rel="noopener noreferrer" href="https://github.com/t9k/ks-clusters/tree/master/offline/t9k/imagelist">镜像列表</a>，保存到本地，然后运行以下命令拉取列表中的镜像：
 
 ```bash
 ansible-playbook ../ks-clusters/t9k-playbooks/22-pre-pull-images.yml \

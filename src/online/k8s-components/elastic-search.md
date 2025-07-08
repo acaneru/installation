@@ -75,17 +75,17 @@ helm install elasticsearch-data \
 ```bash
 # offline install
 helm install elasticsearch-master \
-  ../ks-clusters/tools/offline-additionals/charts/elasticsearch-7.13.4.tgz \
+  ../ks-clusters/offline/additionals/charts/elasticsearch-7.13.4.tgz \
   -n t9k-monitoring \
   -f ../ks-clusters/additionals/elasticsearch/master.yaml
 
 helm install elasticsearch-client \
-  ../ks-clusters/tools/offline-additionals/charts/elasticsearch-7.13.4.tgz \
+  ../ks-clusters/offline/additionals/charts/elasticsearch-7.13.4.tgz \
   -n t9k-monitoring \
   -f ../ks-clusters/additionals/elasticsearch/client.yaml
 
 helm install elasticsearch-data \
-  ../ks-clusters/tools/offline-additionals/charts/elasticsearch-7.13.4.tgz \
+  ../ks-clusters/offline/additionals/charts/elasticsearch-7.13.4.tgz \
   -n t9k-monitoring \
   -f ../ks-clusters/additionals/elasticsearch/data.yaml
 ```
@@ -111,7 +111,7 @@ helm install elasticsearch-single \
 ```
 # offline install
 helm install elasticsearch-single \
-  ../ks-clusters/tools/offline-additionals/charts/elasticsearch-7.13.4.tgz \
+  ../ks-clusters/offline/additionals/charts/elasticsearch-7.13.4.tgz \
   -n t9k-monitoring \
   -f ../ks-clusters/additionals/elasticsearch/single.yaml
 ```

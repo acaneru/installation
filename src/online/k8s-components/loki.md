@@ -141,12 +141,12 @@ helm install promtail \
 
 ```bash
 helm install loki \
-  ../ks-clusters/tools/offline-additionals/charts/loki-6.6.4.tgz \
+  ../ks-clusters/offline/additionals/charts/loki-6.6.4.tgz \
   -n t9k-monitoring \
   -f ../ks-clusters/additionals/loki/loki.yaml 
 
 helm install promtail \
-  ../ks-clusters/tools/offline-additionals/charts/promtail-6.16.2.tgz \
+  ../ks-clusters/offline/additionals/charts/promtail-6.16.2.tgz \
   -n t9k-monitoring \
   -f ../ks-clusters/additionals/loki/promtail.yaml
 ```
@@ -173,12 +173,12 @@ helm install promtail \
 
 ```bash
 helm install loki \
-  ../ks-clusters/tools/offline-additionals/charts/loki-6.6.4.tgz \
+  ../ks-clusters/offline/additionals/charts/loki-6.6.4.tgz \
   -n t9k-monitoring \
   -f ../ks-clusters/additionals/loki/loki-single.yaml 
 
 helm install promtail \
-  ../ks-clusters/tools/offline-additionals/charts/promtail-6.16.2.tgz \
+  ../ks-clusters/offline/additionals/charts/promtail-6.16.2.tgz \
   -n t9k-monitoring \
   -f ../ks-clusters/additionals/loki/promtail.yaml
 ```

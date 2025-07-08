@@ -22,7 +22,7 @@ quay_image_repo: "docker.io/t9kpublic"
 
 ## 生成列表
 
-1）生成 files 和 images 列表的 template（保存在 ks-clusters/tools/offline-k8s/temp 路径下）： 
+1）生成 files 和 images 列表的 template（保存在 ks-clusters/offline/k8s/temp 路径下）： 
 
 ```yaml
 # 进入 kubespray 专用的目录
@@ -34,7 +34,7 @@ $ git checkout kubernetes-<version>
 $ cd ..
 
 # 读取 kubespray 的 download role 的设置，生成一个 template
-ks-clusters/tools/offline-k8s/generate_list_template.sh \
+ks-clusters/offline/k8s/generate_list_template.sh \
     -d ~/ansible/kubespray
 ```
 
@@ -89,11 +89,11 @@ $ cd ~/ansible/$T9K_CLUSTER
 
 
 # 运行之前是需要生成 SSH Key 并运行 ssh-copy-id t9k@nuc 的，这里省略
-$ ansible-playbook ../ks-clusters/tools/offline-k8s/generate_list.yml \
+$ ansible-playbook ../ks-clusters/offline/k8s/generate_list.yml \
     -i inventory/inventory.ini 
 ```
 
-生成的 list 被保存在 `../ks-clusters/tools/offline-k8s/temp/` 路径中。
+生成的 list 被保存在 `../ks-clusters/offline/k8s/temp/` 路径中。
 
 ## 修改文件、镜像列表
 
@@ -106,8 +106,8 @@ $ ansible-playbook ../ks-clusters/tools/offline-k8s/generate_list.yml \
 1）删除以下未被使用的镜像：
 
 ```bash
-sed -i '/t9kpublic/!d' ../ks-clusters/tools/offline-k8s/temp/images.list
-sed -i '/t9kpublic.*\/.*\//d' ../ks-clusters/tools/offline-k8s/temp/images.list
+sed -i '/t9kpublic/!d' ../ks-clusters/offline/k8s/temp/images.list
+sed -i '/t9kpublic.*\/.*\//d' ../ks-clusters/offline/k8s/temp/images.list
 ```
 
 说明：
@@ -123,7 +123,7 @@ sed -i '/t9kpublic.*\/.*\//d' ../ks-clusters/tools/offline-k8s/temp/images.list
 
 ```bash
 sed -i 's|dl.k8s.io|storage.googleapis.com/kubernetes-release|g' \
-    ../ks-clusters/tools/offline-k8s/temp/files.list
+    ../ks-clusters/offline/k8s/temp/files.list
 ```
 
 3）[推荐] 设置 github 代理
@@ -132,19 +132,19 @@ sed -i 's|dl.k8s.io|storage.googleapis.com/kubernetes-release|g' \
 
 ```bash
 sed -i 's|https://ghproxy.com/https://github.com|https://mirror.ghproxy.com/https://github.com|g' \
-    ../ks-clusters/tools/offline-k8s/temp/files.list
+    ../ks-clusters/offline/k8s/temp/files.list
 ```
 
 如果未使用，则增加代理：
 
 ```bash
 sed -i 's|https://github.com|https://mirror.ghproxy.com/https://github.com|g' 
-    ../ks-clusters/tools/offline-k8s/temp/files.list
+    ../ks-clusters/offline/k8s/temp/files.list
 ```
 
 4）检查文件列表
 
-检查 `../ks-clusters/tools/offline-k8s/temp/files.list` 中的文件下载地址，确认符合预期。
+检查 `../ks-clusters/offline/k8s/temp/files.list` 中的文件下载地址，确认符合预期。
 
 [可选] 如果对 kubespray 的设置很熟悉，您可以：
 

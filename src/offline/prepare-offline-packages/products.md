@@ -19,7 +19,7 @@ TODO:
 ## 准备
 
 ```bash
-cd ~/ansible/ks-clusters/tools/offline-t9k
+cd ~/ansible/ks-clusters/offline/t9k
 ```
 
 ## 下载

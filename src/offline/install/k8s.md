@@ -8,7 +8,7 @@ TODO:
 
 ## 检查离线安装包
 
-`ks-clusters/tools/offline-k8s` 中准备的离线文件一览：
+`ks-clusters/offline/k8s` 中准备的离线文件一览：
 
 | 内容                           | 存放路径          |
 | ------------------------------ | ----------------- |
@@ -23,7 +23,7 @@ TODO:
 1）如果 “控制节点” 未安装 docker，请先使用 dpkg 命令安装 Docker（具体安装包的内容请查看已有的内容）：
 
 ```bash
-cd ~/ansible/ks-clusters/tools/offline-k8s/apt-packages/debs/local/pkgs
+cd ~/ansible/ks-clusters/offline/k8s/apt-packages/debs/local/pkgs
 
 # 查看其中 apt 包的版本
 ls
@@ -48,7 +48,7 @@ sudo docker info
 2）进入 offline-k8s 目录：
 
 ```bash
-cd ~/ansible/ks-clusters/tools/offline-k8s
+cd ~/ansible/ks-clusters/offline/k8s
 ```
 
 3）装载 NGINX 和 Registry 镜像：

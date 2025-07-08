@@ -2,7 +2,7 @@
 
 ## 检查离线安装包
 
-`ks-clusters/tools/offline-additionals` 中提前准备的离线文件一览：
+`ks-clusters/offline/additionals` 中提前准备的离线文件一览：
 
 | 内容              | 存放路径          |
 | ----------------- | ----------------- |
@@ -17,7 +17,7 @@
 2）将保存的镜像上传到 Registry 中：
 
 ```bash
-cd ~/ansible/ks-clusters/tools/offline-additionals
+cd ~/ansible/ks-clusters/offline/additionals
 ./manage-offline-container-images.sh --option register
 ```
 

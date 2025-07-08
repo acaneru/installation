@@ -24,7 +24,7 @@ TODO:
 mkdir -p ~/ansible && cd ~/ansible
 git clone https://github.com/t9k/ks-clusters.git
 
-cd ~/ansible/ks-clusters/tools/offline-k8s
+cd ~/ansible/ks-clusters/offline/k8s
 ```
 
 ## 下载
@@ -103,7 +103,7 @@ sudo docker pull docker.io/t9kpublic/registry:offline-2023-09
 sudo docker save docker.io/t9kpublic/registry:offline-2023-09 \
   -o docker.io-t9kpublic-registry-offline-2023-09.tar
 
-cd ~/ansible/ks-clusters/tools/offline-k8s
+cd ~/ansible/ks-clusters/offline/k8s
 ```
 
 ### 文件
