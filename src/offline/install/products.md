@@ -82,7 +82,7 @@ ls container-images | grep landing-page-web
 下载镜像：
 
 ```bash
-docker pull <hostname>:5000/t9kpublic/landing-page-web:1.78.4
+docker pull <registry>/t9kpublic/landing-page-web:1.78.4
 ```
 
 ## 安装 T9k 产品
@@ -182,7 +182,7 @@ sed -i "s|docker.io/t9kpublic|<control-node-ip>:5000/t9kpublic|g" \
 ```bash
 ls ~/ansible/ks-clusters/offline/t9k/productlist
 
-cat ~/ansible/ks-clusters/offline/t9k/productlist/t9k-2023-12-20.list 
+cat ~/ansible/ks-clusters/offline/t9k/productlist/t9k-2023-12-20.list
 ```
 
 安装产品：

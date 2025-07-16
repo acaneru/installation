@@ -12,7 +12,7 @@ TODO:
 | ------------------ | ---------------------------------- |
 | apt packages   | apt-packages/                      |
 | pypi 包        | python-packages/                   |
-| Server 用容器镜像  | server-images/                     |
+| 运行 Server 的镜像和工具  | servers/                     |
 | 文件  | offline-files/                     |
 | 其他容器镜像 | 可修改，默认值为 container-images/ |
 
@@ -83,25 +83,20 @@ python3 -m pip download \
 
 ### nginx / registry server 镜像
 
-这两个镜像用于在 “控制节点” 上创建 server 来提供离线内容：
+用于在 “控制节点” 上创建 server，提供离线下载方式：
 
 ```
 docker.io/t9kpublic/nginx:offline-2023-09
-docker.io/t9kpublic/registry:offline-2023-09
 ```
 
-为了方便使用，我们单独下载这两个镜像。
+为了方便使用，我们单独下载镜像：
 
 ```bash
-mkdir server-images && cd server-images
+mkdir servers && cd servers
 
 sudo docker pull docker.io/t9kpublic/nginx:offline-2023-09
 sudo docker save docker.io/t9kpublic/nginx:offline-2023-09 \
   -o docker.io-t9kpublic-nginx-offline-2023-09.tar
-
-sudo docker pull docker.io/t9kpublic/registry:offline-2023-09
-sudo docker save docker.io/t9kpublic/registry:offline-2023-09 \
-  -o docker.io-t9kpublic-registry-offline-2023-09.tar
 
 cd ~/ansible/ks-clusters/offline/k8s
 ```

@@ -1,4 +1,4 @@
-# [可选] Elastic Search
+# [弃用] Elastic Search
 
 如果使用 Elastic Search 保存集群日志，则需要安装此组件。
 
@@ -28,19 +28,19 @@ kubectl create ns t9k-monitoring
 
 ```bash
 cat >> ../ks-clusters/additionals/elasticsearch/master.yaml << EOF
-image: "192.168.101.159:5000/t9kpublic/elasticsearch"
+image: "registry.sample.t9kcloud.cn/t9kpublic/elasticsearch"
 EOF
 
 cat >> ../ks-clusters/additionals/elasticsearch/client.yaml << EOF
-image: "192.168.101.159:5000/t9kpublic/elasticsearch"
+image: "registry.sample.t9kcloud.cn/t9kpublic/elasticsearch"
 EOF
 
 cat >> ../ks-clusters/additionals/elasticsearch/data.yaml << EOF
-image: "192.168.101.159:5000/t9kpublic/elasticsearch"
+image: "registry.sample.t9kcloud.cn/t9kpublic/elasticsearch"
 EOF
 
 cat >> ../ks-clusters/additionals/elasticsearch/single.yaml << EOF
-image: "192.168.101.159:5000/t9kpublic/elasticsearch"
+image: "registry.sample.t9kcloud.cn/t9kpublic/elasticsearch"
 EOF
 ```
 </aside>

@@ -51,10 +51,10 @@ kubectl label ns  t9k-system kubernetes.io/metadata.name=t9k-system
     <aside class="note">
     <div class="title">离线安装</div>
 
-    修改镜像仓库的设置，示例为 `192.168.101.159:5000`：
+    修改镜像仓库的设置，示例为 `registry.sample.t9kcloud.cn`：
 
     ```bash
-    sed -i "s|docker.io/t9kpublic|192.168.101.159:5000/t9kpublic|g" \
+    sed -i "s|docker.io/t9kpublic|registry.sample.t9kcloud.cn/t9kpublic|g" \
       ../ks-clusters/additionals/gatekeeper/values.yaml
     ```
     </aside>

@@ -22,7 +22,7 @@ quay_image_repo: "docker.io/t9kpublic"
 
 ## 生成列表
 
-1）生成 files 和 images 列表的 template（保存在 ks-clusters/offline/k8s/temp 路径下）： 
+1）生成 files 和 images 列表的 template（保存在 ks-clusters/offline/k8s/temp 路径下）：
 
 ```yaml
 # 进入 kubespray 专用的目录

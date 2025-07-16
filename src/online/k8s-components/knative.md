@@ -26,14 +26,14 @@ Knative 依赖 K8s 集群、<a target="_blank" rel="noopener noreferrer" href="h
 <aside class="note">
 <div class="title">离线安装</div>
 
-如需要使用本地镜像仓库（替换 `192.168.101.159:5000` 为实际的地址）：
+如需要使用本地镜像仓库（替换 `registry.sample.t9kcloud.cn` 为实际的 registry 地址）：
 
 ```bash
 # verify t9kpublic is only used in image name
 grep t9kpublic ../ks-clusters/additionals/knative/v1.13.1/*
 
 # replace image registry
-sed -i "s|docker.io/t9kpublic|192.168.101.159:5000/t9kpublic|g" \
+sed -i "s|docker.io/t9kpublic|registry.sample.t9kcloud.cn/t9kpublic|g" \
     ../ks-clusters/additionals/knative/v1.13.1/*
 ```
 </aside>
@@ -70,7 +70,7 @@ kubectl patch configmap/config-domain \
 kubectl patch configmap/config-deployment \
   --namespace knative-serving \
   --type merge \
-  --patch '{"data":{"registries-skipping-tag-resolving":"192.168.101.159:5000"}}'
+  --patch '{"data":{"registries-skipping-tag-resolving":"registry.sample.t9kcloud.cn"}}'
 ```
 </aside>
 

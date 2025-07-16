@@ -1,4 +1,4 @@
-# K8s
+# 离线安装 Harbor Registry
 
 ```
 TODO:
@@ -14,13 +14,13 @@ TODO:
 | ------------------------------ | ----------------- |
 | 1. apt packages                | apt-packages/     |
 | 2. pypi 包                     | python-packages/  |
-| 3. 容器镜像（nginx, registry） | server-images/    |
-| 4. 容器镜像（其他）            | container-images/ |
-| 5. 一些可执行文件              | offline-files/    |
+| 3. 运行 Server 的镜像和工具      | servers/    |
+| 4. 容器镜像（其他）              | container-images/ |
+| 5. 一些可执行文件                | offline-files/    |
 
 ## 运行 NGINX 和上传镜像
 
-1）如果 “控制节点” 未安装 docker，请先使用 dpkg 命令安装 Docker（具体安装包的内容请查看已有的内容）：
+1）如果 “控制节点” 未安装 docker，请先使用 dpkg 命令安装 Docker：
 
 ```bash
 cd ~/ansible/ks-clusters/offline/k8s/apt-packages/debs/local/pkgs
@@ -45,66 +45,37 @@ sudo systemctl enable --now docker
 sudo docker info
 ```
 
-2）进入 offline-k8s 目录：
+2）进入 offline/k8s 目录：
 
 ```bash
 cd ~/ansible/ks-clusters/offline/k8s
 ```
 
-3）装载 NGINX 和 Registry 镜像：
+3）装载 NGINX 镜像：
 
 ```bash
 sudo docker load \
   -i ./server-images/docker.io-t9kpublic-nginx-offline-2023-09.tar
-
-sudo docker load \
-  -i ./server-images/docker.io-t9kpublic-registry-offline-2023-09.tar
 ```
 
-4）运行一个 nginx（默认 8080 端口），来 serve 保存的文件（offline-files）和 apt 包：
+4）运行一个 nginx（默认 8080 端口），来 serve 保存在 offline-files 的文件和 apt 包：
 
 ```bash
 ./serve-offline-files.sh
 ```
 
-5）如果离线环境中已经存在镜像仓库服务，我们用 `<registry>` 指代该镜像仓库服务的域名或 IP 地址以及服务端口，`<any-prefix>` 是任意名称前缀。您需要配置控制节点和镜像仓库，来满足以下条件：
+5）运行本地 Regsitry
 
-1. 控制节点和 K8s 集群中的节点可以访问该镜像仓库
-1. 控制节点有权限向镜像仓库的地址 `<registry>/<any-prefix>/t9kpublic` 上传镜像
-    1. 如果条件允许，推荐省略 `/<any-prefix>`，直接使用 `<registry>/t9kpublic`
-1. K8s 集群中的节点有权限拉取第 2 步上传的镜像
+`servers` 目录中保存了 Harbor 的离线安装包，例如：`harbor-offline-installer-v2.11.2.tgz` 文件。
 
-验证上述需求：
+参考 [安装 Harbor](../../online/registry/harbor.md) 文档。
 
-```bash
-# 在控制节点测试上传镜像
-sudo docker tag t9kpublic/registry:offline-2023-09 \
-  <registry>/<any-prefix>/t9kpublic/registry:offline-2023-09
-sudo docker push <registry>/<any-prefix>/t9kpublic/registry:offline-2023-09
-
-# 在 K8s 节点中测试下载镜像
-sudo docker pull <registry>/<any-prefix>/t9kpublic/registry:offline-2023-09
-```
-
-在控制节点中运行命令，上传（注册, `--option register`）镜像到镜像仓库服务中：
+6）上传 K8s 安装需要的镜像到 registry 的 t9kpublic 项目中，其中 `<registry>` 为上一步运行的 Registry 的域名：
 
 ```bash
-./manage-offline-container-images.sh \
-  --option register --registry <registry>/<any-prefix>
+$ ./manage-offline-container-images.sh \
+    --option register --registry <registry>
 ```
-
-在使用已有的镜像仓库服务时，下文所有的镜像仓库地址 `<control-node-ip>:5000` 都需要替换为 `<registry>/<any-prefix>`。
-
-6）如果离线环境中没有可用的镜像仓库服务，则运行一个容器 Registry（默认 5000 端口）服务，并将 container-images/ 中的镜像上传到该 Registry 中：
-
-```bash
-$ ./manage-offline-container-images.sh --option register
-```
-
-补充说明：
-
-1. 当名称为“registry”的容器已经存在时，运行该脚本不会创建新的 Registry，而是向 localhost:5000 上传镜像。
-1. 如果要向其他地址上传镜像，可以用命令行参数 `--registry` 来指定，示例见第 5）步。
 
 ## 验证 NGINX 和 Registry 服务
 
@@ -112,10 +83,10 @@ $ ./manage-offline-container-images.sh --option register
 
 ### 验证 apt 服务
 
-获取 apt 包的信息：
+获取 apt 包的信息，其中 `<control-node-ip>` 为控制节点的 IP 地址：
 
 ```bash
-curl http://<hostname>:8080/debs/local/Packages
+curl http://<control-node-ip>:8080/debs/local/Packages
 ```
 
 ### 验证文件下载服务
@@ -129,13 +100,13 @@ ls offline-files/github.com/kubernetes-sigs/cri-tools/releases/download
 根据上文获得的版本信息（例如 `v1.25.0/crictl-v1.25.0-linux-amd64.tar.gz`），下载 crictl 的压缩包：
 
 ```bash
-curl http://<hostname>:8080/github.com/kubernetes-sigs/cri-tools/releases/download/v1.25.0/crictl-v1.25.0-linux-amd64.tar.gz \
+curl http://<control-node-ip>:8080/github.com/kubernetes-sigs/cri-tools/releases/download/v1.25.0/crictl-v1.25.0-linux-amd64.tar.gz \
     -o ./crictl-v1.25.0-linux-amd64.tar.gz
 ```
 
 ### 验证 Registry 服务
 
-查看镜像版本：
+查看 etcd 镜像版本：
 
 ```bash
 ls container-images | grep etcd
@@ -144,15 +115,8 @@ ls container-images | grep etcd
 下载镜像：
 
 ```bash
-sudo docker pull <hostname>:5000/t9kpublic/etcd:v3.5.6
+sudo docker pull <registry>/t9kpublic/etcd:v3.5.6
 ```
-
-<aside class="note">
-<div class="title">注意</div>
-
-如果遇到错误信息 `server gave HTTP response to HTTPS client`，可以参考 [附录：配置 Docker Insecure Registry](../../appendix/configure-docker-insecure-registry.md) 解决。
-
-</aside>
 
 ## 配置 kubespray 运行环境
 
@@ -178,7 +142,7 @@ sudo mv /etc/apt/sources.list ~/
 sudo apt update && sudo apt install python3 python3-venv python3-pip
 ```
 
-[可选] 恢复 apt 配置：
+[可选]在完成离线安装后，可以运行以下命令恢复 apt 配置：
 
 ```bash
 sudo rm -rf /etc/apt/sources.list.d/offline.list
@@ -216,7 +180,7 @@ ansible --version
 
 ## 手动设置
 
-在每个计划安装 K8s 的 “目标节点”中，做以下 apt source 设置。其中 <control-node-ip> 为“控制节点”的 IP 地址：
+在每个计划安装 K8s 的 “目标节点”中，做以下 apt source 设置，使得他们可以从控制节点获取 apt 包。其中 <control-node-ip> 为“控制节点”的 IP 地址：
 
 ```bash
 sudo cat > /etc/apt/sources.list.d/offline.list << EOF
@@ -226,26 +190,20 @@ EOF
 sudo mv /etc/apt/sources.list ~/
 ```
 
-### 安装 Docker
+### 安装容器运行时
 
-为节点安装 docker：
+配置 Kubespray ，为节点安装容器运行时：
 
 ```bash
+# 容器运行时为 docker
 sudo apt update
-sudo apt install docker-ce docker-ce-cli containerd.io
+sudo apt install -y docker-ce docker-ce-cli containerd.io
 sudo systemctl enable --now docker
-```
 
-配置 docker：
-
-```bash
-sudo cat > /etc/docker/daemon.json << EOF
-{
-  "insecure-registries" : ["<control-node-ip>:5000"]
-}
-EOF
-
-sudo systemctl restart docker
+# 容器运行时为 containerd
+sudo apt update
+sudo apt install -y containerd.io
+sudo systemctl enable --now containerd
 ```
 
 测试拉取镜像（根据 [验证 Registry 服务](#验证-registry-服务)的结果灵活调整 etcd 镜像的 tag）：
@@ -291,7 +249,7 @@ helm_download_url: "http://<control-node-ip>:8080/get.helm.sh/helm-{{ helm_versi
 
 Kubespray 会为 K8s 集群 master 节点的 root 用户安装 kubectl 和 helm。但是不会为 ansible 控制节点安装 kubectl 和 helm。我们需要为 ansible 控制节点安装 kubectl 和 helm。
 
-安装 kubectl（如果使用的不是 `storage.googleapis.com` 下载源，请相应地更换路径）：
+安装 kubectl（如果使用的不是 `storage.googleapis.com` 下载源，请相应地更换路径，例如 `dl.k8s.io`）：
 
 ```bash
 # 复制本地文件
@@ -302,8 +260,11 @@ cp ~/ansible/ks-clusters/tools/offline/offline-files/storage.googleapis.com/kube
 
 ```bash
 wget http://<control-node-ip>:8080/storage.googleapis.com/kubernetes-release/release/v1.25.9/bin/linux/amd64/kubectl
+```
 
-# 移动到 PATH 路径
+添加可执行权限，并移动 kubectl 到 `/usr/local/bin` 目录中：
+
+```
 chmod +x kubectl
 sudo mv kubectl /usr/local/bin/kubectl
 ```
@@ -319,8 +280,10 @@ cp ~/ansible/ks-clusters/tools/offline/offline-files/get.helm.sh/helm-v3.12.0-li
 
 ```bash
 wget http://<control-node-ip>:8080/get.helm.sh/helm-v3.12.0-linux-amd64.tar.gz
+```
 
-# 解压并移动到 PATH 路径
+解压并移动到 `/usr/local/bin` 目录中：
+```
 tar zxvf helm-v3.12.0-linux-amd64.tar.gz
 sudo mv linux-amd64/helm /usr/local/bin/helm
 rm -rf linux-amd64/

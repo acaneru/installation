@@ -17,12 +17,12 @@ kubectl create ns t9k-monitoring
 <aside class="note">
 <div class="title">离线安装</div>
 
-修改镜像仓库的设置：
+修改镜像仓库的设置（替换 `registry.sample.t9kcloud.cn` 为实际的 registry 地址）：
 
 ```bash
-sed -i 's|docker.io/t9kpublic|192.168.101.159:5000/t9kpublic|g' ../ks-clusters/additionals/loki/loki.yaml
-sed -i 's|docker.io/t9kpublic|192.168.101.159:5000/t9kpublic|g' ../ks-clusters/additionals/loki/loki-single.yaml
-sed -i 's|docker.io/t9kpublic|192.168.101.159:5000/t9kpublic|g' ../ks-clusters/additionals/loki/promtail.yaml
+sed -i 's|docker.io/t9kpublic|registry.sample.t9kcloud.cn/t9kpublic|g' ../ks-clusters/additionals/loki/loki.yaml
+sed -i 's|docker.io/t9kpublic|registry.sample.t9kcloud.cn/t9kpublic|g' ../ks-clusters/additionals/loki/loki-single.yaml
+sed -i 's|docker.io/t9kpublic|registry.sample.t9kcloud.cn/t9kpublic|g' ../ks-clusters/additionals/loki/promtail.yaml
 ```
 </aside>
 
@@ -38,7 +38,7 @@ Loki 支持在未提前创建数据库的情况下部署，Loki 会自动部署 
 
 #### T9k 审计日志
 
-如果想启用 [T9k 审计日志](../products/pre-install/t9k-auditing.md#启用-t9k-审计日志)，请确保 `../ks-clusters/additionals/loki/promtail.yaml` 文件的 `config.snippets.scrapeConfigs` 字段中包含下列内容：
+Loki 安装时默认启用了启用 [T9k 审计日志](../products/pre-install/t9k-auditing.md#启用-t9k-审计日志)功能。具体配置请参考 `../ks-clusters/additionals/loki/promtail.yaml` 文件的 `config.snippets.scrapeConfigs` 字段：
 
 ```yaml
       # ----------------------------------------------------
@@ -186,7 +186,7 @@ helm install promtail \
 <aside class="note">
 <div class="title">注意</div>
 
-单节点安装方式仅在只有一个 K8s 节点的测试场景中适用。
+单节点安装方式仅适用于 K8s 节点数量小于 3 的测试场景。
 
 </aside>
 

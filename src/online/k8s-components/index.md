@@ -7,7 +7,7 @@
 - [Istio](./istio.md) - Service Mesh 和 Gateway API
 - [Knative](./knative.md) - Serverles 框架
 - [Metrics Server](./metrics-server.md) - 确保其设置正确
-- [Elastic Search](./elastic-search.md) - 存储集群的 log
+- [loki](./loki.md) - 保存集群日志
 - [监控相关](./monitoring.md) - 一些设置
 - [Gatekeeper](./gatekeeper.md) - 准入控制
 
