@@ -15,61 +15,20 @@
 
 ## 上传镜像
 
-1）进入 offline-t9k 目录：
+1）进入 offline/t9k 目录：
 
 ```bash
 cd ~/ansible/ks-clusters/offline/t9k
 ```
 
-2）如果离线环境中不存在镜像仓库服务，或者仅存在 [运行 NGINX 和上传镜像](./k8s.md#运行-nginx-和上传镜像) 创建的镜像仓库。
+2）确认本地 Registry 服务正在运行。此服务在[离线安装 K8s](./k8s.md#运行-nginx-和上传镜像)过程中启动。
 
-（可选）如果 Registry 镜像不存在，则装载 Registry 镜像：
-
-```bash
-sudo docker load -i ./misc/docker.io-t9kpublic-registry-offline-2023-09.tar
-```
-
-运行一个 Registry（默认 5000 端口），并上传（注册, --option register）镜像到 Registry 中（注意，该步骤耗时较长）：
+3）上传 K8s 安装需要的镜像到 registry 的 t9kpublic 项目中，其中 `<registry>` 为 Registry 的域名：
 
 ```bash
-./manage-offline-container-images.sh --option register
+$ ./manage-offline-container-images.sh \
+    --option register --registry <registry>
 ```
-
-<aside class="note">
-<div class="title">注意</div>
-
-当名称为 Registry 的容器已经存在时，运行该脚本不会创建新的 Registry，而是向已经存在的 Registry 上传镜像。
-
-</aside>
-
-3）如果离线环境中已经存在其他镜像仓库服务 ，我们用 `<registry>` 指代该镜像仓库服务的域名或 IP 地址以及服务端口，`<any-prefix>` 是任意名称前缀。您需要配置控制节点和镜像仓库，来满足以下条件：
-
-1. 控制节点和 K8s 集群中的节点可以访问该镜像仓库
-1. 控制节点有权限向镜像仓库的地址 `<registry>/<any-prefix>/t9kpublic` 上传镜像
-    1. 如果条件允许，推荐省略 `/<any-prefix>`，直接使用 `<registry>/t9kpublic`
-1. K8s 集群中的节点有权限拉取第 2 步上传的镜像
-
-验证上述需求：
-
-```bash
-# 在控制节点测试上传镜像
-sudo docker load -i ./server-images/docker.io-t9kpublic-registry-offline-2023-09.tar
-sudo docker tag t9kpublic/registry:offline-2023-09 \
-    <registry>/<any-prefix>/t9kpublic/registry:offline-2023-09
-sudo docker push <registry>/<any-prefix>/t9kpublic/registry:offline-2023-09
-
-# 在 K8s 节点中测试下载镜像
-sudo docker pull <registry>/<any-prefix>/t9kpublic/registry:offline-2023-09
-```
-
-在控制节点中运行命令，上传镜像到镜像仓库服务中：
-
-```bash
-./manage-offline-container-images.sh \
-  --option register --registry <registry>/<any-prefix>
-```
-
-在使用已有的镜像仓库服务时，下文所有的镜像仓库地址 `<control-node-ip>:5000` 都需要替换为 `<registry>/<any-prefix>`。
 
 ## 验证镜像下载
 
