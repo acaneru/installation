@@ -20,7 +20,7 @@ TODO:
 切换目录，设置 K8s 版本：
 
 ```bash
-cd ~/ansible/ks-clusters/tools/offline-additionals
+cd ~/ansible/ks-clusters/offline/additionals
 
 K8S_VER=1.22.0
 ```

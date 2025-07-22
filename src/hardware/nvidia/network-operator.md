@@ -226,8 +226,8 @@ ansible-playbook ks-clusters/t9k-playbooks/4-install-network-operator.yml \
   --become \
   -e "@~/ansible/$T9K_CLUSTER/vault.yml" \
   --vault-password-file=~/ansible/.vault-password.txt \
-  -e network_operator_charts=../ks-clusters/tools/offline-additionals/charts/network-operator-23.10.0.tgz \
-  -e network_operator_image_registry=192.168.101.159:5000/t9kpublic
+  -e network_operator_charts=../ks-clusters/offline/additionals/charts/network-operator-23.10.0.tgz \
+  -e network_operator_image_registry=registry.sample.t9kcloud.cn/t9kpublic
 
 ```
 

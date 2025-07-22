@@ -24,7 +24,7 @@ cd ~/ansible/$T9K_CLUSTER
 curl -LO https://github.com/istio/istio/releases/download/1.15.2/istio-1.15.2-linux-amd64.tar.gz
 
 # offline install, istio-1.15.2
-cp ../ks-clusters/tools/offline-additionals/misc/istio-1.15.2-linux-amd64.tar.gz ./
+cp ../ks-clusters/offline/additionals/misc/istio-1.15.2-linux-amd64.tar.gz ./
 
 tar zxvf istio-1.15.2-linux-amd64.tar.gz
 cd istio-1.15.2
@@ -32,7 +32,7 @@ export PATH=$PWD/bin:$PATH
 cd ..
 ```
 
-再提供一个 Istio 1.20.6 的例子：
+一个 Istio 1.20.6 的例子：
 
 ```bash
 cd ~/ansible/$T9K_CLUSTER
@@ -41,7 +41,7 @@ cd ~/ansible/$T9K_CLUSTER
 curl -LO https://github.com/istio/istio/releases/download/1.20.6/istio-1.20.6-linux-amd64.tar.gz
 
 # offline install, istio-1.20.6
-cp ../ks-clusters/tools/offline-additionals/misc/istio-1.20.6-linux-amd64.tar.gz ./
+cp ../ks-clusters/offline/additionals/misc/istio-1.20.6-linux-amd64.tar.gz ./
 
 tar zxvf istio-1.20.6-linux-amd64.tar.gz
 cd istio-1.20.6
@@ -68,11 +68,11 @@ vim ../ks-clusters/additionals/istio/config.yaml
 <aside class="note">
 <div class="title">离线安装</div>
 
-如果采用本地容器镜像服务器，需要修改镜像仓库的设置：
+如果采用本地容器镜像服务器，需要修改镜像仓库的设置（替换 `registry.sample.t9kcloud.cn` 为实际的 registry 地址）：
 
 ```bash
-# for example, using 192.168.101.159:5000/t9kpublic as registry
-sed -i "s|hub: docker.io/t9kpublic|hub: 192.168.101.159:5000/t9kpublic|g" \
+# for example, using registry.sample.t9kcloud.cn/t9kpublic as registry
+sed -i "s|hub: docker.io/t9kpublic|hub: registry.sample.t9kcloud.cn/t9kpublic|g" \
   ../ks-clusters/additionals/istio/config.yaml
 ```
 </aside>

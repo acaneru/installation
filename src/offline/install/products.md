@@ -2,7 +2,7 @@
 
 ## 检查安装包
 
-`ks-clusters/tools/offline-t9k` 中提前准备的离线文件一览：
+`ks-clusters/offline/t9k` 中提前准备的离线文件一览：
 
 | 内容             | 存放路径              |
 | -------------- | ----------------- |
@@ -15,61 +15,20 @@
 
 ## 上传镜像
 
-1）进入 offline-t9k 目录：
+1）进入 offline/t9k 目录：
 
 ```bash
-cd ~/ansible/ks-clusters/tools/offline-t9k
+cd ~/ansible/ks-clusters/offline/t9k
 ```
 
-2）如果离线环境中不存在镜像仓库服务，或者仅存在 [运行 NGINX 和上传镜像](./k8s.md#运行-nginx-和上传镜像) 创建的镜像仓库。
+2）确认本地 Registry 服务正在运行。此服务在[离线安装 K8s](./k8s.md#运行-nginx-和上传镜像)过程中启动。
 
-（可选）如果 Registry 镜像不存在，则装载 Registry 镜像：
+3）上传 K8s 安装需要的镜像到 registry 的 t9kpublic 项目中，其中 `<registry>` 为 Registry 的域名：
 
 ```bash
-sudo docker load -i ./misc/docker.io-t9kpublic-registry-offline-2023-09.tar
+$ ./manage-offline-container-images.sh \
+    --option register --registry <registry>
 ```
-
-运行一个 Registry（默认 5000 端口），并上传（注册, --option register）镜像到 Registry 中（注意，该步骤耗时较长）：
-
-```bash
-./manage-offline-container-images.sh --option register
-```
-
-<aside class="note">
-<div class="title">注意</div>
-
-当名称为 Registry 的容器已经存在时，运行该脚本不会创建新的 Registry，而是向已经存在的 Registry 上传镜像。
-
-</aside>
-
-3）如果离线环境中已经存在其他镜像仓库服务 ，我们用 `<registry>` 指代该镜像仓库服务的域名或 IP 地址以及服务端口，`<any-prefix>` 是任意名称前缀。您需要配置控制节点和镜像仓库，来满足以下条件：
-
-1. 控制节点和 K8s 集群中的节点可以访问该镜像仓库
-1. 控制节点有权限向镜像仓库的地址 `<registry>/<any-prefix>/t9kpublic` 上传镜像
-    1. 如果条件允许，推荐省略 `/<any-prefix>`，直接使用 `<registry>/t9kpublic`
-1. K8s 集群中的节点有权限拉取第 2 步上传的镜像
-
-验证上述需求：
-
-```bash
-# 在控制节点测试上传镜像
-sudo docker load -i ./server-images/docker.io-t9kpublic-registry-offline-2023-09.tar
-sudo docker tag t9kpublic/registry:offline-2023-09 \
-    <registry>/<any-prefix>/t9kpublic/registry:offline-2023-09
-sudo docker push <registry>/<any-prefix>/t9kpublic/registry:offline-2023-09
-
-# 在 K8s 节点中测试下载镜像
-sudo docker pull <registry>/<any-prefix>/t9kpublic/registry:offline-2023-09
-```
-
-在控制节点中运行命令，上传镜像到镜像仓库服务中：
-
-```bash
-./manage-offline-container-images.sh \
-  --option register --registry <registry>/<any-prefix>
-```
-
-在使用已有的镜像仓库服务时，下文所有的镜像仓库地址 `<control-node-ip>:5000` 都需要替换为 `<registry>/<any-prefix>`。
 
 ## 验证镜像下载
 
@@ -82,7 +41,7 @@ ls container-images | grep landing-page-web
 下载镜像：
 
 ```bash
-docker pull <hostname>:5000/t9kpublic/landing-page-web:1.78.4
+docker pull <registry>/t9kpublic/landing-page-web:1.78.4
 ```
 
 ## 安装 T9k 产品
@@ -180,9 +139,9 @@ sed -i "s|docker.io/t9kpublic|<control-node-ip>:5000/t9kpublic|g" \
 产品列表见：
 
 ```bash
-ls ~/ansible/ks-clusters/tools/offline-t9k/productlist
+ls ~/ansible/ks-clusters/offline/t9k/productlist
 
-cat ~/ansible/ks-clusters/tools/offline-t9k/productlist/t9k-2023-12-20.list 
+cat ~/ansible/ks-clusters/offline/t9k/productlist/t9k-2023-12-20.list
 ```
 
 安装产品：
@@ -190,19 +149,19 @@ cat ~/ansible/ks-clusters/tools/offline-t9k/productlist/t9k-2023-12-20.list
 ```bash
 # 安装命令
 helm install <product> \
-  ../ks-clusters/tools/offline-t9k/charts/<product>-<version.tgz> \
+  ../ks-clusters/offline/t9k/charts/<product>-<version.tgz> \
   -f values.yaml \
   -n t9k-system
 
 # 以安装 t9k-core 为例
 helm install t9k-core \
-  ../ks-clusters/tools/offline-t9k/charts/t9k-core-1.78.4.tgz \
+  ../ks-clusters/offline/t9k/charts/t9k-core-1.78.4.tgz \
   -f values.yaml \
   -n t9k-system
 
 # t9k-monitoring 的 namespace 与其他产品不同
 helm install t9k-monitoring \
-  ../ks-clusters/tools/offline-t9k/charts/t9k-monitoring \
+  ../ks-clusters/offline/t9k/charts/t9k-monitoring \
   -f values.yaml \
   -n t9k-monitoring
 ```

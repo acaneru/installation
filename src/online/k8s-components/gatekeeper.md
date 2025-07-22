@@ -51,10 +51,10 @@ kubectl label ns  t9k-system kubernetes.io/metadata.name=t9k-system
     <aside class="note">
     <div class="title">离线安装</div>
 
-    修改镜像仓库的设置，示例为 `192.168.101.159:5000`：
+    修改镜像仓库的设置，示例为 `registry.sample.t9kcloud.cn`：
 
     ```bash
-    sed -i "s|docker.io/t9kpublic|192.168.101.159:5000/t9kpublic|g" \
+    sed -i "s|docker.io/t9kpublic|registry.sample.t9kcloud.cn/t9kpublic|g" \
       ../ks-clusters/additionals/gatekeeper/values.yaml
     ```
     </aside>
@@ -62,12 +62,12 @@ kubectl label ns  t9k-system kubernetes.io/metadata.name=t9k-system
     ```bash
     # offline install for K8s v1.24 or v1.25 
     helm -n t9k-system install t9k-gatekeeper \
-      ../ks-clusters/tools/offline-additionals/charts/gatekeeper-3.11.0.tgz \
+      ../ks-clusters/offline/additionals/charts/gatekeeper-3.11.0.tgz \
       -f ../ks-clusters/additionals/gatekeeper/values.yaml
 
     # offline install for K8s v1.22
     helm -n t9k-system install t9k-gatekeeper \
-      ../ks-clusters/tools/offline-additionals/charts/gatekeeper-3.11.0-1.tgz \
+      ../ks-clusters/offline/additionals/charts/gatekeeper-3.11.0-1.tgz \
       -f ../ks-clusters/additionals/gatekeeper/values.yaml
     ```
 
